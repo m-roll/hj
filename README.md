@@ -29,13 +29,7 @@ to your server's `/jukebox`, their spotify player will connect with the other an
 with each other.
 
 
-
-## TODO
-
-* Gaps in Spotify client. Beta functionality for song playback is missing
-* Testing for OTP stuff
-* Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page
-
+## Setup
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
@@ -43,3 +37,11 @@ To start your Phoenix server:
   * Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+## TODO
+
+* Gaps in Spotify client. Beta functionality for song playback is missing :(
+* Testing for OTP stuff
+* Refresh auth token if we get a 401 from Spotify. (Trivial with the Spotify client)
+* Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page
+* (Later) Better authorization flow -- would be better all as one page. Maybe grey out the UI and prompt for activation.
