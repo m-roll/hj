@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chatourious · Phoenix Framework</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+  </head>
+  <body>
+    <header class="container">
+      <section class="row pb-2 mt-4 mb-4 border-bottom">
+        <div class="col-md-3">
+          <img width=150 height=150 class="mx-auto d-block" src="<%= Routes.static_path(@conn, "/images/jukebox.png") %>">
+        </div>
+        <div class="col align-content-center hj-header">
+          <h1 class="my-auto">Hillside Jukebox </h1>
+        </div>
+      </section>
+    </header>
+    <main role="main" class="container">
+      <%= if info = get_flash(@conn, :info) do %>
+        <p class="alert alert-info" role="alert"><%= info %></p>
+      <% end %>
+      <%= render @view_module, @view_template, assigns %>
+    </main>
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>
