@@ -45,3 +45,4 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 * Refresh auth token if we get a 401 from Spotify. (Trivial with the Spotify client)
 * Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page
 * (Later) Better authorization flow -- would be better all as one page. Maybe grey out the UI and prompt for activation.
+* (Later) Room IDs - one instance of the server handling many seperate queues

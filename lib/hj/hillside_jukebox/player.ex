@@ -1,6 +1,8 @@
 defmodule HillsideJukebox.Player do
-  def play(song = %HillsideJukebox.Song{}) do
+  require Logger
+
+  def play(song = %HillsideJukebox.Song{platform: :spotify}) do
     users = HillsideJukebox.Users.get_all()
-    Enum.map(users, fn user -> HillsideJukebox.Player.Spotify.play_track(user, song) end)
+    Enum.each(users, fn user -> HillsideJukebox.Player.SpotifyPlayer.play_track(user, song) end)
   end
 end

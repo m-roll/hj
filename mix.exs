@@ -40,7 +40,7 @@ defmodule Hj.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:react_phoenix, "~> 1.2"},
-      {:spotify_ex, "~> 2.0.9"}
+      {:spotify_ex, git: "https://github.com/adam-james/spotify_ex"}
     ]
   end
 end

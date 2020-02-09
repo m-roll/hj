@@ -29,8 +29,11 @@ defmodule HjWeb.UserSocket do
   #     HjWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
+
+  # id should be an md5 (or more secure?) hash of the users spotify authorization code.
+  # If refresh tokens stop working we need to disconnect them anyway.
   def id(_socket), do: nil
 
   channel("queue", HjWeb.QueueChannel)
-  channel("auth", HjWeb.AuthChannel)
+  channel("user", HjWeb.UserChannel)
 end

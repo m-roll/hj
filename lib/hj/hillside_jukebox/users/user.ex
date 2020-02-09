@@ -1,3 +1,3 @@
 defmodule HillsideJukebox.User do
-  defstruct [:authorization_token, :spotify_credentials]
+  defstruct([:spotify_credentials, :user_id, :device_id])
 end

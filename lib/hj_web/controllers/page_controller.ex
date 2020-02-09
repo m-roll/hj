@@ -17,13 +17,24 @@ defmodule HjWeb.PageController do
     end
   end
 
-  def listen(conn, _params) do
+  def authorize(conn, _params) do
     %Plug.Conn{params: query_params} = fetch_query_params(conn)
     _auth_code = authorize_from_params(conn, Map.fetch(query_params, "code"))
   end
 
   def jukebox(conn, _params) do
-    render(conn, "index.html")
+    creds = Spotify.Credentials.new(conn)
+
+    case creds do
+      %Spotify.Credentials{access_token: nil} ->
+        redirect(conn, to: "/authorize")
+
+      %Spotify.Credentials{} ->
+        HillsideJukebox.Users.add_credentials(creds)
+    end
+
+    Logger.debug("is registered")
+    render(conn, "index.html", spotify_access_token: Map.fetch!(creds, :access_token))
   end
 
   defp authorize_from_params(_conn, {:ok, auth_code}) do
