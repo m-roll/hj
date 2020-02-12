@@ -7,11 +7,12 @@ defmodule HjWeb.UserChannel do
   end
 
   def handle_in("user:register", payload, socket = %Phoenix.Socket{join_ref: join_ref}) do
-    spotify_access_token = payload["spotifyAccessToken"]
+    spotify_access_token = HjWeb.Socket.Util.Users.spotify_access_token_from_payload(payload)
     spotify_device_id = payload["deviceId"]
 
     # Double iteration over the user list is not good. Need to find a clean way to update multiple fields
     #   with some abstraction.
+    Logger.debug("Setting device id: #{spotify_device_id}")
     HillsideJukebox.Users.set_device_id(spotify_access_token, spotify_device_id)
     {:noreply, socket}
   end

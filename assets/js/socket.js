@@ -30,6 +30,6 @@ let spotifyPlayer = new SpotifyPlayer((deviceId) =>
 
 window.onSpotifyWebPlaybackSDKReady = spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(spotifyPlayer);
 
-let submissionView = new SubmissionView((url) => queueChannel.add_song(url));
+let submissionView = new SubmissionView((url) => queueChannel.add_song(hj_spotify_access_token, url));
 
 export default socket

@@ -15,7 +15,7 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
     children = [
       HillsideJukebox.Users,
       {HillsideJukebox.SongQueue.Server, :queue.new()},
-      {HillsideJukebox.SongQueue.Timer, fn -> nil end},
+      {HillsideJukebox.SongQueue.Timer, fn -> HillsideJukebox.JukeboxServer.play_next(name) end},
       %{
         id: HillsideJukebox.JukeboxServer,
         # Need to find a way to init this with the correct PIDs instead of the task below it

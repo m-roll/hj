@@ -12,19 +12,24 @@ defmodule HillsideJukebox.Users do
     end)
   end
 
+  def get_by_access_token(access_token) do
+    Agent.get(__MODULE__, fn users ->
+      Enum.find(
+        users,
+        map_user_with_access_token(access_token, fn _ -> true end, fn _ -> false end)
+      )
+    end)
+  end
+
   def set_device_id(access_token, new_device_id) do
     Agent.update(__MODULE__, fn users ->
       Enum.map(
         users,
-        fn user = %HillsideJukebox.User{
-             spotify_credentials: %Spotify.Credentials{access_token: at}
-           } ->
-          if(access_token == at) do
-            %{user | device_id: new_device_id}
-          else
-            user
-          end
-        end
+        map_user_with_access_token(
+          access_token,
+          fn user -> %{user | device_id: new_device_id} end,
+          &Function.identity/1
+        )
       )
     end)
   end
@@ -33,8 +38,13 @@ defmodule HillsideJukebox.Users do
     Agent.get(__MODULE__, &Function.identity/1)
   end
 
-  def remove_with_user_id(user_id) do
-    Agent.update(__MODULE__, fn users -> remove_matching(user_id, users) end)
+  def remove_with_access_token(access_token) do
+    Agent.update(__MODULE__, fn users ->
+      Enum.reject(
+        users,
+        map_user_with_access_token(access_token, fn _ -> true end, fn _ -> false end)
+      )
+    end)
   end
 
   def is_registered(creds) do
@@ -56,9 +66,15 @@ defmodule HillsideJukebox.Users do
     end
   end
 
-  defp remove_matching(user_id_out, users) do
-    Enum.reject(users, fn %HillsideJukebox.User{user_id: user_id} ->
-      user_id == user_id_out
-    end)
+  defp map_user_with_access_token(access_token, match_fun, else_fun) do
+    fn user = %HillsideJukebox.User{
+         spotify_credentials: %Spotify.Credentials{access_token: at}
+       } ->
+      if(access_token == at) do
+        match_fun.(user)
+      else
+        else_fun.(user)
+      end
+    end
   end
 end

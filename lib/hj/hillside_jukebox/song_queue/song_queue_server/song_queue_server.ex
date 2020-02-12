@@ -3,31 +3,33 @@ defmodule HillsideJukebox.SongQueue.Server do
   use Agent
 
   def start_link(initial_queue) do
-    Agent.start_link(fn -> {nil, initial_queue} end)
+    Agent.start_link(fn -> initial_queue end)
   end
 
   def add(pid, new_entry) do
-    Agent.update(pid, fn {next, queue} ->
-      {next, :queue.in(new_entry, queue)}
+    Agent.update(pid, fn queue ->
+      :queue.in(new_entry, queue)
     end)
   end
 
   def is_empty(pid) do
-    :queue.is_empty(
-      Agent.get(pid, fn {_next, queue} ->
-        queue
-      end)
-    )
+    :queue.is_empty(Agent.get(pid, &Function.identity/1))
   end
 
   def next(pid) do
-    Agent.get_and_update(pid, fn {_, queue} ->
-      {{:value, song}, new_queue} = :queue.out(queue)
-      {song, {song, new_queue}}
+    Agent.get_and_update(pid, fn queue ->
+      case :queue.out(queue) do
+        {{:value, song}, new_queue} ->
+          {song, new_queue}
+
+        res = {:empty, _queue} ->
+          res
+      end
     end)
   end
 
   def current(pid) do
-    Agent.get(pid, fn {cur, _} -> cur end)
+    {:value, song} = Agent.get(pid, fn queue -> :queue.peek(queue) end)
+    song
   end
 end

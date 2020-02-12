@@ -33,7 +33,6 @@ defmodule HjWeb.PageController do
         HillsideJukebox.Users.add_credentials(creds)
     end
 
-    Logger.debug("is registered")
     render(conn, "index.html", spotify_access_token: Map.fetch!(creds, :access_token))
   end
 

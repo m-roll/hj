@@ -11,9 +11,10 @@ export default class QueueChannel {
             .receive("error", resp => { console.log("Unable to join queue channel", resp) })
     }
 
-    add_song(url) {
+    add_song(access_token, url) {
         this.queueChannel.push('queue:add', {
             songInput: url,
+            spotifyAccessToken: access_token,
             user: "Anonymous user"
         });
     }
