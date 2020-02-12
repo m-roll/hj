@@ -2,7 +2,7 @@ defmodule HillsideJukebox.Users do
   use Agent
   require Logger
 
-  def start_link() do
+  def start_link(_) do
     Agent.start_link(fn -> [] end, name: __MODULE__)
   end
 

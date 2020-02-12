@@ -6,7 +6,7 @@ defmodule HjWeb.QueueChannel do
   end
 
   def handle_in("queue:add", payload, socket) do
-    song = HillsideJukebox.Jukebox.add_to_queue(payload["songInput"])
+    song = HillsideJukebox.JukeboxServer.add_to_queue("test", payload["songInput"])
 
     broadcast!(socket, "song:processed", %{
       user: "Anonymous user",

@@ -19,7 +19,7 @@ defmodule Hj.MixProject do
   def application do
     [
       mod: {Hj.Application, []},
-      extra_applications: [:logger, :runtime_tools, :spotify_ex]
+      extra_applications: [:logger, :runtime_tools, :spotify_ex, :gproc]
     ]
   end
 
@@ -40,7 +40,8 @@ defmodule Hj.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:react_phoenix, "~> 1.2"},
-      {:spotify_ex, git: "https://github.com/m-roll/spotify_ex"}
+      {:spotify_ex, git: "https://github.com/m-roll/spotify_ex"},
+      {:gproc, "~> 0.8.0"}
     ]
   end
 end

@@ -16,6 +16,7 @@ export default class QueueView {
 
         songCol.appendChild(document.createTextNode(newEntry.song["track_name"]));
         artistCol.appendChild(document.createTextNode(newEntry.song["track_artist"]));
+        console.log(newEntry);
         sourceCol.appendChild(document.createTextNode(capitalize(newEntry.song["platform"])));
         idCol.appendChild(document.createTextNode(newEntry.song["id"]))
 
