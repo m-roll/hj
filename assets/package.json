@@ -6,6 +6,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@forevolve/bootstrap-dark": "^1.0.0-alpha.899",
     "@popperjs/core": "^2.0.5",
     "bootstrap": "^4.4.1",
     "bootstrap-sass": "^3.4.1",

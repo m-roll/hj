@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import '@forevolve/bootstrap-dark/dist/css/bootstrap-dark.min.css';
 import "../css/app.css";
 import { socket } from "./socket";
 import "react-phoenix";
