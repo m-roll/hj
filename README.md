@@ -38,11 +38,17 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+## Running on multiple nodes
+
+There is support for running this program on a multi-node cluster, although the setup is tedious.
+I am working on a better implementation to easily run in across multiple nodes.
+
 ## TODO
 
-* Gaps in Spotify client. Beta functionality for song playback is missing :(
 * Testing for OTP stuff
 * Refresh auth token if we get a 401 from Spotify. (Trivial with the Spotify client)
 * Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page
-* (Later) Better authorization flow -- would be better all as one page. Maybe grey out the UI and prompt for activation.
-* (Later) Room IDs - one instance of the server handling many seperate queues
+* (Later) ~Better authorization flow -- would be better all as one page~. Maybe grey out the UI and prompt for activation.
+
+* (Later) Room IDs - one instance of the server handling many seperate queues (DONE - needs UI)
+* Gaps in Spotify client. Beta functionality for song playback is missing :( (DONE)
