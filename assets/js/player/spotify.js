@@ -4,8 +4,9 @@ const getOAuthToken = (cb) => {
 }
 export default class SpotifyPlayer {
 
-    constructor(deviceReadyCb) {
+    constructor(deviceReadyCb, updateCb) {
         this.deviceReadyCb = deviceReadyCb;
+        this.updateCb = updateCb;
     }
 
     onSpotifyWebPlaybackSDKReady() {
@@ -21,13 +22,15 @@ export default class SpotifyPlayer {
         player.addListener('playback_error', ({ message }) => { console.error(message); });
 
         // Playback status updates
-        player.addListener('player_state_changed', state => { console.log(state); });
+        let updateCb = this.updateCb;
+        player.addListener('player_state_changed', state => {
+            updateCb(state);
+        });
 
         // Ready
-        let cb = this.deviceReadyCb;
+        let readyCb = this.deviceReadyCb;
         player.addListener('ready', ({ device_id }) => {
-            console.log(cb);
-            cb(device_id);
+            readyCb(device_id);
             console.log('Ready with Device ID', device_id);
         });
 

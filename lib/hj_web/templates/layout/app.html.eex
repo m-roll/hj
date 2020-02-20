@@ -8,22 +8,19 @@
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
   </head>
   <body>
-    <header class="container">
-      <section class="row pb-2 mt-4 mb-4 border-bottom">
-        <div class="col-md-3">
-          <img width=150 height=150 class="mx-auto d-block" src="<%= Routes.static_path(@conn, "/images/jukebox.png") %>">
-        </div>
-        <div class="col align-content-center hj-header">
-          <h1 class="my-auto">Hillside Jukebox </h1>
-        </div>
+    <div class="container-fluid wrapper d-flex h-100 flex-column">
+    <header>
+      <section class="row pb-4 pt-4 mb-4 border-bottom justify-content-center hud-overlay">
+        <h1 class="my-auto text-center">Hillside Jukebox </h1>
       </section>
     </header>
-    <main role="main" class="container">
+    <main role="main" class="px-3 d-flex flex-column" >
       <%= if info = get_flash(@conn, :info) do %>
         <p class="alert alert-info" role="alert"><%= info %></p>
       <% end %>
       <%= render @view_module, @view_template, assigns %>
     </main>
+    </div>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

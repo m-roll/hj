@@ -1,32 +1,35 @@
-  <script src="https://sdk.scdn.co/spotify-player.js"></script>
-  <script>
-    var hj_spotify_access_token = "<%= @spotify_access_token%>"
-  </script>
-  <div class="songs container">
-    <div class="row">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">
-              Add a song
-                    </h5>
-            <input type="text" id="song-input" class="form-control mb-2" placeholder="Paste a URL or 'share' clipboard contents" />
-            <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
-            <button type="button" class="btn btn-secondary">Clipboard</button>
-          </div>
-        </div>
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+  let hj_spotify_access_token = "<%= @spotify_access_token%>";
+  let page = "JUKEBOX";
+</script>
+<div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
+</div>
+<div class="songs row">
+  <div class="col">
+    <div class="card hud-overlay">
+      <div class="card-body">
+        <h5 class="card-title">
+          Add a song
+                </h5>
+        <input type="text" id="song-input" class="form-control mb-2" placeholder="Paste a URL or 'share' clipboard contents" />
+        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary">Clipboard</button>
       </div>
-      <div class="col-md-9">
-        <h3>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="card hud-overlay">
+      <div class="card-body">
+        <h3 class="card-title">
           Current queue
-      </h3>
+        </h3>
         <table id="queue-table" class="table">
           <thead>
             <tr>
               <th>Song</th>
               <th>Artist</th>
               <th>Source</th>
-              <th>ID</th>
             </tr>
           </thead>
           <tbody id="song-list">
@@ -35,3 +38,14 @@
       </div>
     </div>
   </div>
+</div>
+<div class="row headsup mt-auto justify-content-center border-top py-3 hud-overlay">
+  <div class="col-md-9">
+    <div class="row justify-content-center mb-1">
+      <h3 id="status-song-title" class=" my-auto text-center">Song title</h3>
+    </div>
+    <div class="row justify-content-center">
+      <h5 id="status-song-artist" class="my-auto text-center">Song artist</h5>
+    </div>
+  </div>
+</div>

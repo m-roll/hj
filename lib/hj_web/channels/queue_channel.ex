@@ -1,4 +1,5 @@
 defmodule HjWeb.QueueChannel do
+  require Logger
   use Phoenix.Channel
 
   def join("queue", _payload, socket) do

@@ -36,6 +36,10 @@ defmodule HjWeb.PageController do
     render(conn, "index.html", spotify_access_token: Map.fetch!(creds, :access_token))
   end
 
+  def queue(conn, _params) do
+    render(conn, "queue.html")
+  end
+
   defp authorize_from_params(_conn, {:ok, auth_code}) do
     auth_code
   end

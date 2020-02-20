@@ -23,5 +23,10 @@ main {
     left:0;
     height:100%;
     z-index:-10;
-    filter:blur(8px);
+    filter:blur(3px);
+}
+
+.hud-overlay {
+    background-color: #212529;
+    opacity:0.8;
 }

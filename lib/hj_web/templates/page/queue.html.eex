@@ -1,0 +1,17 @@
+<script>
+  let page = "QUEUE";
+</script>
+<div class="songs row">
+  <div class="col">
+    <div class="card hud-overlay">
+      <div class="card-body">
+        <h5 class="card-title">
+          Add a song
+                </h5>
+        <input type="text" id="song-input" class="form-control mb-2" placeholder="Paste a URL or 'share' clipboard contents" />
+        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary">Clipboard</button>
+      </div>
+    </div>
+  </div>
+</div>

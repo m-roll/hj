@@ -20,6 +20,7 @@ defmodule HjWeb.Router do
     get "/authorize", PageController, :authorize
     get "/auth", PageController, :auth
     get "/jukebox", PageController, :jukebox
+    get "/queue", PageController, :queue
   end
 
   # Other scopes may use custom stacks.
