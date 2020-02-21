@@ -35,6 +35,37 @@ To start your Phoenix server:
   * Install dependencies with `mix deps.get`
   * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
+  * 
+  
+### Setting up config files
+
+In your config folder, create the following files.
+
+config.secret.exs
+```
+use Mix.Config
+
+config :spotify_ex,
+  client_id: "<your spotify client id>",
+  secret_key: "<your spotify secret key>"
+
+```
+
+spotify.secret.exs
+```
+use Mix.Config
+
+config :spotify_ex,
+  user_id: "<YOUR SPOTIFY USER ID>",
+  scopes: [
+    "streaming",
+    "user-read-email",
+    "user-read-private",
+    "user-read-playback-state",
+    "user-modify-playback-state"
+  ],
+  callback_url: "http://localhost:4000/auth"
+  ```
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
