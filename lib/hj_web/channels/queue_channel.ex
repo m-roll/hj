@@ -6,6 +6,13 @@ defmodule HjWeb.QueueChannel do
     {:ok, socket}
   end
 
+  def handle_in("queue:fetch", _payload, _socket) do
+    queue =
+      HillsideJukebox.SongQueue.Server.fetch(HillsideJukebox.JukeboxServer.get_queue_pid("test"))
+
+    {:reply, queue}
+  end
+
   def handle_in("queue:add", payload, socket) do
     song =
       HillsideJukebox.JukeboxServer.add_to_queue(

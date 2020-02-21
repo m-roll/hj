@@ -18,4 +18,10 @@ export default class QueueChannel {
             user: "Anonymous user"
         });
     }
+
+    fetch() {
+        let res = this.queueChannel.push('queue:fetch');
+        console.log(res);
+        return res;
+    }
 }

@@ -37,4 +37,8 @@ export default class JukeboxSocket {
     addSong(accessToken, url) {
         this.queueChannel.addSong(accessToken, url);
     }
+
+    fetchQueue() {
+        return this.queueChannel.fetchQueue();
+    }
 }

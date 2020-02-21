@@ -27,6 +27,7 @@ export default class JukeboxController {
             this.addSong.apply(that, [url]);
         });
         this.spotify_access_token = hj_spotify_access_token;
+        this.socket.fetchQueue();
     }
 
     onSongAdded(newSong) {

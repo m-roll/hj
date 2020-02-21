@@ -28,6 +28,10 @@ defmodule HillsideJukebox.SongQueue.Server do
     end)
   end
 
+  def fetch(pid) do
+    Agent.get(pid, &Function.identity/1)
+  end
+
   def current(pid) do
     {:value, song} = Agent.get(pid, fn queue -> :queue.peek(queue) end)
     song

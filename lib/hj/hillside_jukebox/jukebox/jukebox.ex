@@ -29,6 +29,10 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.call(via_tuple(room_name), :get_users_pid)
   end
 
+  def get_queue_pid(room_name) do
+    GenServer.call(via_tuple(room_name), :get_queue_pid)
+  end
+
   defp via_tuple(room_name) do
     {:via, :gproc, {:n, :l, {:jukebox_room, room_name}}}
   end
@@ -58,6 +62,10 @@ defmodule HillsideJukebox.JukeboxServer do
 
   def handle_call(:get_users_pid, _from, workers = {_, _, users_pid}) do
     {:reply, users_pid, workers}
+  end
+
+  def handle_call(:get_queue_pid, _from, workers = {queue_pid, _, _}) do
+    {:reply, queue_pid, workers}
   end
 
   @impl true
