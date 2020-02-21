@@ -5,11 +5,14 @@ export default class StatusView {
         this.backgroundElem = document.getElementById("background");
         this.trackPlayingName = document.getElementById("status-song-title");
         this.trackPlayingArtist = document.getElementById("status-song-artist");
+        this.albumSmall = document.getElementById("preview-image");
     }
 
     updateStatusView(newEntry) {
-        this.backgroundElem.style.backgroundImage = "url(" + newEntry.song["track_art_url"] + ")";
-        this.trackPlayingName.textContent = newEntry.song["track_name"];
-        this.trackPlayingArtist.textContent = getArtistString(newEntry.song["track_artists"]);
+        let imageBg = "url(" + newEntry["track_art_url"] + ")";
+        this.backgroundElem.style.backgroundImage = imageBg;
+        this.albumSmall.style.backgroundImage = imageBg;
+        this.trackPlayingName.textContent = newEntry["track_name"];
+        this.trackPlayingArtist.textContent = getArtistString(newEntry["track_artists"]);
     }
 }

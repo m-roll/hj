@@ -16,7 +16,7 @@ defmodule HjWeb.Router do
   scope "/", HjWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", PageController, :queue
     get "/authorize", PageController, :authorize
     get "/auth", PageController, :auth
     get "/jukebox", PageController, :jukebox

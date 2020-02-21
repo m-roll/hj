@@ -30,3 +30,11 @@ main {
     background-color: #212529;
     opacity:0.8;
 }
+
+#preview-image {
+    height:100%;
+    width:auto;
+    background-position:center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}

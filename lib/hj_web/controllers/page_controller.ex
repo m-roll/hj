@@ -30,7 +30,7 @@ defmodule HjWeb.PageController do
         redirect(conn, to: "/authorize")
 
       %Spotify.Credentials{} ->
-        HillsideJukebox.Users.add_credentials(creds)
+        HillsideJukebox.JukeboxServer.add_user("test", creds)
     end
 
     render(conn, "index.html", spotify_access_token: Map.fetch!(creds, :access_token))

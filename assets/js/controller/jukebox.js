@@ -15,7 +15,11 @@ export default class JukeboxController {
 
     constructor() {
         let that = this;
-        this.socket = new JukeboxSocket(this.onSongAdded.bind(this), this.onAuthUpdated.bind(this), ["USER", "QUEUE"]);
+        this.socket = new JukeboxSocket(this.onSongAdded.bind(this),
+            this.onAuthUpdated.bind(this),
+            this.onSongPlay.bind(this),
+            ["USER", "QUEUE", "STATUS"]
+        );
         this.spotifyPlayer = new SpotifyPlayer(this.registerUser.bind(this), this.onPlayerUpdate.bind(this));
         window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
         this.submissionView = new SubmissionView((url) => {
@@ -27,6 +31,9 @@ export default class JukeboxController {
 
     onSongAdded(newSong) {
         this.queueView.addToQueueDisplay(newSong);
+    }
+
+    onSongPlay(newSong) {
         this.statusView.updateStatusView(newSong);
     }
 

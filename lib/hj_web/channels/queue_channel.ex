@@ -9,7 +9,6 @@ defmodule HjWeb.QueueChannel do
   def handle_in("queue:add", payload, socket) do
     song =
       HillsideJukebox.JukeboxServer.add_to_queue(
-        payload["spotifyAccessToken"],
         "test",
         payload["songInput"]
       )

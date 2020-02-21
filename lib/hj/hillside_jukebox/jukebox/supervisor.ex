@@ -28,9 +28,10 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
   end
 
   defp setup(name, pid) do
+    users_pid = find_child(pid, HillsideJukebox.Users)
     queue_pid = find_child(pid, HillsideJukebox.SongQueue.Server)
     timer_pid = find_child(pid, HillsideJukebox.SongQueue.Timer)
-    HillsideJukebox.JukeboxServer.set_workers(name, queue_pid, timer_pid)
+    HillsideJukebox.JukeboxServer.set_workers(name, queue_pid, timer_pid, users_pid)
   end
 
   defp find_child(pid, find_id) do

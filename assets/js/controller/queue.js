@@ -8,7 +8,7 @@ export default class QueueController {
     queueView = new QueueView();
 
     constructor() {
-        this.socket = new JukeboxSocket(this.onSongAdded.bind(this), null, ["QUEUE"]);
+        this.socket = new JukeboxSocket(this.onSongAdded.bind(this), null, null, ["QUEUE"]);
         let that = this;
         this.submissionView = new SubmissionView((url) => {
             //lexical binding - can we get around this?

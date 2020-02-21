@@ -13,7 +13,8 @@ defmodule HjWeb.UserChannel do
     # Double iteration over the user list is not good. Need to find a clean way to update multiple fields
     #   with some abstraction.
     Logger.debug("Setting device id: #{spotify_device_id}")
-    HillsideJukebox.Users.set_device_id(spotify_access_token, spotify_device_id)
+    users_pid = HillsideJukebox.JukeboxServer.get_users_pid("test")
+    HillsideJukebox.Users.set_device_id(users_pid, spotify_access_token, spotify_device_id)
     {:noreply, socket}
   end
 end

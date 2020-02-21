@@ -13,7 +13,10 @@ defmodule SpotifyController.OAuthController do
 
     case auth_result do
       {:ok, _} ->
-        HillsideJukebox.Users.add_credentials(Spotify.Credentials.new(conn))
+        HillsideJukebox.Users.add_credentials(
+          HillsideJukebox.JukeboxServer.get_users_pid("test"),
+          Spotify.Credentials.new(conn)
+        )
     end
 
     auth_result

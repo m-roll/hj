@@ -1,8 +1,8 @@
 export default class StatusChannel {
 
-    constructor(socket, songAddedCb) {
+    constructor(socket, songPlayingCb) {
         this.statusChannel = socket.channel("status", {});
-        this.statusChannel.on('status:play', songAddedCb);
+        this.statusChannel.on('status:play', songPlayingCb);
     }
 
     join() {

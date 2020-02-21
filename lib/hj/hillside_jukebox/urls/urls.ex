@@ -5,13 +5,15 @@ defmodule HillsideJukebox.URLs do
 
   ## Failure case: this will fail if the given URL does not match to a platform
 
-  def get_song("spotify:track:" <> track_id) do
-    %HillsideJukebox.Song{id: track_id, platform: :spotify}
-  end
-
+  ## Need some credentials to get the full details of the song
   def get_song("spotify:track:" <> track_id, creds = %Spotify.Credentials{}) do
-    {:ok, %Spotify.Track{name: name, artists: artists, album: %{"images" => [largest | _rest]}}} =
-      Spotify.Track.get_track(creds, track_id)
+    {:ok,
+     %Spotify.Track{
+       name: name,
+       duration_ms: duration,
+       artists: artists,
+       album: %{"images" => [largest | _rest]}
+     }} = Spotify.Track.get_track(creds, track_id)
 
     %{"url" => art_url} = largest
 
@@ -20,7 +22,8 @@ defmodule HillsideJukebox.URLs do
       platform: :spotify,
       track_name: name,
       track_artists: spotify_get_artists_names(artists),
-      track_art_url: art_url
+      track_art_url: art_url,
+      duration: duration
     }
   end
 

@@ -14,15 +14,19 @@ import StatusChannel from "./channels/status.js";
 export default class JukeboxSocket {
     socket = new Socket("/socket", { params: { token: window.userToken } })
     queueChannel; userChannel;
-    constructor(songAddedCb, authUpdateCb, channels) {
+    constructor(songAddedCb, authUpdateCb, songPlayCb, channels) {
         this.socket.connect();
         this.queueChannel = new QueueChannel(this.socket, songAddedCb);
         this.userChannel = new UserChannel(this.socket, authUpdateCb);
+        this.statusChannel = new StatusChannel(this.socket, songPlayCb);
         if (channels.includes("USER")) {
             this.userChannel.join();
         }
         if (channels.includes("QUEUE")) {
             this.queueChannel.join();
+        }
+        if (channels.includes("STATUS")) {
+            this.statusChannel.join();
         }
     }
 

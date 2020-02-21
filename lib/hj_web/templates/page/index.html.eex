@@ -30,6 +30,7 @@
               <th>Song</th>
               <th>Artist</th>
               <th>Source</th>
+              <th>Duration</th>
             </tr>
           </thead>
           <tbody id="song-list">
@@ -39,13 +40,22 @@
     </div>
   </div>
 </div>
-<div class="row headsup mt-auto justify-content-center border-top py-3 hud-overlay">
-  <div class="col-md-9">
-    <div class="row justify-content-center mb-1">
-      <h3 id="status-song-title" class=" my-auto text-center">Song title</h3>
+<div class="row headsup mt-auto border-top py-3 hud-overlay d-flex">
+  <div class="col-md-1">
+    <div class="row d-flex my-auto">
+      <button type="button fl" class="btn btn-secondary mx-auto">Skip</button>
     </div>
-    <div class="row justify-content-center">
-      <h5 id="status-song-artist" class="my-auto text-center">Song artist</h5>
+  </div>
+  <div class="col-md-1">
+    <div id="preview-image">
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="row mb-1">
+      <h3 id="status-song-title" class=" my-auto">Song title</h3>
+    </div>
+    <div class="row">
+      <h5 id="status-song-artist" class="my-auto">Song artist</h5>
     </div>
   </div>
 </div>
