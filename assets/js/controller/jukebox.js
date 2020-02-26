@@ -15,12 +15,12 @@ export default class JukeboxController {
 
     constructor() {
         let that = this;
-        this.socket = new JukeboxSocket(this.onSongAdded.bind(this),
+        this.socket = new JukeboxSocket(((payload) => { this.onSongAdded(payload.song) }).bind(this),
             this.onAuthUpdated.bind(this),
             this.onSongPlay.bind(this),
             ["USER", "QUEUE", "STATUS"]
         );
-        this.spotifyPlayer = new SpotifyPlayer(this.registerUser.bind(this), this.onPlayerUpdate.bind(this));
+        this.spotifyPlayer = new SpotifyPlayer(this.init.bind(this), this.onPlayerUpdate.bind(this));
         window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
         this.submissionView = new SubmissionView((url) => {
             //lexical binding - can we get around this?
@@ -46,11 +46,20 @@ export default class JukeboxController {
         this.spotify_access_token = auth;
     }
 
-    registerUser(deviceId) {
-        this.socket.registerUser(this.spotify_access_token, deviceId)
+    init(deviceId) {
+        this.socket.registerUser(this.spotify_access_token, deviceId);
+        this.socket.fetchQueue(this.onFetchQueue.bind(this));
+
+    }
+
+    onFetchQueue(payload) {
+        payload.queue.forEach(song => this.onSongAdded(song))
     }
 
     onPlayerUpdate(status) {
-        console.log(status);
+    }
+
+    onSongPopped(song) {
+        this.queueView.pop();
     }
 }

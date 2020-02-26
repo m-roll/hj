@@ -14,9 +14,9 @@ import StatusChannel from "./channels/status.js";
 export default class JukeboxSocket {
     socket = new Socket("/socket", { params: { token: window.userToken } })
     queueChannel; userChannel;
-    constructor(songAddedCb, authUpdateCb, songPlayCb, channels) {
+    constructor(songAddedCb, authUpdateCb, songPlayCb, channels, popCb) {
         this.socket.connect();
-        this.queueChannel = new QueueChannel(this.socket, songAddedCb);
+        this.queueChannel = new QueueChannel(this.socket, songAddedCb, popCb);
         this.userChannel = new UserChannel(this.socket, authUpdateCb);
         this.statusChannel = new StatusChannel(this.socket, songPlayCb);
         if (channels.includes("USER")) {
@@ -38,7 +38,7 @@ export default class JukeboxSocket {
         this.queueChannel.addSong(accessToken, url);
     }
 
-    fetchQueue() {
-        return this.queueChannel.fetchQueue();
+    fetchQueue(fetchCb) {
+        return this.queueChannel.fetch(fetchCb);
     }
 }

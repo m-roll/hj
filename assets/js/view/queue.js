@@ -6,7 +6,6 @@ export default class QueueView {
     }
 
     addToQueueDisplay(newEntry) {
-        console.log(newEntry.song);
         let capitalize = (str) => {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
@@ -17,12 +16,12 @@ export default class QueueView {
         let sourceCol = document.createElement("td");
         let durationCol = document.createElement("td");
 
-        songCol.appendChild(document.createTextNode(newEntry.song["track_name"]));
-        let artistStr = getArtistString(newEntry.song["track_artists"]);
+        songCol.appendChild(document.createTextNode(newEntry["track_name"]));
+        let artistStr = getArtistString(newEntry["track_artists"]);
         artistCol.appendChild(document.createTextNode(artistStr));
-        sourceCol.appendChild(document.createTextNode(capitalize(newEntry.song["platform"])));
+        sourceCol.appendChild(document.createTextNode(capitalize(newEntry["platform"])));
 
-        let ms = newEntry.song["duration"];
+        let ms = newEntry["duration"];
         ms = 1000 * Math.round(ms / 1000);
         var d = new Date(ms);
         let secondsStr = d.getUTCSeconds().toString().padStart(2, '0');
@@ -34,5 +33,9 @@ export default class QueueView {
         row.appendChild(sourceCol);
         row.appendChild(durationCol);
         this.queueDisp.appendChild(row);
+    }
+
+    pop() {
+        this.queueDisp.removeChild(this.queueDisp.childNodes[1]);
     }
 }

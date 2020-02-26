@@ -3,11 +3,18 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   require Logger
 
   def play_track(
-        user = %HillsideJukebox.User{spotify_credentials: creds, device_id: device_id},
+        %HillsideJukebox.User{spotify_credentials: creds, device_id: device_id},
         %HillsideJukebox.Song{platform: :spotify, id: song_id}
       ) do
-    Logger.debug("playing on device #{device_id} for user #{inspect(user)}")
     Spotify.Player.play(creds, generate_body(song_id), device_id)
+  end
+
+  def play_track(
+        %HillsideJukebox.User{spotify_credentials: creds, device_id: device_id},
+        %HillsideJukebox.Song{platform: :spotify, id: song_id},
+        offset_ms
+      ) do
+    Spotify.Player.play(creds, generate_body(song_id, offset_ms), device_id)
   end
 
   def play_track(user = %HillsideJukebox.User{}) do
@@ -17,6 +24,15 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   defp generate_body(song_id) do
     body = %{
       uris: ["spotify:track:#{song_id}"]
+    }
+
+    Jason.encode!(body)
+  end
+
+  defp generate_body(song_id, offset_ms) do
+    body = %{
+      uris: ["spotify:track:#{song_id}"],
+      position_ms: offset_ms
     }
 
     Jason.encode!(body)

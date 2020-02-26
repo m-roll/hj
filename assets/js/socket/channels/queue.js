@@ -1,8 +1,9 @@
 export default class QueueChannel {
 
-    constructor(socket, songProcessedCb) {
+    constructor(socket, songProcessedCb, popCb) {
         this.queueChannel = socket.channel("queue", {});
         this.queueChannel.on('song:processed', songProcessedCb);
+        this.queueChannel.on('queue:pop', popCb);
     }
 
     join() {
@@ -19,9 +20,9 @@ export default class QueueChannel {
         });
     }
 
-    fetch() {
-        let res = this.queueChannel.push('queue:fetch');
-        console.log(res);
-        return res;
+    fetch(fetchCb) {
+        let req = this.queueChannel.push('queue:fetch');
+        req.receive("ok", fetchCb);
+        return req;
     }
 }

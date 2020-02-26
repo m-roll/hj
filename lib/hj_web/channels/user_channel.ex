@@ -14,7 +14,16 @@ defmodule HjWeb.UserChannel do
     #   with some abstraction.
     Logger.debug("Setting device id: #{spotify_device_id}")
     users_pid = HillsideJukebox.JukeboxServer.get_users_pid("test")
-    HillsideJukebox.Users.set_device_id(users_pid, spotify_access_token, spotify_device_id)
+    user_id = join_ref
+    HillsideJukebox.Users.set_user_id_from_token(users_pid, spotify_access_token, user_id)
+    HillsideJukebox.Users.set_device_id(users_pid, user_id, spotify_device_id)
+    new_user = HillsideJukebox.Users.get_by_user_id(users_pid, user_id)
+    HillsideJukebox.JukeboxServer.sync_audio("test", new_user)
     {:noreply, socket}
+  end
+
+  def terminate(_reason, socket = %Phoenix.Socket{join_ref: join_ref}) do
+    users_pid = HillsideJukebox.JukeboxServer.get_users_pid("test")
+    HillsideJukebox.Users.remove_with_user_id(users_pid, join_ref)
   end
 end

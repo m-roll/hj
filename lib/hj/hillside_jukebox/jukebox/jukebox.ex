@@ -25,6 +25,10 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.cast(via_tuple(room_name), {:add_user, creds})
   end
 
+  def sync_audio(room_name, user) do
+    GenServer.cast(via_tuple(room_name), {:sync_audio, user})
+  end
+
   def get_users_pid(room_name) do
     GenServer.call(via_tuple(room_name), :get_users_pid)
   end
@@ -42,7 +46,10 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_call(:play_next, _from, workers = {queue_pid, timer_pid, users_pid}) do
-    HillsideJukebox.SongQueue.Server.next(queue_pid)
+    # Why are we popping and then getting current? Really could be done in one step
+    next = HillsideJukebox.SongQueue.Server.next(queue_pid)
+    # Again, need a way to broadcast this only to a room code
+    HjWeb.Endpoint.broadcast!("queue", "queue:pop", next)
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
     play_and_autoplay_next(next_song, workers)
     {:reply, next_song, workers}
@@ -74,8 +81,19 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   @impl true
-  def handle_cast({:add_user, creds}, workers = {_, _, users_pid}) do
-    HillsideJukebox.Users.add_credentials(users_pid, creds)
+  def handle_cast({:sync_audio, user}, workers = {queue_pid, timer_pid, users_pid}) do
+    case HillsideJukebox.SongQueue.Timer.get_offset(timer_pid) do
+      :not_started -> nil
+      offset -> play_with_offset_for_user(user, offset, queue_pid)
+    end
+
+    {:noreply, workers}
+  end
+
+  @impl true
+  def handle_cast({:add_user, creds}, workers = {queue_pid, timer_pid, users_pid}) do
+    new_user = HillsideJukebox.Users.add_credentials(users_pid, creds)
+
     {:noreply, workers}
   end
 
@@ -87,6 +105,11 @@ defmodule HillsideJukebox.JukeboxServer do
     res = HillsideJukebox.Player.play(users, song)
     HillsideJukebox.SongQueue.Timer.timeout(timer_pid, duration)
     song
+  end
+
+  defp play_with_offset_for_user(user, offset_ms, queue_pid) do
+    current_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
+    HillsideJukebox.Player.play_at_for_user(user, current_song, offset_ms)
   end
 
   defp add_internal(workers = {queue_pid, timer_pid, users_pid}, song) do
