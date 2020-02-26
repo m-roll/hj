@@ -78,10 +78,13 @@ I am working on a better implementation to easily run in across multiple nodes.
 
 * Testing for OTP stuff
 * Refresh auth token if we get a 401 from Spotify. (Trivial with the Spotify client)
-* Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page
+
+
+
+* Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page (DONE)
 * New flow
-  * If you create a room, you are the leader and must connect your spotify account. API requests for song metadata will use this account
-  * If you join a room to listen in, you must connect your spotify account only to play audio in sync
+  * If you create a room, you are the leader and must connect your spotify account. API requests for song metadata will use this account (DONE)
+  * If you join a room to listen in, you must connect your spotify account only to play audio in sync (DONE)
   * If you are just using the queue, the only thing you need is the room code.
 
 * (Later) Room IDs - one instance of the server handling many seperate queues (DONE - needs UI)
