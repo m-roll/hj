@@ -16,4 +16,8 @@ export default class UserChannel {
             .receive("ok", resp => { console.log("Joined user channel successfully", resp) })
             .receive("error", resp => { console.log("Unable to join user channel", resp) })
     }
+
+    voteSkip() {
+        this.userChannel.push("user:vote_skip");
+    }
 }

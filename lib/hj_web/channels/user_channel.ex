@@ -22,6 +22,12 @@ defmodule HjWeb.UserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("user:vote_skip", payload, socket = %Phoenix.Socket{join_ref: join_ref}) do
+    HillsideJukebox.JukeboxServer.vote_skip("test", join_ref)
+
+    {:noreply, socket}
+  end
+
   def terminate(_reason, socket = %Phoenix.Socket{join_ref: join_ref}) do
     users_pid = HillsideJukebox.JukeboxServer.get_users_pid("test")
     HillsideJukebox.Users.remove_with_user_id(users_pid, join_ref)

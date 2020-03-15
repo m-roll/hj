@@ -6,7 +6,7 @@ import JukeboxSocket from "../socket/socket.js";
 
 export default class JukeboxController {
 
-    queueView = new QueueView();
+    queueView;
     statusView = new StatusView();
     submissionView;
     spotifyPlayer;
@@ -18,7 +18,8 @@ export default class JukeboxController {
         this.socket = new JukeboxSocket(((payload) => { this.onSongAdded(payload.song) }).bind(this),
             this.onAuthUpdated.bind(this),
             this.onSongPlay.bind(this),
-            ["USER", "QUEUE", "STATUS"]
+            ["USER", "QUEUE", "STATUS"],
+            this.onSongPopped.bind(this)
         );
         this.spotifyPlayer = new SpotifyPlayer(this.init.bind(this), this.onPlayerUpdate.bind(this));
         window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
@@ -28,6 +29,10 @@ export default class JukeboxController {
         });
         this.spotify_access_token = hj_spotify_access_token;
         this.socket.fetchQueue();
+        this.queueView = new QueueView((e) => {
+            this.socket.userChannel.voteSkip();
+        });
+        this.socket.statusChannel.getCurrent(this.onSongPlay.bind(this));
     }
 
     onSongAdded(newSong) {

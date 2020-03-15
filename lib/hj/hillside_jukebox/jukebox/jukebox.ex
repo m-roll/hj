@@ -1,12 +1,20 @@
 defmodule HillsideJukebox.JukeboxServer do
+  defstruct([:queue_pid, :timer_pid, :users_pid, :num_users, :num_skip_vote])
   use GenServer
   require Logger
 
   ## API
 
-  def start_link(workers, room_name) do
+  def start_link(_, room_name) do
     Logger.debug("Starting jukebox with name #{inspect(room_name)}")
-    GenServer.start_link(__MODULE__, workers, name: via_tuple(room_name))
+
+    GenServer.start_link(
+      __MODULE__,
+      %HillsideJukebox.JukeboxServer{
+        num_skip_vote: 0
+      },
+      name: via_tuple(room_name)
+    )
   end
 
   def add_to_queue(room_name, url) do
@@ -37,6 +45,18 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.call(via_tuple(room_name), :get_queue_pid)
   end
 
+  def vote_skip(room_name, user_id) do
+    GenServer.cast(via_tuple(room_name), {:vote_skip, user_id})
+  end
+
+  def current_playing(room_name) do
+    GenServer.call(via_tuple(room_name), :current)
+  end
+
+  def remove_user(room_name, user_id) do
+    GenServer.call(via_tuple(room_name), {:remove_user, user_id})
+  end
+
   defp via_tuple(room_name) do
     {:via, :gproc, {:n, :l, {:jukebox_room, room_name}}}
   end
@@ -45,83 +65,192 @@ defmodule HillsideJukebox.JukeboxServer do
   ## State is a {pid, pid} tuple where the first pid is the queue process and the second the timer process
 
   @impl true
-  def handle_call(:play_next, _from, workers = {queue_pid, timer_pid, users_pid}) do
-    # Why are we popping and then getting current? Really could be done in one step
-    next = HillsideJukebox.SongQueue.Server.next(queue_pid)
-    # Again, need a way to broadcast this only to a room code
-    HjWeb.Endpoint.broadcast!("queue", "queue:pop", next)
-    next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
-    play_and_autoplay_next(next_song, workers)
-    {:reply, next_song, workers}
+  def handle_call(
+        :play_next,
+        _from,
+        server = %HillsideJukebox.JukeboxServer{
+          queue_pid: queue_pid
+        }
+      ) do
   end
 
+  @impl true
   def handle_call(
         {:add_to_queue, url: url},
         _from,
-        workers = {_, _, users_pid}
+        server = %HillsideJukebox.JukeboxServer{
+          users_pid: users_pid
+        }
       ) do
     %HillsideJukebox.User{spotify_credentials: creds} = HillsideJukebox.Users.get_host(users_pid)
 
     song = HillsideJukebox.URLs.get_song(url, creds)
 
-    add_internal(workers, song)
+    add_internal(server, song)
+    {:reply, song, server}
   end
 
-  def handle_call(:get_users_pid, _from, workers = {_, _, users_pid}) do
-    {:reply, users_pid, workers}
+  def handle_call(
+        :get_users_pid,
+        _from,
+        server = %HillsideJukebox.JukeboxServer{users_pid: users_pid}
+      ) do
+    {:reply, users_pid, server}
   end
 
-  def handle_call(:get_queue_pid, _from, workers = {queue_pid, _, _}) do
-    {:reply, queue_pid, workers}
+  def handle_call(
+        :get_queue_pid,
+        _from,
+        server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid}
+      ) do
+    {:reply, queue_pid, server}
+  end
+
+  def handle_call(:current, _from, server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid}) do
+    current = HillsideJukebox.SongQueue.Server.current(queue_pid)
+    {:reply, current, server}
   end
 
   @impl true
-  def handle_cast({:set_workers, queue_pid, timer_pid, users_pid}, _state) do
-    {:noreply, {queue_pid, timer_pid, users_pid}}
+  def handle_cast({:set_workers, queue_pid, timer_pid, users_pid}, state) do
+    num_users = length(HillsideJukebox.Users.get_all(users_pid))
+
+    {:noreply,
+     %{
+       state
+       | timer_pid: timer_pid,
+         queue_pid: queue_pid,
+         users_pid: users_pid,
+         num_users: num_users
+     }}
+  end
+
+  def handle_cast(
+        {:remove_user, user_id},
+        state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
+      ) do
+    HillsideJukebox.Users.remove_with_user_id(users_pid, user_id)
+    # Need to make sure we actually removed someone before decrementing - security hole
+    {:noreply, %{state | num_users: num_users - 1}}
   end
 
   @impl true
-  def handle_cast({:sync_audio, user}, workers = {queue_pid, timer_pid, users_pid}) do
+  def handle_cast(
+        {:sync_audio, user},
+        server = %HillsideJukebox.JukeboxServer{
+          timer_pid: timer_pid
+        }
+      ) do
     case HillsideJukebox.SongQueue.Timer.get_offset(timer_pid) do
       :not_started -> nil
-      offset -> play_with_offset_for_user(user, offset, queue_pid)
+      offset -> play_with_offset_for_user(user, offset, server)
     end
 
-    {:noreply, workers}
+    {:noreply, server}
   end
 
   @impl true
-  def handle_cast({:add_user, creds}, workers = {queue_pid, timer_pid, users_pid}) do
-    new_user = HillsideJukebox.Users.add_credentials(users_pid, creds)
+  def handle_cast(
+        {:add_user, creds},
+        server = %HillsideJukebox.JukeboxServer{
+          users_pid: users_pid,
+          num_users: num_users
+        }
+      ) do
+    _new_user = HillsideJukebox.Users.add_credentials(users_pid, creds)
+    {:noreply, %{server | num_users: num_users + 1}}
+  end
 
-    {:noreply, workers}
+  @impl true
+  def handle_cast(
+        {:vote_skip, user_id},
+        server = %HillsideJukebox.JukeboxServer{
+          users_pid: users_pid,
+          num_skip_vote: num_skip_vote,
+          num_users: num_users
+        }
+      ) do
+    state =
+      %HillsideJukebox.User.State{voted_skip: has_voted?} =
+      HillsideJukebox.Users.get_state(users_pid, user_id)
+
+    new_num_skip_vote = num_skip_vote
+
+    if(!has_voted?) do
+      new_state = %HillsideJukebox.User.State{state | voted_skip: true}
+      HillsideJukebox.Users.set_state(users_pid, user_id, new_state)
+      new_num_skip_vote = new_num_skip_vote + 1
+
+      if(new_num_skip_vote > num_users / 2) do
+        skip_current_song(server)
+      end
+
+      {:noreply, %HillsideJukebox.JukeboxServer{server | num_skip_vote: new_num_skip_vote}}
+    else
+      {:noreply, server}
+    end
+  end
+
+  defp play_next_internal(
+         server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid, users_pid: users_pid}
+       ) do
+    # Why are we popping and then getting current? Really could be done in one step
+    next = HillsideJukebox.SongQueue.Server.next(queue_pid)
+    # Again, need a way to broadcast this only to a room code
+    HjWeb.Endpoint.broadcast!("queue", "queue:pop", next)
+    next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
+    HillsideJukebox.Users.reset_skip_votes(users_pid)
+    play_and_autoplay_next(next_song, server)
+    {:reply, next_song, server}
+  end
+
+  defp skip_current_song(
+         server = %HillsideJukebox.JukeboxServer{
+           timer_pid: timer_pid,
+           users_pid: users_pid
+         }
+       ) do
+    HillsideJukebox.SongQueue.Timer.cancel(timer_pid)
+    play_next_internal(server)
   end
 
   defp play_and_autoplay_next(
          song = %HillsideJukebox.Song{duration: duration},
-         {queue_pid, timer_pid, users_pid}
+         _server = %HillsideJukebox.JukeboxServer{
+           timer_pid: timer_pid,
+           users_pid: users_pid
+         }
        ) do
-    users = HillsideJukebox.Users.get_all(users_pid)
-    res = HillsideJukebox.Player.play(users, song)
+    HillsideJukebox.Player.play(users_pid, song)
     HillsideJukebox.SongQueue.Timer.timeout(timer_pid, duration)
     song
   end
 
-  defp play_with_offset_for_user(user, offset_ms, queue_pid) do
+  defp play_with_offset_for_user(
+         user,
+         offset_ms,
+         _server = %HillsideJukebox.JukeboxServer{
+           queue_pid: queue_pid,
+           users_pid: users_pid
+         }
+       ) do
     current_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
-    HillsideJukebox.Player.play_at_for_user(user, current_song, offset_ms)
+    HillsideJukebox.Player.play_at_for_user(users_pid, user, current_song, offset_ms)
   end
 
-  defp add_internal(workers = {queue_pid, timer_pid, users_pid}, song) do
+  defp add_internal(
+         server = %HillsideJukebox.JukeboxServer{
+           queue_pid: queue_pid
+         },
+         song
+       ) do
     if HillsideJukebox.SongQueue.Server.is_empty(queue_pid) do
       # If empty, play the first song as soon as it's added
       HillsideJukebox.SongQueue.Server.add(queue_pid, song)
-      play_and_autoplay_next(song, workers)
+      play_and_autoplay_next(song, server)
     else
       HillsideJukebox.SongQueue.Server.add(queue_pid, song)
     end
-
-    {:reply, song, {queue_pid, timer_pid, users_pid}}
   end
 
   defp is_currently_playing({queue_pid, timer_pid, users_pid}) do

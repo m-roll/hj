@@ -9,10 +9,10 @@
   <div class="col">
     <div class="card hud-overlay">
       <div class="card-body">
-        <h5 class="card-title">
+        <h5 class="card-title mb-4">
           Add a song
                 </h5>
-        <input type="text" id="song-input" class="form-control mb-2" placeholder="Paste a URL or 'share' clipboard contents" />
+        <input type="text" id="song-input" class="form-control my-2" placeholder="Paste a URL or 'share' clipboard contents" />
         <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
         <button type="button" class="btn btn-secondary">Clipboard</button>
       </div>
@@ -21,9 +21,9 @@
   <div class="col-md-9">
     <div class="card hud-overlay">
       <div class="card-body">
-        <h3 class="card-title">
+        <h5 class="card-title">
           Current queue
-        </h3>
+        </h5>
         <table id="queue-table" class="table">
           <thead>
             <tr>
@@ -42,20 +42,21 @@
 </div>
 <div class="row headsup mt-auto border-top py-3 hud-overlay d-flex">
   <div class="col-md-1">
-    <div class="row d-flex my-auto">
-      <button type="button fl" class="btn btn-secondary mx-auto">Skip</button>
-    </div>
-  </div>
-  <div class="col-md-1">
     <div id="preview-image">
     </div>
   </div>
-  <div class="col-md-9">
+  <div class="col-md-2">
     <div class="row mb-1">
-      <h3 id="status-song-title" class=" my-auto">Song title</h3>
+      <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
     </div>
     <div class="row">
-      <h5 id="status-song-artist" class="my-auto">Song artist</h5>
+      <p id="status-song-artist" class="my-auto ">Song artist</p>
     </div>
+  </div>
+  <div class="col-md-6 d-flex">
+    <div class="progress-outer my-auto"><div id="track-progress" class="progress-inner"></div></div>
+  </div>
+  <div class="col-md-3 d-flex">
+    <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
   </div>
 </div>

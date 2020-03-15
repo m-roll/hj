@@ -1,8 +1,11 @@
 import { getArtistString } from "./util/artist";
 
 export default class QueueView {
-    constructor() {
+    constructor(skipCb) {
         this.queueDisp = document.getElementById("queue-table");
+        document.getElementById("queue-skip").addEventListener("click", e => {
+            skipCb();
+        });
     }
 
     addToQueueDisplay(newEntry) {
@@ -36,6 +39,7 @@ export default class QueueView {
     }
 
     pop() {
-        this.queueDisp.removeChild(this.queueDisp.childNodes[1]);
+        console.log("pop");
+        this.queueDisp.removeChild(this.queueDisp.childNodes[2]);
     }
 }
