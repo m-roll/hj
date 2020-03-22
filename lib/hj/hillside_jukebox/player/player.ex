@@ -15,20 +15,6 @@ defmodule HillsideJukebox.Player do
 
   def play_at_for_user(users_pid, user, song, offset_ms) do
     Logger.debug("Playing for user: #{inspect(user)}")
-    res = HillsideJukebox.Player.SpotifyPlayer.play_track(user, song, offset_ms)
-
-    case res do
-      {:error, _} ->
-        HillsideJukebox.Users.Authentication.refresh_user_credentials(
-          users_pid,
-          user,
-          fn new_user ->
-            HillsideJukebox.Player.SpotifyPlayer.play_track(new_user, song, offset_ms)
-          end
-        )
-
-      _ ->
-        res
-    end
+    HillsideJukebox.Player.SpotifyPlayer.play_track(user, song, offset_ms, users_pid)
   end
 end

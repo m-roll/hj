@@ -43,8 +43,9 @@ defmodule HillsideJukebox.SongQueue.Timer do
   end
 
   @impl true
-  def handle_cast(:cancel, %HillsideJukebox.SongQueue.Timer{wait_pid: wait_pid}) do
+  def handle_cast(:cancel, timer = %HillsideJukebox.SongQueue.Timer{wait_pid: wait_pid}) do
     Task.shutdown(wait_pid)
+    {:noreply, %{timer | wait_pid: nil}}
   end
 
   @impl true

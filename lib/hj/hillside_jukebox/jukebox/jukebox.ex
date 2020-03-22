@@ -82,9 +82,12 @@ defmodule HillsideJukebox.JukeboxServer do
           users_pid: users_pid
         }
       ) do
-    %HillsideJukebox.User{spotify_credentials: creds} = HillsideJukebox.Users.get_host(users_pid)
+    %HillsideJukebox.User{user_id: user_id} = HillsideJukebox.Users.get_host(users_pid)
 
-    song = HillsideJukebox.URLs.get_song(url, creds)
+    %HillsideJukebox.User.State{spotify_credentials: creds} =
+      HillsideJukebox.Users.get_state(users_pid, user_id)
+
+    song = HillsideJukebox.URLs.get_song(url, creds, users_pid, user_id)
 
     add_internal(server, song)
     {:reply, song, server}

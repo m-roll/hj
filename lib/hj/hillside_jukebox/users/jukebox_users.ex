@@ -11,8 +11,8 @@ defmodule HillsideJukebox.Users do
   def add_credentials(pid, new_credentials = %Spotify.Credentials{}) do
     Agent.get_and_update(pid, fn users ->
       new_user =
-        {%HillsideJukebox.User{spotify_credentials: new_credentials},
-         %HillsideJukebox.User.State{}}
+        {%HillsideJukebox.User{},
+         %HillsideJukebox.User.State{spotify_credentials: new_credentials}}
 
       updated_list = [new_user | users]
       {new_user, updated_list}
@@ -49,8 +49,8 @@ defmodule HillsideJukebox.Users do
       Enum.map(
         users,
         fn {user, state} ->
-          case user do
-            %HillsideJukebox.User{
+          case state do
+            %HillsideJukebox.User.State{
               spotify_credentials: %Spotify.Credentials{access_token: ^access_token}
             } ->
               {%{user | user_id: new_user_id}, state}
@@ -87,9 +87,10 @@ defmodule HillsideJukebox.Users do
     users = Agent.get(__MODULE__, &Function.identity/1)
 
     match =
-      Enum.find(users, fn {%HillsideJukebox.User{
+      Enum.find(users, fn {_user,
+                           %HillsideJukebox.User.State{
                              spotify_credentials: credentials
-                           }, _state} ->
+                           }} ->
         credentials == creds
       end)
 
@@ -153,7 +154,7 @@ defmodule HillsideJukebox.Users do
 
   def reset_skip_votes(users_pid) do
     Agent.update(users_pid, fn users ->
-      Enum.map(users, fn {user, _state} -> {user, %HillsideJukebox.User.State{}} end)
+      Enum.map(users, fn {user, state} -> {user, %{state | voted_skip: false}} end)
     end)
   end
 

@@ -1,20 +1,35 @@
 defmodule HillsideJukebox.Player.SpotifyPlayer do
+  import HillsideJukebox.Auth.Spotify
   require Jason
   require Logger
 
   def play_track(
-        %HillsideJukebox.User{spotify_credentials: creds, device_id: device_id},
-        %HillsideJukebox.Song{platform: :spotify, id: song_id}
+        %HillsideJukebox.User{device_id: device_id, user_id: user_id},
+        %HillsideJukebox.Song{platform: :spotify, id: song_id},
+        users_pid
       ) do
-    Spotify.Player.play(creds, generate_body(song_id), device_id)
+    %HillsideJukebox.User.State{spotify_credentials: creds} =
+      HillsideJukebox.Users.get_state(users_pid, user_id)
+
+    refresh_do(users_pid, user_id, creds, &Spotify.Player.play/3, [
+      generate_body(song_id),
+      device_id
+    ])
   end
 
   def play_track(
-        %HillsideJukebox.User{spotify_credentials: creds, device_id: device_id},
+        %HillsideJukebox.User{device_id: device_id, user_id: user_id},
         %HillsideJukebox.Song{platform: :spotify, id: song_id},
-        offset_ms
+        offset_ms,
+        users_pid
       ) do
-    Spotify.Player.play(creds, generate_body(song_id, offset_ms), device_id)
+    %HillsideJukebox.User.State{spotify_credentials: creds} =
+      HillsideJukebox.Users.get_state(users_pid, user_id)
+
+    refresh_do(users_pid, user_id, creds, &Spotify.Player.play/3, [
+      generate_body(song_id, offset_ms),
+      device_id
+    ])
   end
 
   def play_track(user = %HillsideJukebox.User{}) do
