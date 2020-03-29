@@ -19,6 +19,7 @@ defmodule HjWeb.Router do
     get "/authorize", PageController, :authorize
     get "/auth", PageController, :auth
     get "/", PageController, :jukebox
+    get "/createroom", PageController, :create_room
     get "/:room_code", PageController, :jukebox
   end
 

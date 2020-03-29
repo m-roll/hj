@@ -4,8 +4,8 @@ export default class StatusChannel {
         this.statusChannel = socket.channel("status", {});
     }
 
-    onSongStatusUpdate(songPlayingCb) {
-        this.statusChannel.on('status:play', songPlayingCb);
+    onSongStatusUpdate(roomCode, songPlayingCb) {
+        this.statusChannel.on('status:play:' + roomCode, songPlayingCb);
     }
 
     join() {

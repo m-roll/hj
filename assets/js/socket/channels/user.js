@@ -7,8 +7,8 @@ export default class UserChannel {
         this.userChannel.on("auth:update", authUpdateCb);
     }
 
-    register(access_token, refresh_token, deviceId) {
-        this.userChannel.push('user:register', {
+    register(roomCode, access_token, refresh_token, deviceId) {
+        this.userChannel.push('user:register:' + roomCode, {
             spotifyAccessToken: access_token,
             spotifyRefreshToken: refresh_token,
             deviceId: deviceId
@@ -21,8 +21,8 @@ export default class UserChannel {
             .receive("error", resp => { console.log("Unable to join user channel", resp) })
     }
 
-    voteSkip() {
-        this.userChannel.push("user:vote_skip");
+    voteSkip(roomCode) {
+        this.userChannel.push("user:vote_skip:" + roomCode);
     }
 
     createRoom(cb) {

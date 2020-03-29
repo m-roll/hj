@@ -2,8 +2,8 @@ defmodule SpotifyController.OAuthController do
   use Phoenix.Controller
   require Logger
 
-  def authorize(conn) do
-    redirect(conn, external: Spotify.Authorization.url())
+  def authorize(conn, room_code) do
+    redirect(conn, external: Spotify.Authorization.url() <> "&state=" <> room_code)
   end
 
   def authenticate(conn, params = %{"code" => code}) do

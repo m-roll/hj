@@ -13,13 +13,18 @@ defmodule HjWeb.PageController do
 
     case auth_res do
       {:ok, conn} ->
-        redirect(conn, to: "/jukebox")
+        redirect(conn, to: "/" <> Map.fetch!(params, "state"))
     end
   end
 
   def authorize(conn, _params) do
     %Plug.Conn{params: query_params} = fetch_query_params(conn)
-    _auth_code = authorize_from_params(conn, Map.fetch(query_params, "code"))
+    _auth_code = authorize_from_params(conn, query_params)
+  end
+
+  def create_room(conn, _params) do
+    new_code = HillsideJukebox.Room.Manager.create()
+    redirect(conn, to: "/authorize?state=" <> new_code)
   end
 
   def jukebox(conn, params) do
@@ -61,11 +66,11 @@ defmodule HjWeb.PageController do
     render(conn, "queue.html")
   end
 
-  defp authorize_from_params(_conn, {:ok, auth_code}) do
+  defp authorize_from_params(_conn, %{"code" => auth_code}) do
     auth_code
   end
 
-  defp authorize_from_params(conn, :error) do
-    SpotifyController.OAuthController.authorize(conn)
+  defp authorize_from_params(conn, %{"state" => room_code}) do
+    SpotifyController.OAuthController.authorize(conn, room_code)
   end
 end

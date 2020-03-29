@@ -27,7 +27,7 @@ export default class JukeboxController {
 
     onSongPlayed = song => this.queueView.addToQueueDisplay(payload.newSong).bind(this);
 
-    channels = {
+    roomedChannels = {
         queue: null,
         user: null,
         status: null
@@ -35,7 +35,6 @@ export default class JukeboxController {
 
     constructor() {
         this.setupView();
-
         if (typeof room_code !== 'undefined') {
             this.setupRoom(room_code);
         }
@@ -44,7 +43,7 @@ export default class JukeboxController {
     }
 
     setupRoom(roomCode) {
-        this.setupChannels();
+        this.setupRoomedChannels(roomCode);
         this.setupSpotifyAuth();
         this.setupSpotify();
 
@@ -58,7 +57,7 @@ export default class JukeboxController {
         window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
     }
 
-    setupChannels() {
+    setupRoomedChannels(roomCode) {
         const queueChannel = this.socket.joinChannel(QueueChannel);
         const userChannel = this.socket.joinChannel(UserChannel);
         const statusChannel = this.socket.joinChannel(StatusChannel);
@@ -68,9 +67,9 @@ export default class JukeboxController {
 
         userChannel.onAuthUpdate(((auth) => { this.spotify_access_token = auth; }).bind(this));
 
-        statusChannel.onSongStatusUpdate(this.statusView.updateStatusView);
+        statusChannel.onSongStatusUpdate(roomCode, this.statusView.updateStatusView);
 
-        this.channels = {
+        this.roomedChannels = {
             queue: queueChannel,
             user: userChannel,
             status: statusChannel
@@ -93,7 +92,6 @@ export default class JukeboxController {
     }
 
     setupModal() {
-        this.enterModal.onCreateRoom(this.onCreateRoomReq.bind(this));
         this.enterModal.init();
     }
 
@@ -103,7 +101,7 @@ export default class JukeboxController {
     }
 
     addSong(url) {
-        this.socket.addSong.apply(this.socket, [this.spotify_access_token, url]);
+        this.roomedChannels.queue.addSong.apply(this.roomedChannels.queue, [this.spotify_access_token, url]);
     }
 
     init(deviceId) {
@@ -134,12 +132,6 @@ export default class JukeboxController {
             this.playerView.setTrackProgress(ratio);
         }
         requestAnimationFrame(this.animate.bind(this));
-    }
-
-    onCreateRoomReq() {
-        this.channels.user.createRoom((payload => {
-            this.joinRoom(payload["room_code"]);
-        }).bind(this));
     }
 
     joinRoom(code) {

@@ -37,4 +37,5 @@ defmodule HjWeb.UserSocket do
   channel("queue", HjWeb.QueueChannel)
   channel("user", HjWeb.UserChannel)
   channel("status", HjWeb.StatusChannel)
+  channel("room", HjWeb.RoomChannel)
 end
