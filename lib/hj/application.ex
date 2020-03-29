@@ -10,7 +10,8 @@ defmodule Hj.Application do
     children = [
       # Start the endpoint when the application starts
       HjWeb.Endpoint,
-      HillsideJukebox.Room.Supervisor
+      HillsideJukebox.Room.Supervisor,
+      HillsideJukebox.Room.CodesRegistry
       # Starts a worker by calling: Hj.Worker.start_link(arg)
       # {Hj.Worker, arg},
     ]
@@ -19,7 +20,6 @@ defmodule Hj.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Hj.Supervisor]
     Supervisor.start_link(children, opts)
-    HillsideJukebox.Room.Supervisor.start_room("test")
   end
 
   # Tell Phoenix to update the endpoint configuration

@@ -1,12 +1,16 @@
 export default class UserChannel {
-    constructor(socket, authUpdateCb) {
+    constructor(socket) {
         this.userChannel = socket.channel("user", {});
+    }
+
+    onAuthUpdate(authUpdateCb) {
         this.userChannel.on("auth:update", authUpdateCb);
     }
 
-    register(access_token, deviceId) {
+    register(access_token, refresh_token, deviceId) {
         this.userChannel.push('user:register', {
             spotifyAccessToken: access_token,
+            spotifyRefreshToken: refresh_token,
             deviceId: deviceId
         })
     }
@@ -19,5 +23,15 @@ export default class UserChannel {
 
     voteSkip() {
         this.userChannel.push("user:vote_skip");
+    }
+
+    createRoom(cb) {
+        this.userChannel.push("user:create_room")
+            .receive("ok", resp => {
+                cb(resp);
+            })
+            .receive("error", resp => {
+                console.log("Error creating room", resp);
+            })
     }
 }

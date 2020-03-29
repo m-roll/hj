@@ -11,14 +11,6 @@ defmodule SpotifyController.OAuthController do
     # add a user to the pool of players we need to update when they authenticate
     creds = Spotify.Credentials.new(conn)
 
-    case auth_result do
-      {:ok, _} ->
-        HillsideJukebox.Users.add_credentials(
-          HillsideJukebox.JukeboxServer.get_users_pid("test"),
-          Spotify.Credentials.new(conn)
-        )
-    end
-
     auth_result
   end
 end

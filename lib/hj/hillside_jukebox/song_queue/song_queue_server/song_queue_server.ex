@@ -33,7 +33,6 @@ defmodule HillsideJukebox.SongQueue.Server do
   end
 
   def current(pid) do
-    {:value, song} = Agent.get(pid, fn queue -> :queue.peek(queue) end)
-    song
+    Agent.get(pid, fn queue -> :queue.peek(queue) end)
   end
 end

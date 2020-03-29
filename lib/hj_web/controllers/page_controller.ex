@@ -22,18 +22,39 @@ defmodule HjWeb.PageController do
     _auth_code = authorize_from_params(conn, Map.fetch(query_params, "code"))
   end
 
-  def jukebox(conn, _params) do
-    creds = Spotify.Credentials.new(conn)
+  def jukebox(conn, params) do
+    %Spotify.Credentials{access_token: at, refresh_token: rt} =
+      creds = Spotify.Credentials.new(conn)
 
-    case creds do
-      %Spotify.Credentials{access_token: nil} ->
-        redirect(conn, to: "/authorize")
-
-      %Spotify.Credentials{} ->
-        HillsideJukebox.JukeboxServer.add_user("test", creds)
+    if at == nil do
+      redirect(conn, to: "/authorize")
     end
 
-    render(conn, "index.html", spotify_access_token: Map.fetch!(creds, :access_token))
+    fields =
+      if Map.has_key?(params, "room_code") do
+        load_credentials =
+          case Map.fetch(params, "listen") do
+            {:ok, true} -> true
+            _ -> false
+          end
+
+        room_code = Map.fetch!(params, "room_code")
+
+        if load_credentials do
+          %{
+            has_room_code: true,
+            room_code: room_code,
+            spotify_refresh_token: rt,
+            spotify_access_token: at
+          }
+        else
+          %{has_room_code: true, room_code: room_code}
+        end
+      else
+        %{has_room_code: false}
+      end
+
+    render(conn, "index.html", fields)
   end
 
   def queue(conn, _params) do

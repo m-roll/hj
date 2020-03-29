@@ -1,9 +1,11 @@
 export default class StatusChannel {
 
-    constructor(socket, songPlayingCb) {
+    constructor(socket) {
         this.statusChannel = socket.channel("status", {});
+    }
+
+    onSongStatusUpdate(songPlayingCb) {
         this.statusChannel.on('status:play', songPlayingCb);
-        this.songPlayingCb = songPlayingCb;
     }
 
     join() {
@@ -12,8 +14,8 @@ export default class StatusChannel {
             .receive("error", resp => { console.log("Unable to join status channel", resp) })
     }
 
-    getCurrent(cb) {
-        this.statusChannel.push('status:current')
+    getCurrent(roomCode, cb) {
+        this.statusChannel.push('status:current:' + roomCode)
             .receive("ok", cb);
     }
 }

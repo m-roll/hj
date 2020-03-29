@@ -76,12 +76,12 @@ I am working on a better implementation to easily run in across multiple nodes.
 
 ## TODO
 
+* PRIORITIES
+  * Fix overflow when the queue is long (probably flexbox issue)
+  * Allow cards to be collapsed
+  * Flow when entering for first time. Create/join room.
 * Testing for OTP stuff
-* Refresh auth token if we get a 401 from Spotify. (Trivial with the Spotify client) - do this with macros?
-* Automatically broadcast when player/queue/user updates
-  * When a new song plays
-  * When the queue changes (macros, whenever a change is made to queue wrap in macro)
-  * Status changes - broadcast on user leave, user join
+* names for people
 * chat window
 
 

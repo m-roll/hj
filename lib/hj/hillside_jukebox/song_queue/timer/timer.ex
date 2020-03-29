@@ -39,7 +39,7 @@ defmodule HillsideJukebox.SongQueue.Timer do
         cb.()
       end)
 
-    {:noreply, %{timer | wait_pid: wait_pid}}
+    {:noreply, %{timer | wait_pid: wait_pid, time_called: get_time_ms()}}
   end
 
   @impl true

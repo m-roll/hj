@@ -108,3 +108,56 @@ main {
 body {
     overflow-x: hidden;
 }
+
+#card-area {
+    flex:1;
+    min-height: 0;
+}
+
+#status-bar {
+    width:100vw;
+}
+
+#main {
+    min-height:0;
+}
+
+#card-area .col {
+    max-height:100%;
+}
+
+#queue-card {
+    flex-direction: column;
+    height:100%;
+}
+
+#queue-col {
+    flex-direction: column;
+}
+
+.card {
+    min-height:0;
+}
+
+#queue-table tbody {
+    overflow-y: scroll;
+}
+
+table {
+    display:flex;
+    flex-direction:column;
+}
+
+tr {
+    display:flex;
+}
+
+tr th, tr td {
+    flex:1;
+}
+
+#queue-table-wrap {
+    min-height:0;
+    flex:1;
+    display:flex;
+}

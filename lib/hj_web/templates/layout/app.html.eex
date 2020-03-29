@@ -9,7 +9,7 @@
   </head>
   <body>
     <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
-    <header class="row pb-4 pt-4 px-5 mb-4 border-bottom hud-overlay d-flex">
+    <header class="row pb-4 pt-4 px-5 border-bottom hud-overlay d-flex">
       <div class="col-md-9 my-auto">
         <section class="row">
           <p class="my-auto"><span class="font-weight-bold">Hillside Jukebox</span></p>
@@ -25,7 +25,7 @@
         </div>
       </div>
     </header>
-    <main role="main" class="px-3 d-flex flex-column" >
+    <main id="main" role="main" class="px-3 d-flex flex-column" >
       <%= if info = get_flash(@conn, :info) do %>
         <p class="alert alert-info" role="alert"><%= info %></p>
       <% end %>

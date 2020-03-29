@@ -1,8 +1,14 @@
 export default class QueueChannel {
 
-    constructor(socket, songProcessedCb, popCb) {
+    constructor(socket) {
         this.queueChannel = socket.channel("queue", {});
+    }
+
+    onSongProcessed(songProcessedCb) {
         this.queueChannel.on('song:processed', songProcessedCb);
+    }
+
+    onQueuePop(popCb) {
         this.queueChannel.on('queue:pop', popCb);
     }
 
@@ -12,16 +18,15 @@ export default class QueueChannel {
             .receive("error", resp => { console.log("Unable to join queue channel", resp) })
     }
 
-    addSong(access_token, url) {
-        this.queueChannel.push('queue:add', {
+    addSong(roomCode, url) {
+        this.queueChannel.push('queue:add:' + roomCode, {
             songInput: url,
-            spotifyAccessToken: access_token,
             user: "Anonymous user"
         });
     }
 
-    fetch(fetchCb) {
-        let req = this.queueChannel.push('queue:fetch');
+    fetch(roomCode, fetchCb) {
+        let req = this.queueChannel.push('queue:fetch:' + roomCode);
         req.receive("ok", fetchCb);
         return req;
     }

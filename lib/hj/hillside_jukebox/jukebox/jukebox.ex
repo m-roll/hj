@@ -29,8 +29,8 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.cast(via_tuple(room_name), {:set_workers, queue_pid, timer_pid, users_pid})
   end
 
-  def add_user(room_name, creds = %Spotify.Credentials{}) do
-    GenServer.cast(via_tuple(room_name), {:add_user, creds})
+  def add_user(room_name, user_id, creds = %Spotify.Credentials{}, device_id) do
+    GenServer.cast(via_tuple(room_name), {:add_user, user_id, creds, device_id})
   end
 
   def sync_audio(room_name, user) do
@@ -72,6 +72,7 @@ defmodule HillsideJukebox.JukeboxServer do
           queue_pid: queue_pid
         }
       ) do
+    play_next_internal(server)
   end
 
   @impl true
@@ -144,7 +145,10 @@ defmodule HillsideJukebox.JukeboxServer do
           timer_pid: timer_pid
         }
       ) do
-    case HillsideJukebox.SongQueue.Timer.get_offset(timer_pid) do
+    offset = HillsideJukebox.SongQueue.Timer.get_offset(timer_pid)
+    Logger.debug("Sync attempt: offset: #{inspect(offset)}")
+
+    case offset do
       :not_started -> nil
       offset -> play_with_offset_for_user(user, offset, server)
     end
@@ -154,13 +158,13 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_cast(
-        {:add_user, creds},
+        {:add_user, user_id, creds, device_id},
         server = %HillsideJukebox.JukeboxServer{
           users_pid: users_pid,
           num_users: num_users
         }
       ) do
-    _new_user = HillsideJukebox.Users.add_credentials(users_pid, creds)
+    _new_user = HillsideJukebox.Users.add_credentials(users_pid, user_id, creds, device_id)
     {:noreply, %{server | num_users: num_users + 1}}
   end
 
@@ -237,6 +241,7 @@ defmodule HillsideJukebox.JukeboxServer do
            users_pid: users_pid
          }
        ) do
+    Logger.debug("Playing with offset: #{offset_ms}")
     current_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
     HillsideJukebox.Player.play_at_for_user(users_pid, user, current_song, offset_ms)
   end

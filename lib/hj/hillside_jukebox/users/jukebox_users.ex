@@ -8,10 +8,10 @@ defmodule HillsideJukebox.Users do
     Agent.start_link(fn -> [] end)
   end
 
-  def add_credentials(pid, new_credentials = %Spotify.Credentials{}) do
+  def add_user(pid, id, new_credentials = %Spotify.Credentials{}, device_id) do
     Agent.get_and_update(pid, fn users ->
       new_user =
-        {%HillsideJukebox.User{},
+        {%HillsideJukebox.User{user_id: id, device_id: device_id},
          %HillsideJukebox.User.State{spotify_credentials: new_credentials}}
 
       updated_list = [new_user | users]
@@ -29,38 +29,6 @@ defmodule HillsideJukebox.Users do
       end)
 
     user
-  end
-
-  def set_device_id(pid, user_id, new_device_id) do
-    Agent.update(pid, fn users ->
-      Enum.map(
-        users,
-        map_user_with_user_id(
-          user_id,
-          fn {user, state} -> {%{user | device_id: new_device_id}, state} end,
-          &Function.identity/1
-        )
-      )
-    end)
-  end
-
-  def set_user_id_from_token(pid, access_token, new_user_id) do
-    Agent.update(pid, fn users ->
-      Enum.map(
-        users,
-        fn {user, state} ->
-          case state do
-            %HillsideJukebox.User.State{
-              spotify_credentials: %Spotify.Credentials{access_token: ^access_token}
-            } ->
-              {%{user | user_id: new_user_id}, state}
-
-            _ ->
-              {user, state}
-          end
-        end
-      )
-    end)
   end
 
   def get_all(pid) do

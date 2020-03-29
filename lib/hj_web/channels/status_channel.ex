@@ -5,9 +5,13 @@ defmodule HjWeb.StatusChannel do
     {:ok, socket}
   end
 
-  def handle_in("status:current", payload, socket = %Phoenix.Socket{join_ref: join_ref}) do
-    current = HillsideJukebox.JukeboxServer.current_playing("test")
+  def handle_in(
+        "status:current:" <> roomCode,
+        _payload,
+        _socket = %Phoenix.Socket{join_ref: join_ref}
+      ) do
+    current = HillsideJukebox.JukeboxServer.current_playing(roomCode)
 
-    {:reply, {:ok, current}, socket}
+    {:reply, current, _socket}
   end
 end

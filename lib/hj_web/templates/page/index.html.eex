@@ -1,11 +1,16 @@
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
+  <%= if @has_room_code do%>
   let hj_spotify_access_token = "<%= @spotify_access_token%>";
+  let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
+  let room_code = "<%= @room_code%>";
+  <% end %>
   let page = "JUKEBOX";
 </script>
 <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
 </div>
-<div class="songs row">
+<%= render HjWeb.ModalView, "enter_modal.html", assigns %>
+<div id="card-area" class=" pb-3 pt-3 songs row d-flex">
   <div class="col">
     <div class="card hud-overlay">
       <div class="card-body">
@@ -18,29 +23,31 @@
       </div>
     </div>
   </div>
-  <div class="col-md-9">
+  <div id="queue-col" class="col-md-9 col d-flex">
     <div class="card hud-overlay">
-      <div class="card-body">
-        <h5 class="card-title">
+      <div id="queue-card" class="card-body d-flex">
+        <h5 id="queue-title" class="card-title">
           Current queue
         </h5>
-        <table id="queue-table" class="table">
-          <thead>
-            <tr>
-              <th>Song</th>
-              <th>Artist</th>
-              <th>Source</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody id="song-list">
-          </tbody>
-        </table>
+        <div id="queue-table-wrap">
+          <table id="queue-table" class="table">
+            <thead>
+              <tr>
+                <th>Song</th>
+                <th>Artist</th>
+                <th>Source</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="song-list">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<div class="row headsup mt-auto border-top py-3 hud-overlay d-flex">
+<div id="status-bar" class="row headsup border-top py-3 hud-overlay d-flex">
   <div class="col-md-1">
     <div id="preview-image">
     </div>

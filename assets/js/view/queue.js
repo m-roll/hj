@@ -2,7 +2,7 @@ import { getArtistString } from "./util/artist";
 
 export default class QueueView {
     constructor(skipCb) {
-        this.queueDisp = document.getElementById("queue-table");
+        this.queueDisp = document.getElementById("song-list");
         document.getElementById("queue-skip").addEventListener("click", e => {
             skipCb();
         });
