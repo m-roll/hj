@@ -25,7 +25,7 @@ export default class JukeboxController {
     isPaused = true;
     roomCode;
 
-    onSongPlayed = song => this.queueView.addToQueueDisplay(payload.newSong).bind(this);
+    onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
 
     roomedChannels = {
         queue: null,
@@ -37,8 +37,10 @@ export default class JukeboxController {
         this.setupView();
         if (typeof room_code !== 'undefined') {
             this.setupRoom(room_code);
+        } else {
+            this.setupModal();
         }
-        this.setupModal();
+
         this.setupAnimation();
     }
 
@@ -47,9 +49,10 @@ export default class JukeboxController {
         this.setupSpotifyAuth();
         this.setupSpotify();
 
-        this.channels.queue.fetch(code);
-        this.roomCode = code;
-        this.channels.status.getCurrent(code, this.onSongPlayed);
+        this.roomedChannels.queue.fetch(roomCode);
+        this.roomedChannels.status.getCurrent(roomCode, this.onSongPlayed);
+
+        this.roomCode = roomCode;
     }
 
     setupSpotify() {
@@ -62,18 +65,20 @@ export default class JukeboxController {
         const userChannel = this.socket.joinChannel(UserChannel);
         const statusChannel = this.socket.joinChannel(StatusChannel);
 
-        queueChannel.onSongProcessed();
-        queueChannel.onQueuePop(this.queueView.pop);
+        queueChannel.onSongProcessed(roomCode, this.queueView.addToQueueDisplay.bind(this.queueView));
+        queueChannel.onQueuePop(roomCode, this.queueView.pop);
 
         userChannel.onAuthUpdate(((auth) => { this.spotify_access_token = auth; }).bind(this));
 
-        statusChannel.onSongStatusUpdate(roomCode, this.statusView.updateStatusView);
+        statusChannel.onSongStatusUpdate(roomCode, this.onSongPlayed);
 
         this.roomedChannels = {
             queue: queueChannel,
             user: userChannel,
             status: statusChannel
         }
+
+        this.roomCode = roomCode;
     }
 
     setupView() {
@@ -101,16 +106,16 @@ export default class JukeboxController {
     }
 
     addSong(url) {
-        this.roomedChannels.queue.addSong.apply(this.roomedChannels.queue, [this.spotify_access_token, url]);
+        this.roomedChannels.queue.addSong.apply(this.roomedChannels.queue, [this.roomCode, url]);
     }
 
     init(deviceId) {
-        this.socket.registerUser(this.spotify_access_token, this.spotify_refresh_token, deviceId);
-        this.socket.queue.fetch(this.roomCode, this.onFetchQueue.bind(this));
+        this.roomedChannels.user.register(this.roomCode, this.spotify_access_token, this.spotify_refresh_token, deviceId);
+        this.roomedChannels.queue.fetch(this.roomCode, this.onFetchQueue.bind(this));
     }
 
     onFetchQueue(payload) {
-        payload.queue.forEach(song => this.queueView.addToQueueDisplay(newSong));
+        payload.queue.forEach(song => this.queueView.addToQueueDisplay(song));
     }
 
     onPlayerUpdate(status) {

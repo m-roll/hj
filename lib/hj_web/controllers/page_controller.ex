@@ -13,7 +13,7 @@ defmodule HjWeb.PageController do
 
     case auth_res do
       {:ok, conn} ->
-        redirect(conn, to: "/" <> Map.fetch!(params, "state"))
+        redirect(conn, to: "/" <> Map.fetch!(params, "state") <> "/listen")
     end
   end
 
@@ -27,13 +27,13 @@ defmodule HjWeb.PageController do
     redirect(conn, to: "/authorize?state=" <> new_code)
   end
 
+  def listen(conn, params) do
+    jukebox(conn, Map.put(params, "listen", true))
+  end
+
   def jukebox(conn, params) do
     %Spotify.Credentials{access_token: at, refresh_token: rt} =
       creds = Spotify.Credentials.new(conn)
-
-    if at == nil do
-      redirect(conn, to: "/authorize")
-    end
 
     fields =
       if Map.has_key?(params, "room_code") do
@@ -46,6 +46,10 @@ defmodule HjWeb.PageController do
         room_code = Map.fetch!(params, "room_code")
 
         if load_credentials do
+          if at == nil do
+            redirect(conn, to: "/authorize")
+          end
+
           %{
             has_room_code: true,
             room_code: room_code,

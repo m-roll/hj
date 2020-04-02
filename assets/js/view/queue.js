@@ -19,12 +19,12 @@ export default class QueueView {
         let sourceCol = document.createElement("td");
         let durationCol = document.createElement("td");
 
-        songCol.appendChild(document.createTextNode(newEntry["track_name"]));
-        let artistStr = getArtistString(newEntry["track_artists"]);
+        songCol.appendChild(document.createTextNode(newEntry.song["track_name"]));
+        let artistStr = getArtistString(newEntry.song["track_artists"]);
         artistCol.appendChild(document.createTextNode(artistStr));
-        sourceCol.appendChild(document.createTextNode(capitalize(newEntry["platform"])));
+        sourceCol.appendChild(document.createTextNode(capitalize(newEntry.song["platform"])));
 
-        let ms = newEntry["duration"];
+        let ms = newEntry.song["duration"];
         ms = 1000 * Math.round(ms / 1000);
         var d = new Date(ms);
         let secondsStr = d.getUTCSeconds().toString().padStart(2, '0');

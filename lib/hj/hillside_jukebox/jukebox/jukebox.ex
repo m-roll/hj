@@ -1,5 +1,5 @@
 defmodule HillsideJukebox.JukeboxServer do
-  defstruct([:queue_pid, :timer_pid, :users_pid, :num_users, :num_skip_vote])
+  defstruct([:room_code, :queue_pid, :timer_pid, :users_pid, :num_users, :num_skip_vote])
   use GenServer
   require Logger
 
@@ -11,7 +11,8 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.start_link(
       __MODULE__,
       %HillsideJukebox.JukeboxServer{
-        num_skip_vote: 0
+        num_skip_vote: 0,
+        room_code: room_name
       },
       name: via_tuple(room_name)
     )
@@ -199,12 +200,16 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   defp play_next_internal(
-         server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid, users_pid: users_pid}
+         server = %HillsideJukebox.JukeboxServer{
+           room_code: room_code,
+           queue_pid: queue_pid,
+           users_pid: users_pid
+         }
        ) do
     # Why are we popping and then getting current? Really could be done in one step
     next = HillsideJukebox.SongQueue.Server.next(queue_pid)
     # Again, need a way to broadcast this only to a room code
-    HjWeb.Endpoint.broadcast!("queue", "queue:pop", next)
+    HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, next)
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
     HillsideJukebox.Users.reset_skip_votes(users_pid)
     play_and_autoplay_next(next_song, server)
@@ -224,11 +229,12 @@ defmodule HillsideJukebox.JukeboxServer do
   defp play_and_autoplay_next(
          song = %HillsideJukebox.Song{duration: duration},
          _server = %HillsideJukebox.JukeboxServer{
+           room_code: room_code,
            timer_pid: timer_pid,
            users_pid: users_pid
          }
        ) do
-    HillsideJukebox.Player.play(users_pid, song)
+    HillsideJukebox.Player.play(users_pid, room_code, song)
     HillsideJukebox.SongQueue.Timer.timeout(timer_pid, duration)
     song
   end

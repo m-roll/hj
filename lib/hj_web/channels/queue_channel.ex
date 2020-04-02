@@ -22,7 +22,9 @@ defmodule HjWeb.QueueChannel do
         payload["songInput"]
       )
 
-    broadcast!(socket, "song:processed", %{
+    Logger.debug("SENDING PROCESSED BROADCAST: #{roomCode}")
+
+    broadcast!(socket, "song:processed:" <> roomCode, %{
       user: "Anonymous user",
       song: song
     })

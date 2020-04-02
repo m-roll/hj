@@ -33,6 +33,11 @@ defmodule HillsideJukebox.SongQueue.Server do
   end
 
   def current(pid) do
-    Agent.get(pid, fn queue -> :queue.peek(queue) end)
+    res = Agent.get(pid, fn queue -> :queue.peek(queue) end)
+
+    case res do
+      {:value, song} -> song
+      _ -> :empty
+    end
   end
 end

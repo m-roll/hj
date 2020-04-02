@@ -4,12 +4,13 @@ export default class QueueChannel {
         this.queueChannel = socket.channel("queue", {});
     }
 
-    onSongProcessed(songProcessedCb) {
-        this.queueChannel.on('song:processed', songProcessedCb);
+    onSongProcessed(roomCode, songProcessedCb) {
+        console.log('song:processed:' + roomCode);
+        this.queueChannel.on('song:processed:' + roomCode, songProcessedCb);
     }
 
-    onQueuePop(popCb) {
-        this.queueChannel.on('queue:pop', popCb);
+    onQueuePop(roomCode, popCb) {
+        this.queueChannel.on('queue:pop:' + roomCode, popCb);
     }
 
     join() {
