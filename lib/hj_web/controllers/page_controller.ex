@@ -24,6 +24,7 @@ defmodule HjWeb.PageController do
 
   def create_room(conn, _params) do
     new_code = HillsideJukebox.Room.Manager.create()
+    Logger.debug("Creating room #{new_code}")
     redirect(conn, to: "/authorize?state=" <> new_code)
   end
 

@@ -1,0 +1,11 @@
+<div class="modal fade" id="room-not-found-modal" tabindex="-1" role="dialog" aria-labelledby="roomNotFoundLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3>Room not found!</h3>
+        <p>Please enter an existing room code or create a new room.</p>
+        <button type="button" id="room-not-found-modal-accept" class="btn btn-primary">OKAY</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@
 <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
 </div>
 <%= render HjWeb.ModalView, "enter_modal.html", assigns %>
+<%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %>
 <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
   <div class="col">
     <div class="card hud-overlay">

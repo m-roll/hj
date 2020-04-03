@@ -5,8 +5,12 @@ defmodule HillsideJukebox.Room.Manager do
     new_code
   end
 
-  def remove(code) do
+  def remove(room_code) do
     # HillsideJukebox.Room.Supervisor.terminate_room(code)
-    HillsideJukebox.Room.CodesRegistry.retire(code)
+    HillsideJukebox.Room.CodesRegistry.retire(room_code)
+  end
+
+  def exists?(room_code) do
+    HillsideJukebox.Room.CodesRegistry.exists?(to_charlist(room_code))
   end
 end

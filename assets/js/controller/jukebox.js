@@ -6,8 +6,10 @@ import JukeboxSocket from "../socket/socket.js";
 import QueueChannel from "../socket/channels/queue.js";
 import UserChannel from "../socket/channels/user.js";
 import StatusChannel from "../socket/channels/status.js";
+import RoomChannel from "../socket/channels/room.js";
 import PlayerView from "../view/player.js";
 import EnterModal from "../view/enter-modal.js";
+import RoomNotFoundModal from "../view/room-nf-modal.js";
 
 export default class JukeboxController {
 
@@ -15,6 +17,7 @@ export default class JukeboxController {
     statusView = new StatusView();
     playerView = new PlayerView();
     enterModal = new EnterModal();
+    roomNfModal = new RoomNotFoundModal();
     submissionView;
     spotifyPlayer;
     socket = new JukeboxSocket();
@@ -27,6 +30,8 @@ export default class JukeboxController {
 
     onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
 
+    roomChannel;
+
     roomedChannels = {
         queue: null,
         user: null,
@@ -35,10 +40,18 @@ export default class JukeboxController {
 
     constructor() {
         this.setupView();
-        if (typeof room_code !== 'undefined') {
-            this.setupRoom(room_code);
+        if (typeof room_code !== 'undefined' && room_code !== null) {
+            this.roomChannel = this.socket.joinChannel(RoomChannel);
+            this.roomChannel.checkExists(room_code,
+                (roomCode => {
+                    this.setupRoom(roomCode)
+                }).bind(this),
+                (error => {
+                    this.showRoomNotFoundError(room_code);
+                }).bind(this)
+            );
         } else {
-            this.setupModal();
+            this.setupEnterModal();
         }
 
         this.setupAnimation();
@@ -53,6 +66,10 @@ export default class JukeboxController {
         this.roomedChannels.status.getCurrent(roomCode, this.onSongPlayed);
 
         this.roomCode = roomCode;
+    }
+
+    showRoomNotFoundError(roomCode) {
+        this.setupRoomNfModal();
     }
 
     setupSpotify() {
@@ -96,8 +113,23 @@ export default class JukeboxController {
         this.spotify_refresh_token = hj_spotify_refresh_token;
     }
 
-    setupModal() {
+    setupEnterModal() {
         this.enterModal.init();
+    }
+
+    setupRoomNfModal() {
+        this.roomNfModal.init();
+        this.roomNfModal.onAccept((() => {
+            this.roomNfModal.dismiss();
+            this.mockRedirectHome();
+        }).bind(this));
+    }
+
+    mockRedirectHome() {
+        console.log("Faking redirect home");
+        history.pushState({}, document.title, '/');
+        room_code = null;
+        this.setupEnterModal();
     }
 
     setupAnimation() {

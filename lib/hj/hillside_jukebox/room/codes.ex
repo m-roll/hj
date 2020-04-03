@@ -45,7 +45,7 @@ defmodule HillsideJukebox.Room.CodesRegistry do
     end
   end
 
-  defp exists?(:end, []) do
+  defp exists?(:end, _) do
     false
   end
 
