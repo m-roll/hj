@@ -40,16 +40,9 @@ export default class JukeboxController {
 
     constructor() {
         this.setupView();
+        this.roomChannel = this.socket.joinChannel(RoomChannel);
         if (typeof room_code !== 'undefined' && room_code !== null) {
-            this.roomChannel = this.socket.joinChannel(RoomChannel);
-            this.roomChannel.checkExists(room_code,
-                (roomCode => {
-                    this.setupRoom(roomCode)
-                }).bind(this),
-                (error => {
-                    this.showRoomNotFoundError(room_code);
-                }).bind(this)
-            );
+            this.tryJoinRoom(room_code);
         } else {
             this.setupEnterModal();
         }
@@ -57,7 +50,18 @@ export default class JukeboxController {
         this.setupAnimation();
     }
 
-    setupRoom(roomCode) {
+    tryJoinRoom(roomCode) {
+        this.roomChannel.checkExists(roomCode,
+            (roomCode => {
+                this.setupRoom(roomCode)
+            }).bind(this),
+            (error => {
+                this.showRoomNotFoundError(room_code);
+            }).bind(this)
+        );
+    }
+
+    setupRoom(roomCode, isListening) {
         this.setupRoomedChannels(roomCode);
         this.setupSpotifyAuth();
         this.setupSpotify();
@@ -115,6 +119,7 @@ export default class JukeboxController {
 
     setupEnterModal() {
         this.enterModal.init();
+        this.enterModal.onJoinRoom(this.tryJoinRoom.bind(this));
     }
 
     setupRoomNfModal() {

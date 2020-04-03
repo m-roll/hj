@@ -19,6 +19,14 @@ export default class EnterModal {
         })
     }
 
+    onJoinRoom(cb) {
+        $('#enter-modal-room-join').click(e => {
+            let roomCode = $('#enter-modal-room-code').val();
+            $('#enter-modal-room-code').val('');
+            cb(roomCode);
+        });
+    }
+
     dismiss() {
         $('#enter-modal').modal('hide');
     }

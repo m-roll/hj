@@ -4,7 +4,7 @@
       <div class="modal-body">
         <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-primary">CREATE</a>
         <input type="text" id="enter-modal-room-code" class="form-control my-2" placeholder="Room code you want to join" />
-        <button type="button" class="btn btn-primary">JOIN</button>
+        <button type="button" id="enter-modal-room-join" class="btn btn-primary">JOIN</button>
       </div>
     </div>
   </div>
