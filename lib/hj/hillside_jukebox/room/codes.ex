@@ -49,6 +49,10 @@ defmodule HillsideJukebox.Room.CodesRegistry do
     false
   end
 
+  defp exists?(_map, []) do
+    false
+  end
+
   defp exists?(map, [first | rest]) do
     case Map.fetch(map, first) do
       {:ok, inner} -> exists?(inner, rest)
@@ -56,14 +60,14 @@ defmodule HillsideJukebox.Room.CodesRegistry do
     end
   end
 
-  defp retire(:end, []) do
+  defp retire(%{}, []) do
     :end
   end
 
   defp retire(map, [first | rest] = _str) when is_map(map) do
     case Map.fetch(map, first) do
       {:ok, inner_map} -> %{map | first => retire(inner_map, rest)}
-      _ -> %{map | first => retire(%{}, rest)}
+      _ -> Map.put(map, first, retire(%{}, rest))
     end
   end
 

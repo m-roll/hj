@@ -28,21 +28,6 @@ defmodule HillsideJukebox.URLs do
     }
   end
 
-  def get_platform(uri) do
-    uri
-    |> decode
-    |> parse
-    |> platform_from_host
-  end
-
-  defp platform_from_host(%URI{host: "www.soundcloud.com"}) do
-    :soundcloud
-  end
-
-  defp platform_from_host(%URI{host: "www.spotify.com"}) do
-    :spotify
-  end
-
   defp spotify_get_artists_names(artists) do
     Enum.map(artists, fn %{"name" => name} -> name end)
   end

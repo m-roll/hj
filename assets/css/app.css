@@ -161,3 +161,37 @@ tr th, tr td {
     flex:1;
     display:flex;
 }
+
+#div-join-room, #div-create-room {
+    flex-direction:column;
+    justify-content: space-around;
+}
+
+#col-create-room {
+    flex-direction:column;
+}
+
+#row-create-room-btns {
+    flex:1;
+}
+
+.enter-modal-header-col h5 {
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-control-roomcode {
+    background: 
+    repeating-linear-gradient(90deg, 
+        dimgrey 0, 
+        dimgrey 1ch, 
+        transparent 0, 
+        transparent 1.5ch) 
+      0 100%/100% 2px no-repeat;
+      letter-spacing: .5ch;
+    border:none;
+    color:#d3d3d3;
+    font: 3ch consolas, monospace;
+    width: 6.0ch;
+    text-transform:lowercase;
+}

@@ -56,7 +56,7 @@ export default class JukeboxController {
                 this.setupRoom(roomCode)
             }).bind(this),
             (error => {
-                this.showRoomNotFoundError(room_code);
+                this.showRoomNotFoundError(roomCode);
             }).bind(this)
         );
     }
@@ -119,7 +119,10 @@ export default class JukeboxController {
 
     setupEnterModal() {
         this.enterModal.init();
-        this.enterModal.onJoinRoom(this.tryJoinRoom.bind(this));
+        this.enterModal.onJoinRoom(((roomCode) => {
+            this.tryJoinRoom(roomCode);
+            this.enterModal.dismiss();
+        }).bind(this));
     }
 
     setupRoomNfModal() {

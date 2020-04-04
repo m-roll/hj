@@ -2,9 +2,35 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-primary">CREATE</a>
-        <input type="text" id="enter-modal-room-code" class="form-control my-2" placeholder="Room code you want to join" />
-        <button type="button" id="enter-modal-room-join" class="btn btn-primary">JOIN</button>
+        <div class="container-fluid">
+          <div class="row pb-2">
+            <div id="col-create-room" class="col-md-6 border-right d-flex">
+              <div class="row">
+                <div class="col enter-modal-header-col">
+                  <h5>CREATE</h5>
+                </div>
+              </div>
+              <div id="row-create-room-btns" class="row">
+                <div id="div-create-room" class="col d-flex">
+                  <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-primary">CREATE</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col enter-modal-header-col">
+                  <h5>JOIN</h5>
+                </div>
+              </div>
+              <div class="row">
+                <div id="div-join-room" class="col d-flex">
+                  <input type="text" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
+                  <button type="button" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
