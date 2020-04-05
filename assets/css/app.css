@@ -195,3 +195,32 @@ tr th, tr td {
     width: 6.0ch;
     text-transform:lowercase;
 }
+
+#audio-play-overlay {
+    z-index:100;
+    height:100%;
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    left:0;
+}
+
+#audio-play-overlay .cover {
+    height:100%;
+    width:100%;
+    background-color: black;
+    opacity:0.5;
+    position:absolute;
+    cursor:pointer;
+}
+
+#audio-play-overlay p {
+    margin:auto;
+    z-index:30;
+    font-weight:bold;
+}
+
+.hidden {
+    display:none !important;
+}

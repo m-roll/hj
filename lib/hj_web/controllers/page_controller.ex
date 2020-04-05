@@ -48,20 +48,21 @@ defmodule HjWeb.PageController do
 
         if load_credentials do
           if at == nil do
-            redirect(conn, to: "/authorize")
+            redirect(conn, to: "/authorize?state=" <> room_code)
           end
 
           %{
             has_room_code: true,
             room_code: room_code,
+            has_credentials: true,
             spotify_refresh_token: rt,
             spotify_access_token: at
           }
         else
-          %{has_room_code: true, room_code: room_code}
+          %{has_room_code: true, room_code: room_code, has_credentials: false}
         end
       else
-        %{has_room_code: false}
+        %{has_room_code: false, has_credentials: false}
       end
 
     render(conn, "index.html", fields)

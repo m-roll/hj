@@ -1,4 +1,6 @@
+import $ from "jquery";
 const player_name = "Hillside Jukebox";
+
 const getOAuthToken = (cb) => {
     return cb(hj_spotify_access_token);
 }
@@ -7,6 +9,10 @@ export default class SpotifyPlayer {
     constructor(deviceReadyCb, updateCb) {
         this.deviceReadyCb = deviceReadyCb;
         this.updateCb = updateCb;
+    }
+
+    initSpotifyScript() {
+        $.getScript("https://sdk.scdn.co/spotify-player.js");
     }
 
     onSpotifyWebPlaybackSDKReady() {

@@ -1,12 +1,17 @@
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
+
 <script>
   <%= if @has_room_code do%>
-  let hj_spotify_access_token = "<%= @spotify_access_token%>";
-  let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
-  let room_code = "<%= @room_code%>";
+  let hj_room_code = "<%= @room_code%>";
   <% end %>
-  let page = "JUKEBOX";
+  <%= if @has_credentials do%>
+    let hj_spotify_access_token = "<%= @spotify_access_token%>";
+    let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
+  <% end %>
 </script>
+<div id="audio-play-overlay" class="d-flex">
+  <p>Setting things up...</p>
+  <div class="cover"></div>
+</div>
 <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
 </div>
 <%= render HjWeb.ModalView, "enter_modal.html", assigns %>
@@ -62,9 +67,11 @@
     </div>
   </div>
   <div class="col-md-6 d-flex">
-    <div class="progress-outer my-auto"><div id="track-progress" class="progress-inner"></div></div>
+    <div id="listening-progress-bar" class="progress-outer my-auto"><div id="track-progress" class="progress-inner"></div></div>
+    <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link"href="">here</a>
   </div>
   <div class="col-md-3 d-flex">
     <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
   </div>
 </div>
+<script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
