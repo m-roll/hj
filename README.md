@@ -82,6 +82,7 @@ I am working on a better implementation to easily run in across multiple nodes.
   * Flow when entering for first time. Create/join room.
 * Testing for OTP stuff
 * names for people
+* use async/await on frontend! can't believe i forgot about this
 * chat window
 
 
