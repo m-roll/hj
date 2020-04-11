@@ -40,3 +40,7 @@ npm-debug.log
 /config/prod.secret.exs
 
 /config/spotify.secret.exs
+
+# ignore tooling versions from asdf
+
+*.deb
