@@ -106,3 +106,4 @@ I am working on a better implementation to easily run in across multiple nodes.
    * TODO add dockerfile to source control
    * This will handle installing all dependencies and allow you to run at `bin/my_app start`
    * Everyone working on this _needs to run docker locally_. Erlang has some issues with compatibility since it is ancient, so everyone needs to be testing/deploying releases on the same OS.
+ * change config setting to embed erlang in the release
