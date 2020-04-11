@@ -95,3 +95,16 @@ I am working on a better implementation to easily run in across multiple nodes.
 
 * (Later) Room IDs - one instance of the server handling many seperate queues (DONE - needs UI)
 * Gaps in Spotify client. Beta functionality for song playback is missing :( (DONE)
+
+# DEPLOYING TO PRODUCTION
+
+ * Production secrets need to be set a runtime. Use releases instead of prod.config.exs. See "using releases" to set configuration at runtime.
+   * Rename `config/prod.secret.exs` to `config/releases.exs`
+   * Change use `Mix.Config` inside the new `config/releases.exs` file to `import Config`
+   * Change `config/prod.exs` to no longer call `import_config "prod.secret.exs"` at the bottom
+ * Releasing
+   * `MIX_ENV=prod mix release`
+ * Releasing in Docker container
+   * TODO add dockerfile to source control
+   * This will handle installing all dependencies and allow you to run at `bin/my_app start`
+   * Everyone working on this _needs to run docker locally_. Erlang has some issues with compatibility since it is ancient, so everyone needs to be testing/deploying releases on the same OS.
