@@ -1,10 +1,10 @@
-# Hillside jukebox
+# Hillside jukebox https://github.com/m-roll
 
 ## About
 
 The Hillside Jukebox is a way for multiple people to submit spotify links to a common queue. 
 That is, multiple people can submit their favorite track and eventually have it played through
-every browser currently on the [`localhost:4000/jukebox`](http://localhost:4000/jukebox) page.
+every browser currently on the [`localhost:4000/`](http://localhost:4000/) page.
 
 Consequently, any browser on the `jukebox` page will sync that users audio playback with any other
 user also on the `jukebox` page.
@@ -18,16 +18,26 @@ can submit songs and eventually get them played. My roommates and I have a RaspP
 our stereo that runs this page, it requires little to no interaction once the page is loaded.
 
 Visit
-[`localhost:4000/add`](http://localhost:4000/add) to add songs using a spotify track URI that
+[`localhost:4000/`](http://localhost:4000/) to add songs using a spotify track URI that
 can be copied from any official Spotify client.
 
-If you want to listen in to the jukebox, navigate to the `/listen` page. If this is your first time
+If you want to listen in to the jukebox, you will be prompted to tune in. If this is your first time
 visiting, Spotify will prompt to give the app permission to play music on your behalf. After you give
-permission, you will be redirected to `/jukebox`. If there are any songs in the queue, they will begin playing
+permission, you will be redirected back to the jukebox page. If there are any songs in the queue, they will begin playing
 when you load the page. Otherwise, have some of your friends add songs they want to hear! If anyone else connects
-to your server's `/jukebox`, their spotify player will connect with the other and play the same songs in sync
+to your jukebox, their spotify player will connect with the other and play the same songs in sync
 with each other.
 
+Rooms are used so anyone can spin up their own jukebox. You will be prompted to either join or create a room when you first visit the website. If you create a room, the 4 letter room code will be visible in the URL slug. Share this code so other people can join your room and tune in.
+
+
+## Why elixir?
+
+I hope to eventually implement chat into this service as well, so users in a room can interact with each other and discuss which songs they would like to play. The erlang environment is great for telecommunications-like services (such as chat), and this model also fit very well with the queue model.
+
+Elixir also gave me a lot of flexibility for scaling this application. Each jukebox room runs as it's own process within the application. If the application garners much traffic, it will be very easy to implement load balancing between different nodes: we just spin up room processes on different servers within the VM. There is a registry which keeps track of room IDs and what process they point to. This registry is very lightweight and fast, so looking up which node each process runs on is basically trivial.
+
+Also, Elixir is fun!
 
 ## Setup
 To start your Phoenix server:
@@ -35,7 +45,6 @@ To start your Phoenix server:
   * Install dependencies with `mix deps.get`
   * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
-  * 
   
 ### Setting up config files
 
@@ -84,17 +93,6 @@ I am working on a better implementation to easily run in across multiple nodes.
 * names for people
 * use async/await on frontend! can't believe i forgot about this
 * chat window
-
-
-
-* Make sure we note when a user disconnects. We don't want to keep controlling their audio after they leave the page (DONE)
-* New flow
-  * If you create a room, you are the leader and must connect your spotify account. API requests for song metadata will use this account (DONE)
-  * If you join a room to listen in, you must connect your spotify account only to play audio in sync (DONE)
-  * If you are just using the queue, the only thing you need is the room code.
-
-* (Later) Room IDs - one instance of the server handling many seperate queues (DONE - needs UI)
-* Gaps in Spotify client. Beta functionality for song playback is missing :( (DONE)
 
 # DEPLOYING TO PRODUCTION
 
