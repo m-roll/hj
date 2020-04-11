@@ -41,7 +41,8 @@ defmodule Hj.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:react_phoenix, "~> 1.2"},
       {:spotify_ex, git: "https://github.com/m-roll/spotify_ex"},
-      {:gproc, "~> 0.8.0"}
+      {:gproc, "~> 0.8.0"},
+      {:distillery, "~> 2.1"}
     ]
   end
 end
