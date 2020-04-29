@@ -6,6 +6,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@forevolve/bootstrap-dark": "^1.0.0-alpha.981",
     "@popperjs/core": "^2.0.5",
     "bootstrap": "^4.4.1",
     "bootstrap-sass": "^3.4.1",
@@ -28,6 +29,7 @@
     "css-loader": "^2.1.1",
     "mini-css-extract-plugin": "^0.4.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "style-loader": "^1.2.1",
     "terser-webpack-plugin": "^1.1.0",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.2"
