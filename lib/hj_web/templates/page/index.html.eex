@@ -54,11 +54,11 @@
   </div>
 </div>
 <div id="status-bar" class="row headsup border-top py-3 hud-overlay d-flex">
-  <div class="col-md-1">
+  <div class="col-1 col-sm-1">
     <div id="preview-image">
     </div>
   </div>
-  <div class="col-md-2">
+  <div class="col-3 col-sm-2">
     <div class="row mb-1">
       <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
     </div>
@@ -66,11 +66,11 @@
       <p id="status-song-artist" class="my-auto ">Song artist</p>
     </div>
   </div>
-  <div class="col-md-6 d-flex">
+  <div class="col-5 col-sm-6 d-flex">
     <div id="listening-progress-bar" class="progress-outer my-auto"><div id="track-progress" class="progress-inner"></div></div>
     <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link"href="">here</a>
   </div>
-  <div class="col-md-3 d-flex">
+  <div class="col-3 col-sm-3 d-flex">
     <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
   </div>
 </div>
