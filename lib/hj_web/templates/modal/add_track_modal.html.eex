@@ -1,0 +1,12 @@
+<div class="modal fade" id="add-track-modal" tabindex="-1" role="dialog" aria-labelledby="addTrackLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="card-title mb-4"> Add a song </h5>
+        <input type="text" id="song-input" class="form-control my-2" placeholder="Paste a URL or 'share' clipboard contents" />
+        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary">Clipboard</button>
+      </div>
+    </div>
+  </div>
+</div>

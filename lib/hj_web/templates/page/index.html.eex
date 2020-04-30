@@ -1,77 +1,86 @@
-
-<script>
-  <%= if @has_room_code do%>
-  let hj_room_code = "<%= @room_code%>";
-  <% end %>
-  <%= if @has_credentials do%>
-    let hj_spotify_access_token = "<%= @spotify_access_token%>";
-    let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
-  <% end %>
-</script>
-<div id="audio-play-overlay" class="d-flex">
-  <p>Setting things up...</p>
-  <div class="cover"></div>
-</div>
-<div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
-</div>
-<%= render HjWeb.ModalView, "enter_modal.html", assigns %>
-<%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %>
-<div id="card-area" class=" pb-3 pt-3 songs row d-flex">
-  <div class="col">
-    <div class="card hud-overlay">
-      <div class="card-body">
-        <h5 class="card-title mb-4">
-          Add a song
-                </h5>
-        <input type="text" id="song-input" class="form-control my-2" placeholder="Paste a URL or 'share' clipboard contents" />
-        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-secondary">Clipboard</button>
-      </div>
-    </div>
-  </div>
-  <div id="queue-col" class="col-md-9 col d-flex">
-    <div class="card hud-overlay">
-      <div id="queue-card" class="card-body d-flex">
-        <h5 id="queue-title" class="card-title">
-          Current queue
-        </h5>
-        <div id="queue-table-wrap">
-          <table id="queue-table" class="table">
-            <thead>
-              <tr>
-                <th>Song</th>
-                <th>Artist</th>
-                <th>Source</th>
-                <th>Duration</th>
-              </tr>
-            </thead>
-            <tbody id="song-list">
-            </tbody>
-          </table>
+<div class="headline-main-content">
+  <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
+    <header class="row pb-4 pt-4 px-5 black-gradient-up hud-overlay d-flex">
+      <div class="col-3 my-auto">
+        <section class="row">
+          <p class="my-auto"><span class="font-weight-bold">Hillside Jukebox</span></p>
+        </section>
+        <div class="row">
+          <p class="my-auto title-author">Built by Matt Rollender</p>
         </div>
       </div>
-    </div>
+      <div class="col-1">
+        <button id="add-track-button" class="btn btn-secondary">add</button>
+      </div>
+      <div class="col-8 my-auto spotify-branding-container">
+        <div class="row d-flex">
+          <span id="spotify-powered-by" class="my-auto">powered by</span>
+          <img class="my-auto" id="spotify-logo" src="<%= Routes.static_path(@conn, "/images/spotify_green.png") %>" />
+          <img class="my-auto" id="spotify-icon" src="<%= Routes.static_path(@conn, "/images/spotify_icon_green.png") %>" />
+          <button type="button" class="btn btn-secondary" id="spotify-btn-link">get spotify free</button>
+        </div>
+        <div class="row">
+        </div>
+      </div>
+    </header>
+    <main id="main" role="main" class="px-3 d-flex flex-column"> <%= if info = get_flash(@conn, :info) do %> <p class="alert alert-info" role="alert"><%= info %></p> <% end %> <script>
+        <%= if @has_room_code do %>
+          let hj_room_code = "<%= @room_code%>";
+        <%end%>
+         <%= if @has_credentials do %>
+          let hj_spotify_access_token = "<%= @spotify_access_token%>";
+        let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
+        <%end%>
+      </script>
+      <div id="audio-play-overlay" class="d-flex">
+        <p>Setting things up...</p>
+        <div class="cover"></div>
+      </div>
+      <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
+      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
+        <div class="col px-auto preview-container d-flex">
+          <div id="preview-image">
+          </div>
+        </div>
+      </div>
+      <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
+        <div class="col-1 col-sm-1">
+        </div>
+        <div class="col-3 col-sm-2">
+          <div class="row mb-1">
+            <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
+          </div>
+          <div class="row">
+            <p id="status-song-artist" class="my-auto ">Song artist</p>
+          </div>
+        </div>
+        <div class="col-5 col-sm-6 d-flex">
+          <div id="listening-progress-bar" class="progress-outer my-auto">
+            <div id="track-progress" class="progress-inner"></div>
+          </div>
+          <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
+        </div>
+        <div class="col-3 col-sm-3 d-flex">
+          <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+</div>
+<div class="container-fluid">
+  <div id="queue-table-wrap">
+    <table id="queue-table" class="table">
+      <thead>
+        <tr>
+          <th>Song</th>
+          <th>Artist</th>
+          <th>Source</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody id="song-list">
+      </tbody>
+    </table>
   </div>
 </div>
-<div id="status-bar" class="row headsup border-top py-3 hud-overlay d-flex">
-  <div class="col-1 col-sm-1">
-    <div id="preview-image">
-    </div>
-  </div>
-  <div class="col-3 col-sm-2">
-    <div class="row mb-1">
-      <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
-    </div>
-    <div class="row">
-      <p id="status-song-artist" class="my-auto ">Song artist</p>
-    </div>
-  </div>
-  <div class="col-5 col-sm-6 d-flex">
-    <div id="listening-progress-bar" class="progress-outer my-auto"><div id="track-progress" class="progress-inner"></div></div>
-    <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link"href="">here</a>
-  </div>
-  <div class="col-3 col-sm-3 d-flex">
-    <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
-  </div>
-</div>
-<script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

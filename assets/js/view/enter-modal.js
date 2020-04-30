@@ -1,4 +1,4 @@
-import $ from "jquery"; // let's keep jquery out of other stuff
+import $ from 'jquery'; // let's keep jquery out of other stuff
 export default class EnterModal {
     constructor() {
         this.modalElement = $('#enter-modal');

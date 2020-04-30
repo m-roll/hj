@@ -8,31 +8,6 @@
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
   </head>
   <body>
-    <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
-    <header class="row pb-4 pt-4 px-5 border-bottom hud-overlay d-flex">
-      <div class="col-3 my-auto">
-        <section class="row">
-          <p class="my-auto"><span class="font-weight-bold">Hillside Jukebox</span></p>
-        </section>
-        <div class="row">
-          <p class="my-auto">Built by Matt Rollender</p>
-        </div>
-      </div>
-      <div class="col">
-      </div>
-      <div class="col-3 my-auto">
-        <div class="row d-flex">
-        <span id="spotify-powered-by" class="my-auto">powered by</span><img class="my-auto" id="spotify-logo" src="<%= Routes.static_path(@conn, "/images/spotify_green.png") %>">
-        <button type="button" class="btn btn-secondary">get spotify free</button>
-        </div>
-      </div>
-    </header>
-    <main id="main" role="main" class="px-3 d-flex flex-column" >
-      <%= if info = get_flash(@conn, :info) do %>
-        <p class="alert alert-info" role="alert"><%= info %></p>
-      <% end %>
-      <%= render @view_module, @view_template, assigns %>
-    </main>
-    </div>
+    <%= render @view_module, @view_template, assigns %>
   </body>
 </html>

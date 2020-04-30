@@ -1,226 +1,294 @@
 /* This file is for your main application css. */
+// use for bootstrap responsiveness
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
 
 .hj-header {
-    display:flex;
+  display: flex;
 }
 
-html,body {
-    height: 100%;
+header {
+  background: none;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 main {
-    flex-grow: 1;
-
+  flex-grow: 1;
 }
 
 #background {
-    background-position:center;
-    background-size:cover;
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    left:0;
-    height:100%;
-    z-index:-10;
-    filter:blur(3px);
-}
-
-.hud-overlay {
-    background-color: #191414;
+  background-position: center;
+  background-size: cover;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  z-index: -10;
+  filter: blur(3px);
 }
 
 #preview-image {
-    height:100%;
-    width:auto;
-    background-position:center;
-    background-size: contain;
-    background-repeat: no-repeat;
+  height: 100%;
+  width: auto;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  flex: 1;
 }
 
 .progress-outer {
-    width:100%;
-    height:6px;
-    background-color:#111;
-    border-radius:3px;
+  width: 100%;
+  height: 6px;
+  background-color: #111;
+  border-radius: 3px;
 }
 
 .progress-inner {
-    width:50%;
-    background-color:#999;
-    height:100%;
-    border-radius:3px;
+  width: 50%;
+  background-color: #999;
+  height: 100%;
+  border-radius: 3px;
 }
 
 .progress-holder {
-    height:100%;
+  height: 100%;
 }
 
 #outer-container {
-    padding:0;
+  padding: 0;
 }
 
 .btn {
-    border-radius: 25px;
-    text-transform: uppercase;
-    font-weight:bold;
-    font-size:12px;
-    padding: .375rem 1.5rem;
+  border-radius: 25px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 12px;
+  padding: .375rem 1.5rem;
+  margin: 0.2rem;
 }
 
 .btn-primary {
-    background-color: #1DB954;
-    border-color: #1DB954;
+  background-color: #1DB954 !important;
+  border-color: #1DB954 !important;
+}
+
+.btn-primary:hover {
+  background-color: #1DB954;
+  border-color: #1DB954;
+}
+
+.btn:hover {
+  scale: 1.05;
+  transition: scale ease 0.05s;
+}
+
+.btn-secondary {
+  color: 191414;
+  box-shadow: 0 0 0 1px rgb(215, 215, 215);
+  background-color: rgba(25, 20, 20, 0.8)
+}
+
+.btn-secondary:hover {
+  background-color: rgba(25, 20, 20, 1.0);
+  box-shadow: 0 0 0 1px rgb(255, 255, 255);
 }
 
 .card {
-    border-radius: 0;
+  border-radius: 0;
 }
 
 .card-body {
-    padding: 1.75rem;
+  padding: 1.75rem;
 }
 
 .form-control {
-    background-color: #FFFFFF;
-    border-radius:24px;
-    color: #191414;
-    font-size:12px;
-    margin-bottom:0.5rem;
+  background-color: #FFFFFF;
+  border-radius: 24px;
+  color: #191414;
+  font-size: 12px;
+  margin-bottom: 0.5rem;
 }
 
 .form-control:focus {
-    background-color: #FFFFFF;
-    color: #191414;
+  background-color: #FFFFFF;
+  color: #191414;
 }
 
-#spotify-logo {
-    height:30px;
-    width:auto;
-    margin:15px;
-}
-
-#spotify-powered-by {
-    text-transform: uppercase;
-    font-size:12px;
+#spotify-logo,
+#spotify-icon {
+  height: 30px;
+  width: auto;
+  margin: 15px;
 }
 
 body {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 #card-area {
-    flex:1;
-    min-height: 0;
+  flex: 1;
+  min-height: 0;
 }
 
 #status-bar {
-    width:100vw;
+  width: 100vw;
 }
 
 #main {
-    min-height:0;
+  min-height: 0;
 }
 
 #card-area .col {
-    max-height:100%;
+  max-height: 100%;
 }
 
 #queue-card {
-    flex-direction: column;
-    height:100%;
+  flex-direction: column;
+  height: 100%;
 }
 
 #queue-col {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 .card {
-    min-height:0;
+  min-height: 0;
 }
 
 #queue-table tbody {
-    overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 table {
-    display:flex;
-    flex-direction:column;
+  display: flex;
+  flex-direction: column;
 }
 
 tr {
-    display:flex;
+  display: flex;
 }
 
-tr th, tr td {
-    flex:1;
+tr th,
+tr td {
+  flex: 1;
 }
 
 #queue-table-wrap {
-    min-height:0;
-    flex:1;
-    display:flex;
+  min-height: 0;
+  flex: 1;
+  display: flex;
 }
 
-#div-join-room, #div-create-room {
-    flex-direction:column;
-    justify-content: space-around;
+#div-join-room,
+#div-create-room {
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 #col-create-room {
-    flex-direction:column;
+  flex-direction: column;
 }
 
 #row-create-room-btns {
-    flex:1;
+  flex: 1;
 }
 
 .enter-modal-header-col h5 {
-    font-weight: bold;
-    text-align: center;
+  font-weight: bold;
+  text-align: center;
 }
 
 .form-control-roomcode {
-    background: 
-    repeating-linear-gradient(90deg, 
-        dimgrey 0, 
-        dimgrey 1ch, 
-        transparent 0, 
-        transparent 1.5ch) 
-      0 100%/100% 2px no-repeat;
-      letter-spacing: .5ch;
-    border:none;
-    color:#d3d3d3;
-    font: 3ch consolas, monospace;
-    width: 6.0ch;
-    text-transform:lowercase;
+  background:
+    repeating-linear-gradient(90deg,
+      dimgrey 0,
+      dimgrey 1ch,
+      transparent 0,
+      transparent 1.5ch) 0 100%/100% 2px no-repeat;
+  letter-spacing: .5ch;
+  border: none;
+  color: #d3d3d3;
+  font: 3ch consolas, monospace;
+  width: 6.0ch;
+  text-transform: lowercase;
 }
 
 #audio-play-overlay {
-    z-index:100;
-    height:100%;
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    left:0;
+  z-index: 100;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  left: 0;
 }
 
 #audio-play-overlay .cover {
-    height:100%;
-    width:100%;
-    background-color: black;
-    opacity:0.5;
-    position:absolute;
-    cursor:pointer;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  opacity: 0.5;
+  position: absolute;
+  cursor: pointer;
 }
 
 #audio-play-overlay p {
-    margin:auto;
-    z-index:30;
-    font-weight:bold;
+  margin: auto;
+  z-index: 30;
+  font-weight: bold;
 }
 
 .hidden {
-    display:none !important;
+  display: none !important;
+}
+
+#spotify-powered-by {
+  text-transform: uppercase;
+  font-size: 12px;
+  display: none;
+}
+
+@include media-breakpoint-up(sm) {
+  #spotify-powered-by {
+    display: initial !important;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  #spotify-icon {
+    display: none;
+  }
+
+  #spotify-logo {
+    display: initial !important;
+  }
+}
+
+#spotify-logo {
+  display: none;
+}
+
+.spotify-branding-container {
+  .row {
+    justify-content: flex-end;
+  }
+}
+
+.title-author {
+  font-size: 0.5rem;
+}
+
+.black-gradient-up {
+  background-image: linear-gradient(to top, rgba(25, 20, 20, 0), rgba(25, 20, 20, 1));
+}
+
+.headline-main-content {
+  height: 100vh;
 }

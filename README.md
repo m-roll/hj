@@ -86,13 +86,16 @@ I am working on a better implementation to easily run in across multiple nodes.
 ## TODO
 
 * PRIORITIES
-  * Fix overflow when the queue is long (probably flexbox issue)
   * Allow cards to be collapsed
-  * Flow when entering for first time. Create/join room.
 * Testing for OTP stuff
 * names for people
 * use async/await on frontend! can't believe i forgot about this
 * chat window
+* What to do when content isn't available in playback country
+* Search feature!
+* Separate TV friendly display
+* UI for skipping and # of people listening
+* Settings when creating a room <- maybe in a paid version?
 
 # DEPLOYING TO PRODUCTION
 
