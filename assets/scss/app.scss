@@ -10,11 +10,13 @@
 
 header {
   background: none;
+  z-index: 2000;
 }
 
 html,
 body {
   height: 100%;
+  color: white;
 }
 
 main {
@@ -34,13 +36,23 @@ main {
   filter: blur(3px);
 }
 
+.preview-container {
+  text-align: center;
+}
+
+.preview-image-container {
+  display: inline-block;
+  height: 100%;
+}
+
 #preview-image {
   height: 100%;
   width: auto;
-  background-position: center;
+  box-shadow: 0 0 10vh 10vh rgba(25, 20, 20, 0.6);
   background-size: contain;
-  background-repeat: no-repeat;
-  flex: 1;
+  max-width: 80vw;
+  max-height: 80vw;
+  margin: auto;
 }
 
 .progress-outer {
@@ -48,6 +60,7 @@ main {
   height: 6px;
   background-color: #111;
   border-radius: 3px;
+  box-shadow: 0 0 1px 1px #999;
 }
 
 .progress-inner {
@@ -55,6 +68,7 @@ main {
   background-color: #999;
   height: 100%;
   border-radius: 3px;
+  box-shadow: 0 0 1px 1px #191414;
 }
 
 .progress-holder {
@@ -69,8 +83,6 @@ main {
   border-radius: 25px;
   text-transform: uppercase;
   font-weight: bold;
-  font-size: 12px;
-  padding: .375rem 1.5rem;
   margin: 0.2rem;
 }
 
@@ -251,15 +263,10 @@ tr td {
 
 #spotify-powered-by {
   text-transform: uppercase;
-  font-size: 12px;
-  display: none;
+  font-size: 10px;
 }
 
-@include media-breakpoint-up(sm) {
-  #spotify-powered-by {
-    display: initial !important;
-  }
-}
+@include media-breakpoint-up(sm) {}
 
 @include media-breakpoint-up(md) {
   #spotify-icon {
@@ -276,6 +283,8 @@ tr td {
 }
 
 .spotify-branding-container {
+  margin-right: 0;
+
   .row {
     justify-content: flex-end;
   }

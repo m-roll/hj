@@ -12,7 +12,9 @@
       <div class="col-1">
         <button id="add-track-button" class="btn btn-secondary">add</button>
       </div>
-      <div class="col-8 my-auto spotify-branding-container">
+      <div class="col">
+      </div>
+      <div class="col-6 my-auto spotify-branding-container">
         <div class="row d-flex">
           <span id="spotify-powered-by" class="my-auto">powered by</span>
           <img class="my-auto" id="spotify-logo" src="<%= Routes.static_path(@conn, "/images/spotify_green.png") %>" />
@@ -39,8 +41,7 @@
       <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
       </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
         <div class="col px-auto preview-container d-flex">
-          <div id="preview-image">
-          </div>
+          <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
         </div>
       </div>
       <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">

@@ -7,14 +7,25 @@ html {
 }
 
 .btn {
-  font-size:0.5rem;
+  font-size: 0.7rem;
+  padding: .375rem 0.75rem;
+}
+
+#spotify-btn-link {
+  display: none;
 }
 
 @include media-breakpoint-up(sm) {
   html {
     font-size: 1rem;
   }
+
   .btn {
-    font-size:0.7rem;
+    font-size: 0.7rem;
+    padding: .375rem 1.5rem !important;
+  }
+
+  #spotify-btn-link {
+    display: initial !important;
   }
 }
