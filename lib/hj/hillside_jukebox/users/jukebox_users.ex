@@ -72,8 +72,7 @@ defmodule HillsideJukebox.Users do
   end
 
   def get_host(pid) do
-    {user, _} = Agent.get(pid, fn users -> List.last(users) end)
-    user
+    Agent.get(pid, fn users -> List.last(users) end)
   end
 
   def update_with_id(users_pid, user_id, new_user) do
