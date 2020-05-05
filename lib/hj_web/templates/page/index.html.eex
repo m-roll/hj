@@ -1,6 +1,6 @@
 <div class="headline-main-content">
   <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
-    <header class="row pb-4 pt-4 px-5 black-gradient-up hud-overlay d-flex">
+    <header class="row pb-4 pt-4 px-5 hud-overlay hud-top d-flex">
       <div class="col-3 my-auto">
         <section class="row">
           <p class="my-auto"><span class="font-weight-bold">Hillside Jukebox</span></p>
@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="col-1">
-        <button id="add-track-button" class="btn btn-secondary">add</button>
+        <button id="add-track-button" class="btn btn-primary">add</button>
       </div>
       <div class="col">
       </div>
@@ -25,7 +25,7 @@
         </div>
       </div>
     </header>
-    <main id="main" role="main" class="px-3 d-flex flex-column"> <%= if info = get_flash(@conn, :info) do %> <p class="alert alert-info" role="alert"><%= info %></p> <% end %> <script>
+    <main id="main" role="main" class="d-flex flex-column"> <%= if info = get_flash(@conn, :info) do %> <p class="alert alert-info" role="alert"><%= info %></p> <% end %> <script>
         <%= if @has_room_code do %>
           let hj_room_code = "<%= @room_code%>";
         <%end%>
@@ -44,35 +44,41 @@
           <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
         </div>
       </div>
-      <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
-        <div class="col-1 col-sm-1">
-        </div>
-        <div class="col-3 col-sm-2">
-          <div class="row mb-1">
-            <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
+      <div class="hud-bottom">
+        <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
+          <div class="col-1 col-sm-1">
           </div>
-          <div class="row">
-            <p id="status-song-artist" class="my-auto ">Song artist</p>
+          <div class="col-3 col-sm-2">
+            <div class="row mb-1">
+              <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
+            </div>
+            <div class="row">
+              <p id="status-song-artist" class="my-auto ">Song artist</p>
+            </div>
+          </div>
+          <div class="col-5 col-sm-6 d-flex">
+            <div id="listening-progress-bar" class="progress-outer my-auto">
+              <div id="track-progress" class="progress-inner"></div>
+            </div>
+            <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
+          </div>
+          <div class="col-3 col-sm-3 d-flex">
+            <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
           </div>
         </div>
-        <div class="col-5 col-sm-6 d-flex">
-          <div id="listening-progress-bar" class="progress-outer my-auto">
-            <div id="track-progress" class="progress-inner"></div>
+        <div class="queue-peek row">
+          <div class="col queue-peek-holder">
+            <button class="queue-peek-button btn" id="queue-peek-btn">view queue</button>
           </div>
-          <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
-        </div>
-        <div class="col-3 col-sm-3 d-flex">
-          <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
         </div>
       </div>
     </main>
   </div>
-  <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
 </div>
-<div class="container-fluid">
+<div class="container-fluid bottom-readable">
   <div id="queue-table-wrap">
     <table id="queue-table" class="table">
-      <thead>
+      <thead id="queue-table-header" class="queue-table-header">
         <tr>
           <th>Song</th>
           <th>Artist</th>
@@ -85,3 +91,4 @@
     </table>
   </div>
 </div>
+<script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>

@@ -152,7 +152,7 @@ export default class JukeboxController {
     }).bind(this))
   }
   onFetchQueue(payload) {
-    payload.queue.forEach(song => this.queueView.addToQueueDisplay({
+    payload.queue.forEach(song => this.queueView.addToQueueDisplay.call(this.queueView, {
       song
     }));
   }

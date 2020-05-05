@@ -3,6 +3,7 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
+@import "util.scss";
 
 .hj-header {
   display: flex;
@@ -15,6 +16,8 @@ header {
 
 html,
 body {
+  @include hide-scrollbar;
+  @include smooth-scroll;
   height: 100%;
   color: white;
 }
@@ -48,7 +51,7 @@ main {
 #preview-image {
   height: 100%;
   width: auto;
-  box-shadow: 0 0 10vh 10vh rgba(25, 20, 20, 0.6);
+  box-shadow: 0 0 10vh 10vh rgba(25, 20, 20, 0.2);
   background-size: contain;
   max-width: 80vw;
   max-height: 80vw;
@@ -196,6 +199,7 @@ tr td {
   min-height: 0;
   flex: 1;
   display: flex;
+  max-height: 90vh;
 }
 
 #div-join-room,
@@ -294,10 +298,28 @@ tr td {
   font-size: 0.5rem;
 }
 
-.black-gradient-up {
-  background-image: linear-gradient(to top, rgba(25, 20, 20, 0), rgba(25, 20, 20, 1));
+.hud-top {
+  @include gradient-to-black(top, 1);
+}
+
+.hud-bottom {
+  @include gradient-to-black(bottom, 0.8);
 }
 
 .headline-main-content {
   height: 100vh;
+}
+
+.queue-peek-holder {
+  text-align: center;
+  margin-top: -1em;
+}
+
+.bottom-readable {
+  max-height: 90vh;
+  background-color: rgba(25, 20, 20, 0.8);
+}
+
+.queue-table-header tr th {
+  border-top: none;
 }

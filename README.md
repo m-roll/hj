@@ -86,14 +86,11 @@ I am working on a better implementation to easily run in across multiple nodes.
 ## TODO
 
 * PRIORITIES
-  * Allow cards to be collapsed
-* Testing for OTP stuff
 * names for people
 * use async/await on frontend! can't believe i forgot about this
 * chat window
 * What to do when content isn't available in playback country
-* Search feature!
-* Separate TV friendly display
+* Search feature - use client authorization from spotify so anyone -- not just spotify account holders -- can search the system.
 * UI for skipping and # of people listening
 * Settings when creating a room <- maybe in a paid version?
 
