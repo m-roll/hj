@@ -85,7 +85,7 @@ I am working on a better implementation to easily run in across multiple nodes.
 
 ## TODO
 
-* PRIORITIES
+* Bug - if someone joins when song is about to end, progress bar is a second long and plays song from start. Maybe an offset glitch with backend.
 * names for people
 * use async/await on frontend! can't believe i forgot about this
 * chat window
