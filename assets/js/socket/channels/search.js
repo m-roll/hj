@@ -10,9 +10,10 @@ export default class SearchChannel {
     })
   }
   query(roomCode, query, resultsCb) {
-    this.roomChannel.push('room:exists', {
-      roomCode,
-      query
-    }).receive("ok", resultsCb);
+    this.roomChannel.push('search:query:' + roomCode, {
+      query: query
+    }).receive("ok", (resp) => {
+      resultsCb(resp["truncated_results"]);
+    });
   }
 }

@@ -6,6 +6,7 @@ import QueueChannel from "../socket/channels/queue.js";
 import UserChannel from "../socket/channels/user.js";
 import StatusChannel from "../socket/channels/status.js";
 import RoomChannel from "../socket/channels/room.js";
+import SearchChannel from "../socket/channels/search.js";
 import PlayerView from "../view/player.js";
 import AudioActivatorView from "../view/audio-activator.js";
 import EnterModal from "../view/enter-modal.js";
@@ -71,6 +72,7 @@ export default class JukeboxController {
     this.roomedChannels.queue.fetch(roomCode);
     this.roomedChannels.status.getCurrent(roomCode, this.onSongPlayed);
     this.roomCode = roomCode;
+    this.setupAddTrackModal(roomCode);
   }
   showRoomNotFoundError(roomCode) {
     this.setupRoomNfModal();
@@ -106,7 +108,6 @@ export default class JukeboxController {
     this.queueView = new QueueView((e) => {
       this.socket.userChannel.voteSkip();
     });
-    this.setupAddTrackModal();
   }
   setupSpotifyAuth() {
     this.spotify_access_token = hj_spotify_access_token;
@@ -127,8 +128,11 @@ export default class JukeboxController {
       this.mockRedirectHome();
     }).bind(this));
   }
-  setupAddTrackModal() {
+  setupAddTrackModal(roomCode) {
     this.addTrackModal.init();
+    this.addTrackModal.onSearchQuerySubmit((query) => {
+      this.roomedChannels.search.query(roomCode, query, this.addTrackModal.populateSearchResults.bind(this.addTrackModal))
+    });
     this.addTrackModal.onAddTrack(((songUri) => {
       this.addSong(songUri);
       this.addTrackModal.dismiss();

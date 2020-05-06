@@ -1,7 +1,13 @@
 import $ from 'jquery'; // let's keep jquery out of other stuff
+import {
+  getInputValueFromForm
+} from './util/jquery.js';
+import SearchResultsView from './search-results.jsx';
+const searchFormSelector = "#song-search-form";
+const modalSelector = '#add-track-modal';
+const addTrackButtonSelector = '.search-result-add';
+const searchFieldInputName = "search-query";
 export default class AddTrackModal {
-  searchFormSelector = "#song-search-form";
-  modalSelector = '#add-track-modal';
   constructor() {
     this.modalElement = $(modalSelector);
     this.searchResultsView = new SearchResultsView();
@@ -21,15 +27,19 @@ export default class AddTrackModal {
     $(modalSelector).modal('show');
   }
   populateSearchResults(searchResults) {
+    this.searchResultsView.updateSearchResults(searchResults);
     let that = this;
-    $('.search-result-add').click(e => {
-      that.onAddTrackCb(this.value);
-    })
+    $(addTrackButtonSelector).click(e => {
+      that.onAddTrackCb("spotify:track:" + e.target.value);
+    });
   }
   onSearchQuerySubmit(cb) {
-    $(searchFormSelector).submit((event) => {
+    $(searchFormSelector).on('submit', (event) => {
       event.preventDefault();
-      let keyValueInputs = event.target.serializeArray();
+      event.stopPropagation();
+      let searchQuery = getInputValueFromForm($(event.currentTarget), searchFieldInputName);
+      cb(searchQuery);
+      return false;
     });
   }
   onAddTrack(cb) {

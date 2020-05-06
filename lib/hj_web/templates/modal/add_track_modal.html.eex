@@ -4,10 +4,10 @@
       <div class="modal-body">
         <h5 class="card-title mb-4"> Add a song </h5>
         <form id="song-search-form">
-          <input type="text" id="song-input" class="form-control my-2" placeholder="Search for a track" />
-          <button type="submit" class="btn btn-secondary">Submit</button>
+          <input type="text" name="search-query" id="search-query" class="form-control my-2" placeholder="Search for a track" />
+          <button name="search-submit" type="submit" class="btn btn-secondary">Submit</button>
         </form>
-        <div id="search-list-group" class="list-group">
+        <div id="search-list-group" class="search-list-group list-group">
         </div>
         <button id="add-modal-close-btn" type="button" class="btn btn-secondary">Done</button>
       </div>

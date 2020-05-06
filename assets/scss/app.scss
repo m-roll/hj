@@ -323,3 +323,15 @@ tr td {
 .queue-table-header tr th {
   border-top: none;
 }
+
+.search-list-group {
+  .search-result-album-cover {
+    img {
+      width: 100%;
+    }
+  }
+
+  .search-result-meta {}
+
+  .search-result-add {}
+}
