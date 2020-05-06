@@ -1,10 +1,16 @@
 import $ from 'jquery'; // let's keep jquery out of other stuff
 export default class AddTrackModal {
+  searchFormSelector = "#song-search-form";
+  modalSelector = '#add-track-modal';
   constructor() {
-    this.modalElement = $('#add-track-modal');
+    this.modalElement = $(modalSelector);
+    this.searchResultsView = new SearchResultsView();
+    $('#add-modal-close-btn').click((e => {
+      this.dismiss();
+    }).bind(this));
   }
   init() {
-    $('#add-track-modal').modal({
+    $(modalSelector).modal({
       backdrop: "static",
       keyboard: true,
       focus: true,
@@ -12,15 +18,24 @@ export default class AddTrackModal {
     });
   }
   show() {
-    $('#add-track-modal').modal('show');
+    $(modalSelector).modal('show');
   }
-  onAddTrack(cb) {
-    $('#submit-button').click(e => {
-      let songInput = document.getElementById("song-input");
-      cb(songInput.value);
+  populateSearchResults(searchResults) {
+    let that = this;
+    $('.search-result-add').click(e => {
+      that.onAddTrackCb(this.value);
+    })
+  }
+  onSearchQuerySubmit(cb) {
+    $(searchFormSelector).submit((event) => {
+      event.preventDefault();
+      let keyValueInputs = event.target.serializeArray();
     });
   }
+  onAddTrack(cb) {
+    this.onAddTrackCb = cb;
+  }
   dismiss() {
-    $('#add-track-modal').modal('hide');
+    $(modalSelector).modal('hide');
   }
 }

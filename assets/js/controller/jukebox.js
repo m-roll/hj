@@ -35,7 +35,8 @@ export default class JukeboxController {
   roomedChannels = {
     queue: null,
     user: null,
-    status: null
+    status: null,
+    search: null
   }
   constructor() {
     this.setupView();
@@ -83,6 +84,7 @@ export default class JukeboxController {
     const queueChannel = this.socket.joinChannel(QueueChannel);
     const userChannel = this.socket.joinChannel(UserChannel);
     const statusChannel = this.socket.joinChannel(StatusChannel);
+    const searchChannel = this.socket.joinChannel(SearchChannel);
     queueChannel.onSongProcessed(roomCode, this.queueView.addToQueueDisplay.bind(this.queueView));
     queueChannel.onQueuePop(roomCode, this.queueView.pop);
     userChannel.onAuthUpdate(((auth) => {
@@ -92,7 +94,8 @@ export default class JukeboxController {
     this.roomedChannels = {
       queue: queueChannel,
       user: userChannel,
-      status: statusChannel
+      status: statusChannel,
+      search: searchChannel
     }
     this.roomCode = roomCode;
   }
