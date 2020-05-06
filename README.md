@@ -86,6 +86,7 @@ I am working on a better implementation to easily run in across multiple nodes.
 ## TODO
 
 * Bug - if someone joins when song is about to end, progress bar is a second long and plays song from start. Maybe an offset glitch with backend.
+* bug - socket channel joining is not room specific -- this could leak information to people not in the room, even if we don't match for it.
 * names for people
 * use async/await on frontend! can't believe i forgot about this
 * chat window

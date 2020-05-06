@@ -3,27 +3,13 @@
     <div class="modal-content">
       <div class="modal-body">
         <h5 class="card-title mb-4"> Add a song </h5>
-        <form id="add-song-form">
+        <form id="song-search-form">
           <input type="text" id="song-input" class="form-control my-2" placeholder="Search for a track" />
           <button type="submit" class="btn btn-secondary">Submit</button>
         </form>
-        <div class="list-group">
-          <div class="list-group-item">
-            <div class="row">
-              <div class="col-2 search-result-album-cover"></div>
-              <div class="col-8 search-result-meta">
-                <div class="row mb-1">
-                  <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
-                </div>
-                <div class="row">
-                  <p id="status-song-artist" class="my-auto ">Song artist</p>
-                </div>
-              </div>
-              <div class="col-2 search-result-add">+</div>
-            </div>
-          </div>
+        <div id="search-list-group" class="list-group">
         </div>
-        <button id="submit-button" type="button" class="btn btn-secondary">Done</button>
+        <button id="add-modal-close-btn" type="button" class="btn btn-secondary">Done</button>
       </div>
     </div>
   </div>
