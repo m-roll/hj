@@ -2,7 +2,7 @@ defmodule HjWeb.UserChannel do
   use Phoenix.Channel
   require Logger
 
-  def join("user", _payload, socket) do
+  def join("user:" <> _roomCode, _payload, socket) do
     {:ok, socket}
   end
 
@@ -40,8 +40,8 @@ defmodule HjWeb.UserChannel do
     {:noreply, socket}
   end
 
-  def terminate(_reason, socket = %Phoenix.Socket{join_ref: join_ref}) do
-    # users_pid = HillsideJukebox.JukeboxServer.get_users_pid(payload["r0omCode"]) How do we fix this?
-    # HillsideJukebox.Users.remove_with_user_id(users_pid, join_ref)
+  def terminate(_reason, socket = %Phoenix.Socket{topic: "user:" <> roomCode, join_ref: join_ref}) do
+    users_pid = HillsideJukebox.JukeboxServer.get_users_pid(roomCode)
+    HillsideJukebox.Users.remove_with_user_id(users_pid, join_ref)
   end
 end

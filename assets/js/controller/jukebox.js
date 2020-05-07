@@ -84,7 +84,7 @@ export default class JukeboxController {
   }
   setupRoomedChannels(roomCode) {
     const queueChannel = this.socket.joinChannel(QueueChannel);
-    const userChannel = this.socket.joinChannel(UserChannel);
+    const userChannel = this.socket.joinChannel(UserChannel, roomCode);
     const statusChannel = this.socket.joinChannel(StatusChannel);
     const searchChannel = this.socket.joinChannel(SearchChannel);
     queueChannel.onSongProcessed(roomCode, this.queueView.addToQueueDisplay.bind(this.queueView));
@@ -139,7 +139,6 @@ export default class JukeboxController {
     }).bind(this));
   }
   mockRedirectHome() {
-    console.log("Faking redirect home");
     history.pushState({}, document.title, '/');
     hj_room_code = null;
     this.setupEnterModal();

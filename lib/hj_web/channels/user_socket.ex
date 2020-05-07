@@ -35,7 +35,7 @@ defmodule HjWeb.UserSocket do
   def id(_socket), do: nil
 
   channel("queue", HjWeb.QueueChannel)
-  channel("user", HjWeb.UserChannel)
+  channel("user:*", HjWeb.UserChannel)
   channel("status", HjWeb.StatusChannel)
   channel("room", HjWeb.RoomChannel)
   channel("search", HjWeb.SearchChannel)
