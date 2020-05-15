@@ -44,3 +44,10 @@ npm-debug.log
 # ignore tooling versions from asdf
 
 *.deb
+
+# Releases artifacts
+
+/rel/config.exs
+/rel/env.bat.eex
+/rel/env.sh.eex
+/rel/vm.args.eex
