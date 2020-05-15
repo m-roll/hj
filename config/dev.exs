@@ -21,6 +21,17 @@ config :hj, HjWeb.Endpoint,
     ]
   ]
 
+config :spotify_ex,
+  user_id: "<YOUR SPOTIFY USER ID>",
+  scopes: [
+    "streaming",
+    "user-read-email",
+    "user-read-private",
+    "user-read-playback-state",
+    "user-modify-playback-state"
+  ],
+  callback_url: "http://localhost:4000/auth"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

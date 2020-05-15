@@ -64,8 +64,8 @@ export default class JukeboxController {
     this.listenInAndProgressBarView.setListening(isListening);
     if (isListening) {
       this.setupSpotifyAuth();
-      this.setupSpotify();
       this.audioActivatorView.show();
+      this.setupSpotify();
     } else {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
     }
@@ -78,7 +78,9 @@ export default class JukeboxController {
     this.setupRoomNfModal();
   }
   setupSpotify() {
-    this.spotifyPlayer = new SpotifyPlayer(this.initAudio.bind(this), this.onPlayerUpdate.bind(this));
+    this.spotifyPlayer = new SpotifyPlayer();
+    this.spotifyPlayer.onDeviceReady(this.initAudio.bind(this));
+    this.spotifyPlayer.onPlayerUpdate(this.onPlayerUpdate.bind(this));
     window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
     this.spotifyPlayer.initSpotifyScript();
   }

@@ -8,11 +8,10 @@
 use Mix.Config
 
 import_config "config.secret.exs"
-import_config "spotify.secret.exs"
 
 # Configures the endpoint
 config :hj, HjWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "http://localhost"],
   secret_key_base: "JTSfmjLwGLK2nbIVoxuT7EkCbkrusszYwFrAMQDEgui0OJrAwYZw5qqFV/b6mGZP",
   render_errors: [view: HjWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Hj.PubSub, adapter: Phoenix.PubSub.PG2]

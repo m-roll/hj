@@ -30,7 +30,8 @@ export default class SearchResultsView {
               <div className="col-2 search-result-add"><button className="btn btn-primary" value={song["id"]}>+</button></div>
             </div>
           </div>)
-        )}
+        )
+        }
       </div>);
   }
 }

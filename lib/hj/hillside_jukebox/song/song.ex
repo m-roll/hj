@@ -8,14 +8,21 @@ defmodule HillsideJukebox.Song do
             track_art_url: "",
             duration: 1000
 
-  def from(%Spotify.Track{
-        id: track_id,
-        name: name,
-        duration_ms: duration,
-        artists: artists,
-        album: %{"images" => [largest | _rest]}
-      }) do
-    %{"url" => art_url} = largest
+  def from(
+        %Spotify.Track{
+          id: track_id,
+          name: name,
+          duration_ms: duration,
+          artists: artists,
+          album: %{"images" => images}
+        },
+        image_size
+      ) do
+    %{"url" => art_url} =
+      case image_size do
+        :largest -> List.first(images)
+        :thumb -> List.last(images)
+      end
 
     %HillsideJukebox.Song{
       id: track_id,

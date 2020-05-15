@@ -17,6 +17,6 @@ defmodule HillsideJukebox.Search do
         [%{type: @search_types, limit: @search_limit, q: query}]
       )
 
-    Enum.map(results, &HillsideJukebox.Song.from/1)
+    Enum.map(results, fn spotify_track -> HillsideJukebox.Song.from(spotify_track, :thumb) end)
   end
 end

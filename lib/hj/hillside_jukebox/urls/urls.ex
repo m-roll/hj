@@ -11,6 +11,6 @@ defmodule HillsideJukebox.URLs do
     {:ok, spotify_track} =
       refresh_do(users_pid, user_id, creds, &Spotify.Track.get_track/2, [track_id])
 
-    HillsideJukebox.Song.from(spotify_track)
+    HillsideJukebox.Song.from(spotify_track, :largest)
   end
 end
