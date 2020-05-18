@@ -2,10 +2,10 @@ import {
   getArtistString
 } from "./util/artist";
 export default class QueueView {
-  constructor(skipCb) {
+  constructor() {
     this.queueDisp = document.getElementById("song-list");
     document.getElementById("queue-skip").addEventListener("click", e => {
-      skipCb();
+      this.onSkipRequestCb();
     });
     let queueHeader = document.getElementById("queue-table-header");
     console.log(queueHeader);
@@ -13,6 +13,7 @@ export default class QueueView {
       queueHeader.scrollIntoView(true);
     });
   }
+  // TODO use JSX
   addToQueueDisplay(newEntry) {
     let capitalize = (str) => {
       return str.charAt(0).toUpperCase() + str.slice(1);
@@ -41,5 +42,8 @@ export default class QueueView {
   pop() {
     console.log("pop");
     this.queueDisp.removeChild(this.queueDisp.childNodes[2]);
+  }
+  onSkipRequest(cb) {
+    this.onSkipRequestCb = cb;
   }
 }

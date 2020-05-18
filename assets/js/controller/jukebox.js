@@ -16,9 +16,10 @@ import AddTrackModal from "../view/add-track-modal.js";
 import AddTrackController from "./jukebox/add-track.js";
 import StatusController from "./jukebox/status.js";
 import RoomController from "./jukebox/room.js";
+import QueueController from "./jukebox/queue.js";
 export default class JukeboxController {
   // views
-  queueView;
+  queueView = new QueueView();
   statusView = new StatusView();
   playerView = new PlayerView();
   audioActivatorView = new AudioActivatorView();
@@ -49,13 +50,15 @@ export default class JukeboxController {
   getRoomChannelThunk = () => this.roomChannel;
   getSearchControllerThunk = () => this.roomedChannels.search;
   getStatusProviderThunk = () => this.roomedChannels.status;
+  getQueueProviderThunk = () => this.roomedChannels.queue;
   // secondary controllers
   roomController = new RoomController(this.enterModal, this, this.getRoomChannelThunk, this.setupRoom.bind(this));
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
   statusController = new StatusController(this.statusView, this.getStatusProviderThunk, this.roomController.getRoomCode);
+  queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView);
   constructor() {
     this.setupView();
-    this.addTrackController.onSongSubmit(this.addSong.bind(this));
+    this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
     this.setupAnimation();
   }
   setupRoom(roomCode, isListening) {
@@ -69,8 +72,8 @@ export default class JukeboxController {
     } else {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
     }
-    this.roomedChannels.queue.fetch(roomCode);
-    this.statusController.ready.call(this.statusController);
+    this.statusController.ready();
+    this.queueController.ready();
     this.roomCode = roomCode;
   }
   showRoomNotFoundError(roomCode) {
@@ -88,29 +91,21 @@ export default class JukeboxController {
     this.spotifyPlayer.initSpotifyScript();
   }
   setupRoomedChannels(roomCode) {
-    const queueChannel = this.socket.joinChannel(QueueChannel);
-    const userChannel = this.socket.joinChannel(UserChannel, roomCode);
-    const statusChannel = this.socket.joinChannel(StatusChannel);
-    const searchChannel = this.socket.joinChannel(SearchChannel);
-    queueChannel.onSongProcessed(roomCode, this.queueView.addToQueueDisplay.bind(this.queueView));
-    queueChannel.onQueuePop(roomCode, this.queueView.pop);
+    let userChannel = this.socket.joinChannel(UserChannel, roomCode);
     userChannel.onAuthUpdate(((auth) => {
       this.spotify_access_token = auth;
     }).bind(this));
     this.roomedChannels = {
-      queue: queueChannel,
+      queue: this.socket.joinChannel(QueueChannel),
       user: userChannel,
-      status: statusChannel,
-      search: searchChannel
+      status: this.socket.joinChannel(StatusChannel),
+      search: this.socket.joinChannel(SearchChannel)
     }
     this.roomCode = roomCode;
   }
   setupView() {
     document.getElementById("add-track-button").addEventListener("click", (e) => {
       this.addTrackModal.show();
-    });
-    this.queueView = new QueueView((e) => {
-      this.socket.userChannel.voteSkip();
     });
   }
   setupSpotifyAuth() {
@@ -132,9 +127,6 @@ export default class JukeboxController {
   setupAnimation() {
     this.animationStartTimestamp = +new Date();
     requestAnimationFrame(this.animate.bind(this));
-  }
-  addSong(url) {
-    this.roomedChannels.queue.addSong.apply(this.roomedChannels.queue, [this.roomCode, url]);
   }
   initAudio(deviceId) {
     this.audioActivatorView.setContents("Click anywhere to tune in");

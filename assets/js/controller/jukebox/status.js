@@ -5,7 +5,6 @@ export default class StatusController {
     this.roomCodeThunk = roomCodeThunk;
   }
   ready() {
-    console.log(this.statusProducerThunk());
     this.statusProducerThunk().getCurrent(this.roomCodeThunk(), this.statusView.updateStatusView.bind(this.statusView));
     this.statusProducerThunk().onSongStatusUpdate(this.statusView.updateStatusView.bind(this.statusView));
   }
