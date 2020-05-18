@@ -13,7 +13,11 @@ import EnterModal from "../view/enter-modal.js";
 import RoomNotFoundModal from "../view/room-nf-modal.js";
 import ListenInAndProgressBarView from "../view/listen-in-indicator.js";
 import AddTrackModal from "../view/add-track-modal.js";
+import AddTrackController from "./jukebox/add-track.js";
+import StatusController from "./jukebox/status.js";
+import RoomController from "./jukebox/room.js";
 export default class JukeboxController {
+  // views
   queueView;
   statusView = new StatusView();
   playerView = new PlayerView();
@@ -22,6 +26,7 @@ export default class JukeboxController {
   enterModal = new EnterModal();
   roomNfModal = new RoomNotFoundModal();
   addTrackModal = new AddTrackModal();
+  // misc.
   spotifyPlayer;
   socket = new JukeboxSocket();
   spotify_access_token;
@@ -39,24 +44,19 @@ export default class JukeboxController {
     status: null,
     search: null
   }
+  roomChannel = this.socket.joinChannel(RoomChannel);
+  // thunks
+  getRoomChannelThunk = () => this.roomChannel;
+  getSearchControllerThunk = () => this.roomedChannels.search;
+  getStatusProviderThunk = () => this.roomedChannels.status;
+  // secondary controllers
+  roomController = new RoomController(this.enterModal, this, this.getRoomChannelThunk, this.setupRoom.bind(this));
+  addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
+  statusController = new StatusController(this.statusView, this.getStatusProviderThunk, this.roomController.getRoomCode);
   constructor() {
     this.setupView();
-    this.roomChannel = this.socket.joinChannel(RoomChannel);
-    if (typeof hj_room_code !== 'undefined' && hj_room_code !== null) {
-      this.tryJoinRoom(hj_room_code);
-    } else {
-      this.setupEnterModal();
-    }
+    this.addTrackController.onSongSubmit(this.addSong.bind(this));
     this.setupAnimation();
-  }
-  tryJoinRoom(roomCode) {
-    this.roomChannel.checkExists(roomCode,
-      (roomCode => {
-        this.setupRoom(roomCode)
-      }).bind(this),
-      (error => {
-        this.showRoomNotFoundError(roomCode);
-      }).bind(this));
   }
   setupRoom(roomCode, isListening) {
     this.setupRoomedChannels(roomCode);
@@ -70,9 +70,8 @@ export default class JukeboxController {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
     }
     this.roomedChannels.queue.fetch(roomCode);
-    this.roomedChannels.status.getCurrent(roomCode, this.onSongPlayed);
+    this.statusController.ready.call(this.statusController);
     this.roomCode = roomCode;
-    this.setupAddTrackModal(roomCode);
   }
   showRoomNotFoundError(roomCode) {
     this.setupRoomNfModal();
@@ -80,6 +79,10 @@ export default class JukeboxController {
   setupSpotify() {
     this.spotifyPlayer = new SpotifyPlayer();
     this.spotifyPlayer.onDeviceReady(this.initAudio.bind(this));
+    this.spotifyPlayer.onBrowserNotSupportedError(((errorMsg) => {
+      console.log("browser does not support web playback:", errorMsg);
+      this.initAudio(null);
+    }).bind(this));
     this.spotifyPlayer.onPlayerUpdate(this.onPlayerUpdate.bind(this));
     window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
     this.spotifyPlayer.initSpotifyScript();
@@ -94,7 +97,6 @@ export default class JukeboxController {
     userChannel.onAuthUpdate(((auth) => {
       this.spotify_access_token = auth;
     }).bind(this));
-    statusChannel.onSongStatusUpdate(roomCode, this.onSongPlayed);
     this.roomedChannels = {
       queue: queueChannel,
       user: userChannel,
@@ -115,29 +117,11 @@ export default class JukeboxController {
     this.spotify_access_token = hj_spotify_access_token;
     this.spotify_refresh_token = hj_spotify_refresh_token;
   }
-  setupEnterModal() {
-    this.enterModal.init();
-    this.enterModal.onJoinRoom(((roomCode) => {
-      this.enterModal.dismiss();
-      history.pushState({}, document.title, roomCode);
-      this.tryJoinRoom(roomCode);
-    }).bind(this));
-  }
   setupRoomNfModal() {
     this.roomNfModal.init();
     this.roomNfModal.onAccept((() => {
       this.roomNfModal.dismiss();
       this.mockRedirectHome();
-    }).bind(this));
-  }
-  setupAddTrackModal(roomCode) {
-    this.addTrackModal.init();
-    this.addTrackModal.onSearchQuerySubmit((query) => {
-      this.roomedChannels.search.query(roomCode, query, this.addTrackModal.populateSearchResults.bind(this.addTrackModal))
-    });
-    this.addTrackModal.onAddTrack(((songUri) => {
-      this.addSong(songUri);
-      this.addTrackModal.dismiss();
     }).bind(this));
   }
   mockRedirectHome() {

@@ -10,6 +10,9 @@ export default class SpotifyPlayer {
   onDeviceReady(cb) {
     this.deviceReadyCb = cb;
   }
+  onBrowserNotSupportedError(cb) {
+    this.browserNotSupportedErrorCb = cb;
+  }
   onPlayerUpdate(cb) {
     this.updateCb = cb;
   }
@@ -19,10 +22,11 @@ export default class SpotifyPlayer {
       getOAuthToken: getOAuthToken
     });
     // Error handling
+    let browserNotSupportedError = this.browserNotSupportedErrorCb;
     player.addListener('initialization_error', ({
       message
     }) => {
-      console.error(message);
+      browserNotSupportedError(message);
     });
     player.addListener('authentication_error', ({
       message
