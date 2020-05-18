@@ -1,8 +1,8 @@
 import $ from 'jquery'; // let's keep jquery out of other stuff
 import {
   getInputValueFromForm
-} from './util/jquery.js';
-import SearchResultsView from './search-results.jsx';
+} from '../util/jquery.js';
+import SearchResultsView from './add-track/search-results.jsx';
 const searchFormSelector = "#song-search-form";
 const modalSelector = '#add-track-modal';
 const addTrackButtonSelector = '.search-result-add';

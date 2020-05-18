@@ -6,7 +6,7 @@ export default class RoomChannel {
     this.roomChannel.join().receive("ok", resp => {
       console.log("Joined room channel successfully", resp)
     }).receive("error", resp => {
-      console.log("Unable to join room channel", resp)
+      console.warn("Unable to join room channel", resp)
     })
   }
   onRoomExists(cb) {

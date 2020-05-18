@@ -17,7 +17,7 @@ export default class UserChannel {
     this.userChannel.join().receive("ok", resp => {
       console.log("Joined user channel successfully", resp)
     }).receive("error", resp => {
-      console.log("Unable to join user channel", resp)
+      console.warn("Unable to join user channel", resp)
     })
   }
   voteSkip(roomCode) {
@@ -27,7 +27,7 @@ export default class UserChannel {
     this.userChannel.push("user:create_room").receive("ok", resp => {
       cb(resp);
     }).receive("error", resp => {
-      console.log("Error creating room", resp);
+      console.warn("Error creating room", resp);
     })
   }
 }

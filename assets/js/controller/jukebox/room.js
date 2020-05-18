@@ -1,18 +1,20 @@
 export default class RoomController {
-  constructor(joinRoomView, joinRoomErrorView, roomRegistryThunk, setupRoomCb) {
-    this.setupRoomCb = setupRoomCb;
+  constructor(joinRoomView, joinRoomErrorView, roomRegistryThunk) {
     this.roomRegistryThunk = roomRegistryThunk;
     roomRegistryThunk().onRoomExists(this._setupRooms.bind(this));
     roomRegistryThunk().onRoomNotFound(joinRoomErrorView.showRoomNotFoundError.bind(joinRoomErrorView));
-    joinRoomView.onJoinRoom(((roomCode) => {
-      history.pushState({}, document.title, roomCode);
+    joinRoomView.onJoinRoomSubmit(((roomCode) => {
       this.tryJoinRoom(roomCode);
     }).bind(this));
     if (typeof hj_room_code !== 'undefined' && hj_room_code !== null) {
+      // this is if the room code is set via the URL
       this.tryJoinRoom(hj_room_code);
     } else {
-      joinRoomView.init();
+      joinRoomView.promptJoin();
     }
+  }
+  onRoomJoined(cb) {
+    this.setupRoomCb = cb;
   }
   tryJoinRoom(roomCode) {
     this.roomRegistryThunk().checkExists(roomCode);

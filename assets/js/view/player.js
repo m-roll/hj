@@ -2,13 +2,15 @@ export default class PlayerView {
   constructor() {
     this.progressBarElement = document.getElementById("track-progress");
   }
-  setTrackPlaybackInfo(startTimestamp, trackLength) {
-    this.startTimestamp = startTimestamp;
-    this.trackLength = trackLength;
+  updatePlayer(status) {
+    let isStarting = !status.paused;
+    this.isPaused = status.paused;
+    if (isStarting) {
+      this.startTimestamp = +new Date() - status.position;
+      this.trackLength = status.duration;
+    }
   }
-  setPaused(isPaused) {
-    this.isPaused = isPaused;
-  }
+  setTrackPlaybackInfo(startTimestamp, trackLength) {}
   animate(absTimestamp) {
     if (this.trackLength && !this.isPaused) {
       let ratio = (absTimestamp - this.startTimestamp) / this.trackLength;

@@ -6,7 +6,7 @@ export default class SearchChannel {
     this.roomChannel.join().receive("ok", resp => {
       console.log("Joined search channel successfully", resp)
     }).receive("error", resp => {
-      console.log("Unable to join search channel", resp)
+      console.warn("Unable to join search channel", resp)
     })
   }
   query(roomCode, query, resultsCb) {

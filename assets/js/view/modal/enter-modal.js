@@ -7,22 +7,26 @@ export default class EnterModal {
     $('#enter-modal').modal({
       backdrop: "static",
       keyboard: false,
-      focus: true,
-      show: true
+      focus: false,
+      show: false
     });
   }
-  onCreateRoom(cb) {
+  show() {
+    $('#enter-modal').modal('show');
+  }
+  onCreateRoomSubmit(cb) {
     $('#enter-modal-room-create').click(e => {
       cb();
     })
   }
-  onJoinRoom(cb) {
+  onJoinRoomSubmit(cb) {
     const dismiss = () => {
       $('#enter-modal').modal('hide');
     }
     $('#enter-modal-room-join').click(e => {
       let roomCode = $('#enter-modal-room-code').val();
       $('#enter-modal-room-code').val('');
+      history.pushState({}, document.title, roomCode);
       cb(roomCode);
       dismiss();
     });

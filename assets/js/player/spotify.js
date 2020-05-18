@@ -60,7 +60,7 @@ export default class SpotifyPlayer {
     player.addListener('not_ready', ({
       device_id
     }) => {
-      console.log('Device ID has gone offline', device_id);
+      console.warn('Device ID has gone offline', device_id);
     });
     // Connect to the player!
     player.connect();

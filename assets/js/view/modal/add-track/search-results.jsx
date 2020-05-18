@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 
-import React from './util/react-polyfill.js';
-import { getArtistString } from './util/artist.js';
+import React from '../../util/react-polyfill.js';
+import { getArtistString } from '../../util/artist.js';
 
 export default class SearchResultsView {
   searchListGroupId = "search-list-group";
