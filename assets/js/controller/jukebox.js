@@ -17,6 +17,8 @@ import AddTrackController from "./jukebox/add-track.js";
 import StatusController from "./jukebox/status.js";
 import RoomController from "./jukebox/room.js";
 import QueueController from "./jukebox/queue.js";
+import SpotifyPlaybackController from "./playback/spotify.js";
+import AnimationController from "./animation.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -33,7 +35,6 @@ export default class JukeboxController {
   spotify_access_token;
   songPlayedTime;
   currentSongLength;
-  animationStartTimestamp;
   isPaused = true;
   roomCode;
   isListening;
@@ -56,10 +57,13 @@ export default class JukeboxController {
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
   statusController = new StatusController(this.statusView, this.getStatusProviderThunk, this.roomController.getRoomCode);
   queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView);
+  localPlaybackController = new SpotifyPlaybackController(new SpotifyPlayer(), this.initAudio.bind(this), this.onPlayerUpdate.bind(this));
+  animationController = new AnimationController(this.playerView);
   constructor() {
-    this.setupView();
+    this.setupEvents();
+  }
+  setupEvents() {
     this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
-    this.setupAnimation();
   }
   setupRoom(roomCode, isListening) {
     this.setupRoomedChannels(roomCode);
@@ -68,7 +72,6 @@ export default class JukeboxController {
     if (isListening) {
       this.setupSpotifyAuth();
       this.audioActivatorView.show();
-      this.setupSpotify();
     } else {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
     }
@@ -78,17 +81,6 @@ export default class JukeboxController {
   }
   showRoomNotFoundError(roomCode) {
     this.setupRoomNfModal();
-  }
-  setupSpotify() {
-    this.spotifyPlayer = new SpotifyPlayer();
-    this.spotifyPlayer.onDeviceReady(this.initAudio.bind(this));
-    this.spotifyPlayer.onBrowserNotSupportedError(((errorMsg) => {
-      console.log("browser does not support web playback:", errorMsg);
-      this.initAudio(null);
-    }).bind(this));
-    this.spotifyPlayer.onPlayerUpdate(this.onPlayerUpdate.bind(this));
-    window.onSpotifyWebPlaybackSDKReady = this.spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(this.spotifyPlayer);
-    this.spotifyPlayer.initSpotifyScript();
   }
   setupRoomedChannels(roomCode) {
     let userChannel = this.socket.joinChannel(UserChannel, roomCode);
@@ -102,11 +94,6 @@ export default class JukeboxController {
       search: this.socket.joinChannel(SearchChannel)
     }
     this.roomCode = roomCode;
-  }
-  setupView() {
-    document.getElementById("add-track-button").addEventListener("click", (e) => {
-      this.addTrackModal.show();
-    });
   }
   setupSpotifyAuth() {
     this.spotify_access_token = hj_spotify_access_token;
@@ -124,10 +111,7 @@ export default class JukeboxController {
     hj_room_code = null;
     this.setupEnterModal();
   }
-  setupAnimation() {
-    this.animationStartTimestamp = +new Date();
-    requestAnimationFrame(this.animate.bind(this));
-  }
+  setupAnimation() {}
   initAudio(deviceId) {
     this.audioActivatorView.setContents("Click anywhere to tune in");
     this.audioActivatorView.onDismiss((() => {
@@ -142,21 +126,10 @@ export default class JukeboxController {
   }
   onPlayerUpdate(status) {
     let isStarting = !status.paused;
-    if (status.paused) {
-      this.isPaused = true;
-    } else {
-      this.isPaused = false;
-      this.songPlayedTime = +new Date() - status.position;
-      this.currentSongLength = status.duration;
+    this.playerView.setPaused(status.paused);
+    if (isStarting) {
+      let startTimestamp = +new Date() - status.position;
+      this.playerView.setTrackPlaybackInfo(startTimestamp, status.duration);
     }
-  }
-  animate(timestamp) {
-    let absTimestamp = this.animationStartTimestamp + timestamp;
-    if (this.songPlayedTime && !this.isPaused) {
-      let ratio = (absTimestamp - this.songPlayedTime) / this.currentSongLength;
-      if (ratio > 1) ratio = 1;
-      this.playerView.setTrackProgress(ratio);
-    }
-    requestAnimationFrame(this.animate.bind(this));
   }
 }

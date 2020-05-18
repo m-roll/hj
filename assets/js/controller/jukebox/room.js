@@ -3,7 +3,7 @@ export default class RoomController {
     this.setupRoomCb = setupRoomCb;
     this.roomRegistryThunk = roomRegistryThunk;
     roomRegistryThunk().onRoomExists(this._setupRooms.bind(this));
-    roomRegistryThunk().onRoomNotFound(joinRoomErrorView.showRoomNotFoundError);
+    roomRegistryThunk().onRoomNotFound(joinRoomErrorView.showRoomNotFoundError.bind(joinRoomErrorView));
     joinRoomView.onJoinRoom(((roomCode) => {
       history.pushState({}, document.title, roomCode);
       this.tryJoinRoom(roomCode);

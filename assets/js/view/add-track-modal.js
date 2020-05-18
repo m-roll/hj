@@ -14,6 +14,9 @@ export default class AddTrackModal {
     $('#add-modal-close-btn').click((e => {
       this.dismiss();
     }).bind(this));
+    document.getElementById("add-track-button").addEventListener("click", (e) => {
+      this.show();
+    });
   }
   init() {
     $(modalSelector).modal({
