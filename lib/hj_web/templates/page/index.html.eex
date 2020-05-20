@@ -39,7 +39,7 @@
         <div class="cover"></div>
       </div>
       <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
-      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
+      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
         <div class="col px-auto preview-container d-flex">
           <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
         </div>
