@@ -20,6 +20,8 @@ import SpotifyPlaybackController from "./playback/spotify.js";
 import AnimationController from "./animation.js";
 import RoomNotFoundView from "../view/room-not-found.js";
 import JoinRoomView from "../view/join-room.js";
+import DeviceListView from "../view/device-list.js";
+import DevicesController from "./jukebox/devices.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -30,6 +32,7 @@ export default class JukeboxController {
   joinRoomView = new JoinRoomView();
   addTrackModal = new AddTrackModal();
   roomNotFoundView = new RoomNotFoundView(this.joinRoomView);
+  deviceListView = new DeviceListView();
   // misc.
   spotifyPlayer;
   socket = new JukeboxSocket();
@@ -60,6 +63,7 @@ export default class JukeboxController {
   queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView);
   localPlaybackController = new SpotifyPlaybackController(new SpotifyPlayer(), this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
+  devicesController = new DevicesController(this.deviceListView);
   constructor() {
     this.setupEvents();
   }

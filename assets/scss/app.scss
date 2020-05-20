@@ -341,3 +341,34 @@ tr td {
     width: auto;
   }
 }
+
+.popover>.popover-header {
+  background-color: rgb(50, 50, 52);
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.7rem;
+  border-bottom: none;
+  text-align: center;
+  padding: 1rem;
+}
+
+.popover>.popover-body {
+  background-color: rgb(35, 35, 36);
+  color: white;
+  padding: 1rem;
+  border-bottom-left-radius: calc(.3rem - 1px);
+  border-bottom-right-radius: calc(.3rem - 1px);
+}
+
+.popover {
+  color: white;
+  box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.25);
+}
+
+.bs-popover-top>.arrow::after {
+  border-top-color: rgb(35, 35, 36) !important;
+}
+
+.popover-header {
+  background-color: #191d21;
+}
