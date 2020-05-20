@@ -63,7 +63,7 @@
             <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
           </div>
           <div class="col col-1 d-flex">
-          <button class="btn btn-device-playback"><i class="fas fa-headphones playback-device-icon"></i></button>
+            <button class="btn btn-device-playback"><i class="fas fa-headphones-alt playback-device-icon"></i></button>
           </div>
           <div class="col-1 col-sm-2 d-flex">
             <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>

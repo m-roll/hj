@@ -8,9 +8,9 @@ import {
   dom
 } from '@fortawesome/fontawesome-svg-core'
 import {
-  faHeadphones
+  faHeadphonesAlt
 } from '@fortawesome/free-solid-svg-icons'
 import JukeboxController from "./controller/jukebox";
-library.add(faHeadphones);
+library.add(faHeadphonesAlt);
 dom.watch();
 let controller = new JukeboxController();
