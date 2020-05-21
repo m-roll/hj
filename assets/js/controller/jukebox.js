@@ -56,7 +56,7 @@ export default class JukeboxController {
   getSearchControllerThunk = () => this.roomedChannels.search;
   getStatusProviderThunk = () => this.roomedChannels.status;
   getQueueProviderThunk = () => this.roomedChannels.queue;
-  getUserProviderThunk = () => this.roomedChannels.search;
+  getUserProviderThunk = () => this.roomedChannels.user;
   // secondary controllers
   roomController = new RoomController(this.joinRoomView, this.roomNotFoundView, this.getRoomChannelThunk, this.setupRoom.bind(this));
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);

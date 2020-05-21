@@ -1,6 +1,7 @@
 import $ from "jquery";
 import DeviceListView from "./device-list/device-list";
 const modalSelector = "#device-list-modal";
+const deviceOptionSelector = ".device-list-device";
 export default class DeviceListModal {
   constructor() {
     this.modalElement = $(modalSelector);
@@ -11,7 +12,7 @@ export default class DeviceListModal {
   }
   init() {
     $(modalSelector).modal({
-      backdrop: "static",
+      backdrop: true,
       keyboard: true,
       focus: true,
       show: false

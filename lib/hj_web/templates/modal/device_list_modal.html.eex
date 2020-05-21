@@ -5,7 +5,7 @@
         <h5 class="card-title mb-4"> Select playback device </h5>
         <div id="device-list-group" class="device-list-group list-group">
         </div>
-        <button id="add-modal-close-btn" type="button" class="btn btn-secondary">Done</button>
+        <button id="device-list-close-btn" type="button" class="btn btn-secondary">Done</button>
       </div>
     </div>
   </div>

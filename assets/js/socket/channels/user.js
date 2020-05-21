@@ -36,9 +36,13 @@ export default class UserChannel {
     });
   }
   getDevices(roomCode) {
-    this.userChannel.push("user:get_devices:" + roomCode).receive("ok", resp => {
+    this.receiveDevicesCb([{
+      name: "dummy device",
+      id: 1
+    }]);
+    this.userChannel.push("user:get_devices:" + roomCode).receive("ok", (resp => {
       this.receiveDevicesCb(resp);
-    }).receive("error", resp => {
+    }).bind(this)).receive("error", resp => {
       console.warn("error retrieving user devices", resp);
     });
   }

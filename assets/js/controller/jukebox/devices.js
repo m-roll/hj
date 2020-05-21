@@ -5,7 +5,7 @@ export default class DevicesController {
     this.roomCodeThunk = roomCodeThunk;
   }
   _setupListeners() {
-    this.devicesProviderThunk().onReceiveDevices(this.devicesView.updateDevices);
+    this.devicesProviderThunk().onReceiveDevices(this.devicesView.updateDevices.bind(this.devicesView));
     this.devicesView.onDeviceListRefresh((() => {
       this.devicesProviderThunk().getDevices(this.roomCodeThunk());
     }).bind(this));
