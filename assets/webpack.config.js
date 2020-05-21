@@ -34,7 +34,10 @@ module.exports = (env, options) => ({
       use: [MiniCssExtractPlugin.loader, 'css-loader']
     }, {
       test: /\.s[ac]ss$/i,
-      use: ['style-loader', 'css-loader', 'sass-loader', ],
+      use: ['style-loader', 'css-loader', 'sass-loader'],
+    }, {
+      test: /.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+      use: 'url-loader'
     }]
   },
   plugins: [

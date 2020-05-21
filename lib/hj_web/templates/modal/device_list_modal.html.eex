@@ -1,0 +1,12 @@
+<div class="modal fade" id="device-list-modal" tabindex="-1" role="dialog" aria-labelledby="deviceListModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="card-title mb-4"> Select playback device </h5>
+        <div id="device-list-group" class="device-list-group list-group">
+        </div>
+        <button id="device-list-close-btn" type="button" class="btn btn-secondary">Done</button>
+      </div>
+    </div>
+  </div>
+</div>

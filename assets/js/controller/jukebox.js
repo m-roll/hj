@@ -20,6 +20,8 @@ import SpotifyPlaybackController from "./playback/spotify.js";
 import AnimationController from "./animation.js";
 import RoomNotFoundView from "../view/room-not-found.js";
 import JoinRoomView from "../view/join-room.js";
+import DevicesView from "../view/devices.js";
+import DevicesController from "./jukebox/devices.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -30,6 +32,7 @@ export default class JukeboxController {
   joinRoomView = new JoinRoomView();
   addTrackModal = new AddTrackModal();
   roomNotFoundView = new RoomNotFoundView(this.joinRoomView);
+  devicesView = new DevicesView();
   // misc.
   spotifyPlayer;
   socket = new JukeboxSocket();
@@ -53,6 +56,7 @@ export default class JukeboxController {
   getSearchControllerThunk = () => this.roomedChannels.search;
   getStatusProviderThunk = () => this.roomedChannels.status;
   getQueueProviderThunk = () => this.roomedChannels.queue;
+  getUserProviderThunk = () => this.roomedChannels.user;
   // secondary controllers
   roomController = new RoomController(this.joinRoomView, this.roomNotFoundView, this.getRoomChannelThunk, this.setupRoom.bind(this));
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
@@ -60,6 +64,7 @@ export default class JukeboxController {
   queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView);
   localPlaybackController = new SpotifyPlaybackController(new SpotifyPlayer(), this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
+  devicesController = new DevicesController(this.devicesView, this.getUserProviderThunk, this.roomController.getRoomCode);
   constructor() {
     this.setupEvents();
   }
@@ -79,6 +84,7 @@ export default class JukeboxController {
     }
     this.statusController.ready();
     this.queueController.ready();
+    this.devicesController.ready();
     this.roomCode = roomCode;
   }
   setupRoomedChannels(roomCode) {

@@ -39,7 +39,7 @@
         <div class="cover"></div>
       </div>
       <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
-      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
+      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
         <div class="col px-auto preview-container d-flex">
           <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
         </div>
@@ -62,7 +62,10 @@
             </div>
             <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
           </div>
-          <div class="col-3 col-sm-3 d-flex">
+          <div class="col col-1 d-flex">
+            <a tabindex="0" class="btn btn-device-playback" id="btn-device-popover" role="button" data-placement="top" data-toggle="popover" title="Switch device" data-content="Loading devices..."><i class="fas fa-headphones-alt playback-device-icon"></i></a></button>
+          </div>
+          <div class="col-1 col-sm-2 d-flex">
             <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
           </div>
         </div>

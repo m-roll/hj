@@ -30,4 +30,23 @@ export default class UserChannel {
       console.warn("Error creating room", resp);
     })
   }
+  setDeviceId(roomCode, newId) {
+    this.userChannel.push("user:set_device:" + roomCode, {
+      deviceId: newId
+    });
+  }
+  getDevices(roomCode) {
+    this.receiveDevicesCb([{
+      name: "dummy device",
+      id: 1
+    }]);
+    this.userChannel.push("user:get_devices:" + roomCode).receive("ok", (resp => {
+      this.receiveDevicesCb(resp);
+    }).bind(this)).receive("error", resp => {
+      console.warn("error retrieving user devices", resp);
+    });
+  }
+  onReceiveDevices(cb) {
+    this.receiveDevicesCb = cb;
+  }
 }

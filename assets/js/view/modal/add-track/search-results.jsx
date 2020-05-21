@@ -2,17 +2,16 @@
 
 import React from '../../util/react-polyfill.js';
 import { getArtistString } from '../../util/artist.js';
-
+const searchListGroupId = "search-list-group";
 export default class SearchResultsView {
-  searchListGroupId = "search-list-group";
 
   updateSearchResults(songs) {
-    let searchListGroup = document.getElementById(this.searchListGroupId);
-    let newDom = this._getSearchDom(songs);
+    let searchListGroup = document.getElementById(searchListGroupId);
+    let newDom = this._render(songs);
     searchListGroup.parentNode.replaceChild(newDom, searchListGroup);
   }
 
-  _getSearchDom(songs) {
+  _render(songs) {
     return (
       <div id="search-list-group" className="search-list-group list-group">
         {songs.map(song =>

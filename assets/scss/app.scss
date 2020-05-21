@@ -330,8 +330,14 @@ tr td {
       width: 100%;
     }
   }
+}
 
-  .search-result-meta {}
+.btn-device-playback {
+  height: 50%;
+  margin: auto;
 
-  .search-result-add {}
+  .playback-device-icon {
+    height: 100%;
+    width: auto;
+  }
 }
