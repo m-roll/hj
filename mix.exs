@@ -39,7 +39,7 @@ defmodule Hj.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:spotify_ex, git: "https://github.com/m-roll/spotify_ex"},
+      {:despotify, git: "https://git.waitstreet.com/mroll/despotify-standalone.git"},
       {:gproc, "~> 0.8.0"},
       {:distillery, "~> 2.1"}
     ]

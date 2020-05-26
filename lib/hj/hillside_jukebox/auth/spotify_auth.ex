@@ -2,12 +2,12 @@ defmodule HillsideJukebox.Auth.Spotify do
   @expired {:ok, %{"error" => %{"status" => 401}}}
 
   # When choosing arity to pass in, use the arity + 1. The creds will be appended to the first
-  def refresh_do(users_pid, user_id, creds = %Spotify.Credentials{}, fun, args) do
+  def refresh_do(users_pid, user_id, creds = %DeSpotify.Auth.Tokens{}, fun, args) do
     res = apply(fun, [creds | args])
 
     case res do
       @expired ->
-        {:ok, new_creds = %Spotify.Credentials{}} = Spotify.Authentication.refresh(creds)
+        {:ok, new_creds = %DeSpotify.Auth.Tokens{}} = Spotify.Authentication.refresh(creds)
         update_creds(users_pid, user_id, new_creds)
         apply(fun, [new_creds | args])
 
