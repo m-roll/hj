@@ -2,7 +2,7 @@
 
 ## About
 
-The Hillside Jukebox is a way for multiple people to submit spotify links to a common queue. 
+The Hillside Jukebox is a way for multiple people to submit spotify links to a common queue.
 That is, multiple people can submit their favorite track and eventually have it played through
 every browser currently on the [`localhost:4000/`](http://localhost:4000/) page.
 
@@ -30,7 +30,6 @@ with each other.
 
 Rooms are used so anyone can spin up their own jukebox. You will be prompted to either join or create a room when you first visit the website. If you create a room, the 4 letter room code will be visible in the URL slug. Share this code so other people can join your room and tune in.
 
-
 ## Why elixir?
 
 I hope to eventually implement chat into this service as well, so users in a room can interact with each other and discuss which songs they would like to play. The erlang environment is great for telecommunications-like services (such as chat), and this model also fit very well with the queue model.
@@ -40,27 +39,40 @@ Elixir also gave me a lot of flexibility for scaling this application. Each juke
 Also, Elixir is fun!
 
 ## Setup
+
 To start your Phoenix server:
 
-  * Install dependencies with `mix deps.get`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
-  
+- Install dependencies with `mix deps.get`
+- Install Node.js dependencies with `cd assets && npm install`
+- Start Phoenix endpoint in top level directory with `mix phx.server`
+
+### Obtain Spotify Developer Info
+
+To run this application locally, you will need to connect your Spotify Developer to your personal Spotify account.
+
+- Visit your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/login) after you log in or sign up
+- Click "CREATE A CLIENT ID" and create a new applicatioin
+- Once made, you'll be able to view your Client ID and Client Secret key used next for setting up the config files
+- To retrieve your Spotify User ID, go to the [Spotify Web Player](https://open.spotify.com/), click on your profile picture in the top right and then "Profile"
+- Your Spotify User ID will be the string of digits at the end of that URL
+
 ### Setting up config files
 
 In your config folder, create the following files.
 
 config.secret.exs
+
 ```
 use Mix.Config
 
 config :spotify_ex,
-  client_id: "<your spotify client id>",
-  secret_key: "<your spotify secret key>"
+  client_id: "<YOUR SPOTIFY CLIENT ID>",
+  secret_key: "<YOUR SPOTIFY CLIENT SECRET>"
 
 ```
 
 spotify.secret.exs
+
 ```
 use Mix.Config
 
@@ -74,7 +86,7 @@ config :spotify_ex,
     "user-modify-playback-state"
   ],
   callback_url: "http://localhost:4000/auth"
-  ```
+```
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
@@ -85,26 +97,26 @@ I am working on a better implementation to easily run in across multiple nodes.
 
 ## TODO
 
-* Bug - if someone joins when song is about to end, progress bar is a second long and plays song from start. Maybe an offset glitch with backend.
-* bug - socket channel joining is not room specific -- this could leak information to people not in the room, even if we don't match for it.
-* names for people
-* use async/await on frontend! can't believe i forgot about this
-* chat window
-* What to do when content isn't available in playback country
-* Search feature - use client authorization from spotify so anyone -- not just spotify account holders -- can search the system.
-* UI for skipping and # of people listening
-* Settings when creating a room <- maybe in a paid version?
+- Bug - if someone joins when song is about to end, progress bar is a second long and plays song from start. Maybe an offset glitch with backend.
+- bug - socket channel joining is not room specific -- this could leak information to people not in the room, even if we don't match for it.
+- names for people
+- use async/await on frontend! can't believe i forgot about this
+- chat window
+- What to do when content isn't available in playback country
+- Search feature - use client authorization from spotify so anyone -- not just spotify account holders -- can search the system.
+- UI for skipping and # of people listening
+- Settings when creating a room <- maybe in a paid version?
 
 # DEPLOYING TO PRODUCTION
 
- * Production secrets need to be set a runtime. Use releases instead of prod.config.exs. See "using releases" to set configuration at runtime.
-   * Rename `config/prod.secret.exs` to `config/releases.exs`
-   * Change use `Mix.Config` inside the new `config/releases.exs` file to `import Config`
-   * Change `config/prod.exs` to no longer call `import_config "prod.secret.exs"` at the bottom
- * Releasing
-   * `MIX_ENV=prod mix release`
- * Releasing in Docker container
-   * TODO add dockerfile to source control
-   * This will handle installing all dependencies and allow you to run at `bin/my_app start`
-   * Everyone working on this _needs to run docker locally_. Erlang has some issues with compatibility since it is ancient, so everyone needs to be testing/deploying releases on the same OS.
- * change config setting to embed erlang in the release
+- Production secrets need to be set a runtime. Use releases instead of prod.config.exs. See "using releases" to set configuration at runtime.
+  - Rename `config/prod.secret.exs` to `config/releases.exs`
+  - Change use `Mix.Config` inside the new `config/releases.exs` file to `import Config`
+  - Change `config/prod.exs` to no longer call `import_config "prod.secret.exs"` at the bottom
+- Releasing
+  - `MIX_ENV=prod mix release`
+- Releasing in Docker container
+  - TODO add dockerfile to source control
+  - This will handle installing all dependencies and allow you to run at `bin/my_app start`
+  - Everyone working on this _needs to run docker locally_. Erlang has some issues with compatibility since it is ancient, so everyone needs to be testing/deploying releases on the same OS.
+- change config setting to embed erlang in the release
