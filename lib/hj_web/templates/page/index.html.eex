@@ -25,13 +25,13 @@
         </div>
       </div>
     </header>
-    <main id="main" role="main" class="d-flex flex-column"> <%= if info = get_flash(@conn, :info) do %> <p class="alert alert-info" role="alert"><%= info %></p> <% end %> <script>
+    <main id="main" role="main" class="d-flex flex-column"> <script>
         <%= if @has_room_code do %>
           let hj_room_code = "<%= @room_code%>";
         <%end%>
          <%= if @has_credentials do %>
           let hj_spotify_access_token = "<%= @spotify_access_token%>";
-        let hj_spotify_refresh_token = "<%= @spotify_refresh_token%>";
+          let hj_resource_token = "<%= @hj_resource_token%>";
         <%end%>
       </script>
       <div id="audio-play-overlay" class="d-flex">

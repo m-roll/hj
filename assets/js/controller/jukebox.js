@@ -35,13 +35,14 @@ export default class JukeboxController {
   devicesView = new DevicesView();
   // misc.
   spotifyPlayer;
-  socket = new JukeboxSocket();
+  socket;
   spotify_access_token;
   songPlayedTime;
   currentSongLength;
   isPaused = true;
   roomCode;
   isListening;
+  isLoggedIn;
   onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
   roomChannel;
   roomedChannels = {
@@ -50,7 +51,6 @@ export default class JukeboxController {
     status: null,
     search: null
   }
-  roomChannel = this.socket.joinChannel(RoomChannel);
   // thunks
   getRoomChannelThunk = () => this.roomChannel;
   getSearchControllerThunk = () => this.roomedChannels.search;
@@ -67,6 +67,10 @@ export default class JukeboxController {
   devicesController = new DevicesController(this.devicesView, this.getUserProviderThunk, this.roomController.getRoomCode);
   constructor() {
     this.setupEvents();
+    this.isLoggedIn = typeof hj_resource_token !== 'undefined';
+    this.socket = new JukeboxSocket(this.isLoggedIn);
+    this.roomChannel = this.socket.joinChannel(RoomChannel);
+    this.roomController.ready();
   }
   setupEvents() {
     this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
@@ -78,6 +82,7 @@ export default class JukeboxController {
     this.listenInAndProgressBarView.setListening(isListening);
     if (isListening) {
       this.setupSpotifyAuth();
+      localPlaybackController.read();
       this.audioActivatorView.show();
     } else {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
@@ -93,10 +98,10 @@ export default class JukeboxController {
       this.spotify_access_token = auth;
     }).bind(this));
     this.roomedChannels = {
-      queue: this.socket.joinChannel(QueueChannel),
+      queue: this.socket.joinChannel(QueueChannel, roomCode),
       user: userChannel,
-      status: this.socket.joinChannel(StatusChannel),
-      search: this.socket.joinChannel(SearchChannel)
+      status: this.socket.joinChannel(StatusChannel, roomCode),
+      search: this.socket.joinChannel(SearchChannel, roomCode)
     }
     this.roomCode = roomCode;
   }

@@ -1,6 +1,7 @@
 export default class QueueChannel {
-  constructor(socket) {
-    this.queueChannel = socket.channel("queue", {});
+  constructor(socket, ...args) {
+    let roomCode = args[0]
+    this.queueChannel = socket.channel("queue:" + roomCode, {});
   }
   onSongProcessed(roomCode, songProcessedCb) {
     console.log('song:processed:' + roomCode);

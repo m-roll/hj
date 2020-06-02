@@ -1,6 +1,7 @@
 export default class StatusChannel {
-  constructor(socket) {
-    this.statusChannel = socket.channel("status", {});
+  constructor(socket, ...args) {
+    let roomCode = args[0];
+    this.statusChannel = socket.channel("status:" + roomCode, {});
   }
   onSongStatusUpdate(roomCode, songPlayingCb) {
     this.statusChannel.on('status:play:' + roomCode, songPlayingCb);

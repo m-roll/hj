@@ -13,19 +13,26 @@ import QueueChannel from "./channels/queue.js";
 import UserChannel from "./channels/user.js";
 import StatusChannel from "./channels/status.js";
 export default class JukeboxSocket {
-  socket = new Socket("/socket", {
-    params: {
-      token: window.userToken
-    }
-  })
   queueChannel;
   userChannel;
-  constructor() {
+  constructor(isLoggedIn) {
+    const socketUri = isLoggedIn ? "/secure-socket" : "/anon-socket";
+    this.socket = new Socket(socketUri, {
+      params: this.getConnectionParams(isLoggedIn)
+    })
     this.socket.connect();
   }
   joinChannel(channel, ...args) {
     let newChannel = new channel(this.socket, ...args);
     newChannel.join();
     return newChannel;
+  }
+  getConnectionParams(isLoggedIn) {
+    return isLoggedIn ? {
+      token: window.userToken,
+      user_token: hj_resource_token
+    } : {
+      token: window.userToken
+    }
   }
 }

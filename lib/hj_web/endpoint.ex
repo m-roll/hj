@@ -1,7 +1,11 @@
 defmodule HjWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :hj
 
-  socket "/socket", HjWeb.UserSocket,
+  socket "/secure-socket", HjWeb.SecureUserSocket,
+    websocket: true,
+    longpoll: false
+
+  socket "/anon-socket", HjWeb.AnonUserSocket,
     websocket: true,
     longpoll: false
 

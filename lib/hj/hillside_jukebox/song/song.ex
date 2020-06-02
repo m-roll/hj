@@ -9,7 +9,7 @@ defmodule HillsideJukebox.Song do
             duration: 1000
 
   def from(
-        %Spotify.Track{
+        %DeSpotify.Track{
           id: track_id,
           name: name,
           duration_ms: duration,

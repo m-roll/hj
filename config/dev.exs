@@ -21,7 +21,7 @@ config :hj, HjWeb.Endpoint,
     ]
   ]
 
-config :spotify_ex,
+config :despotify,
   user_id: "<YOUR SPOTIFY USER ID>",
   scopes: [
     "streaming",
@@ -30,7 +30,7 @@ config :spotify_ex,
     "user-read-playback-state",
     "user-modify-playback-state"
   ],
-  callback_url: "http://localhost:4000/auth"
+  redirect_uri: "http://localhost:4000/auth"
 
 # ## SSL Support
 #

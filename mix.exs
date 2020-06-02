@@ -19,7 +19,7 @@ defmodule Hj.MixProject do
   def application do
     [
       mod: {Hj.Application, []},
-      extra_applications: [:logger, :runtime_tools, :spotify_ex, :gproc]
+      extra_applications: [:logger, :runtime_tools, :despotify, :gproc]
     ]
   end
 
@@ -41,7 +41,9 @@ defmodule Hj.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:despotify, git: "https://git.waitstreet.com/mroll/despotify-standalone.git"},
       {:gproc, "~> 0.8.0"},
-      {:distillery, "~> 2.1"}
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"},
+      {:guardian, "~> 2.0"}
     ]
   end
 end

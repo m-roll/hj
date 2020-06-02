@@ -1,6 +1,6 @@
 export default class SearchChannel {
-  constructor(socket) {
-    this.roomChannel = socket.channel("search", {});
+  constructor(socket, roomCode) {
+    this.roomChannel = socket.channel("search:" + roomCode, {});
   }
   join() {
     this.roomChannel.join().receive("ok", resp => {
@@ -10,7 +10,7 @@ export default class SearchChannel {
     })
   }
   query(roomCode, query, resultsCb) {
-    this.roomChannel.push('search:query:' + roomCode, {
+    this.roomChannel.push('search:query', {
       query: query
     }).receive("ok", (resp) => {
       resultsCb(resp["truncated_results"]);

@@ -7,7 +7,8 @@ export default class SpotifyPlaybackController {
     }).bind(this));
     spotifyPlayer.onPlayerUpdate(playerStatusReceiver.updatePlayer.bind(playerStatusReceiver));
     window.onSpotifyWebPlaybackSDKReady = spotifyPlayer.onSpotifyWebPlaybackSDKReady.bind(spotifyPlayer);
+  }
+  ready() {
     spotifyPlayer.initSpotifyScript();
   }
-  ready() {}
 }

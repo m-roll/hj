@@ -1,6 +1,6 @@
 defmodule HjWeb.Socket.Util.Users do
   def spotify_credentials_from_payload(payload) do
-    %Spotify.Credentials{
+    %DeSpotify.Auth.Tokens{
       access_token: payload["spotifyAccessToken"],
       refresh_token: payload["spotifyRefreshToken"]
     }
