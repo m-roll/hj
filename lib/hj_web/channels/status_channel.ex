@@ -16,7 +16,7 @@ defmodule HjWeb.StatusChannel do
   end
 
   defp room_code(socket) do
-    %Phoenix.Socket{topic: "search:" <> room_code} = socket
+    %Phoenix.Socket{topic: "status:" <> room_code} = socket
     room_code
   end
 end

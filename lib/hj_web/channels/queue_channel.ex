@@ -35,7 +35,7 @@ defmodule HjWeb.QueueChannel do
   end
 
   defp room_code(socket) do
-    %Phoenix.Socket{topic: "search:" <> room_code} = socket
+    %Phoenix.Socket{topic: "queue:" <> room_code} = socket
     room_code
   end
 end

@@ -16,9 +16,9 @@ defmodule HjWeb.SecureUserChannel do
         _payload,
         socket
       ) do
-    {new_user, _} = HillsideJukebox.JukeboxServer.add_user(room_code(socket), socket_user(socket))
+    HillsideJukebox.JukeboxServer.add_user(room_code(socket), socket_user(socket))
 
-    HillsideJukebox.JukeboxServer.sync_audio(room_code(socket), new_user)
+    HillsideJukebox.JukeboxServer.sync_audio(room_code(socket), socket_user(socket))
     {:noreply, socket}
   end
 
@@ -42,7 +42,7 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   defp socket_user(socket) do
-    %Phoenix.Socket{assigns: %{"user" => user}} = socket
+    %Phoenix.Socket{assigns: %{user: user}} = socket
     user
   end
 end

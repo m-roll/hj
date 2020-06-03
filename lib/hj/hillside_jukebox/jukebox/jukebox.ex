@@ -30,10 +30,6 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.cast(via_tuple(room_name), {:set_workers, queue_pid, timer_pid, users_pid})
   end
 
-  def add_user(room_name, user_id, creds = %DeSpotify.Auth.Tokens{}, device_id) do
-    GenServer.cast(via_tuple(room_name), {:add_user, user_id, creds, device_id})
-  end
-
   def sync_audio(room_name, user) do
     GenServer.cast(via_tuple(room_name), {:sync_audio, user})
   end
@@ -55,11 +51,11 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   def add_user(room_name, user) do
-    GenServer.call(via_tuple(room_name), {:add_user, user})
+    GenServer.cast(via_tuple(room_name), {:add_user, user})
   end
 
   def remove_user(room_name, user) do
-    GenServer.call(via_tuple(room_name), {:remove_user, user})
+    GenServer.cast(via_tuple(room_name), {:remove_user, user})
   end
 
   defp via_tuple(room_name) do
@@ -137,8 +133,9 @@ defmodule HillsideJukebox.JukeboxServer do
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
     HillsideJukebox.Users.add_user(users_pid, user)
+    Logger.debug("Adding user to room pool: #{inspect(user)}")
     # Need to make sure we actually removed someone before decrementing - security hole
-    {:noreply, %{state | num_users: num_users - 1}}
+    {:noreply, %{state | num_users: num_users + 1}}
   end
 
   def handle_cast(
@@ -166,18 +163,6 @@ defmodule HillsideJukebox.JukeboxServer do
     end
 
     {:noreply, server}
-  end
-
-  @impl true
-  def handle_cast(
-        {:add_user, user_id, creds, device_id},
-        server = %HillsideJukebox.JukeboxServer{
-          users_pid: users_pid,
-          num_users: num_users
-        }
-      ) do
-    _new_user = HillsideJukebox.Users.add_credentials(users_pid, user_id, creds, device_id)
-    {:noreply, %{server | num_users: num_users + 1}}
   end
 
   @impl true

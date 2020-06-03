@@ -82,7 +82,7 @@ export default class JukeboxController {
     this.listenInAndProgressBarView.setListening(isListening);
     if (isListening) {
       this.setupSpotifyAuth();
-      localPlaybackController.read();
+      this.localPlaybackController.ready();
       this.audioActivatorView.show();
     } else {
       this.listenInAndProgressBarView.setRoomCode(roomCode);
@@ -107,7 +107,6 @@ export default class JukeboxController {
   }
   setupSpotifyAuth() {
     this.spotify_access_token = hj_spotify_access_token;
-    this.spotify_refresh_token = hj_spotify_refresh_token;
   }
   initAudio(deviceId) {
     this.audioActivatorView.setContents("Click anywhere to tune in");

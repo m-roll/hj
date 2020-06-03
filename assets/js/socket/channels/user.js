@@ -7,7 +7,7 @@ export default class UserChannel {
     this.userChannel.on("auth:update", authUpdateCb);
   }
   register(roomCode, access_token, refresh_token, deviceId) {
-    this.userChannel.push('user:register:' + roomCode, {
+    this.userChannel.push('user:register', {
       spotifyAccessToken: access_token,
       spotifyRefreshToken: refresh_token,
       deviceId: deviceId

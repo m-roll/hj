@@ -14,6 +14,6 @@ export default class StatusChannel {
     })
   }
   getCurrent(roomCode, cb) {
-    this.statusChannel.push('status:current:' + roomCode).receive("ok", cb);
+    this.statusChannel.push('status:current').receive("ok", cb);
   }
 }

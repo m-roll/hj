@@ -8,14 +8,13 @@ defmodule HjWeb.PageController do
   end
 
   def auth(conn, params) do
-    conn = SpotifyController.OAuthController.authenticate(conn, params)
+    {conn, redirect_url} = SpotifyController.OAuthController.authenticate(conn, params)
 
-    redirect(conn, to: "/" <> Map.fetch!(params, "state") <> "/listen")
+    redirect(conn, to: redirect_url)
   end
 
   def authorize(conn, params) do
-    %{"room_code" => room_code} = params
-    SpotifyController.OAuthController.authorize(conn, room_code)
+    SpotifyController.OAuthController.authorize(conn, params)
   end
 
   def create_room(conn, _params) do
@@ -44,8 +43,6 @@ defmodule HjWeb.PageController do
           user =
             %HillsideJukebox.User{access_token: access_token} =
             Guardian.Plug.current_resource(conn)
-
-          Logger.debug("logged in user: #{inspect(user)}")
 
           if resource_token == nil do
             redirect(conn, to: "/authorize")

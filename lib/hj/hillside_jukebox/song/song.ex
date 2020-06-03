@@ -14,11 +14,11 @@ defmodule HillsideJukebox.Song do
           name: name,
           duration_ms: duration,
           artists: artists,
-          album: %{"images" => images}
+          album: %DeSpotify.SimplifiedAlbum{images: images}
         },
         image_size
       ) do
-    %{"url" => art_url} =
+    %DeSpotify.Image{url: art_url} =
       case image_size do
         :largest -> List.first(images)
         :thumb -> List.last(images)
@@ -35,6 +35,6 @@ defmodule HillsideJukebox.Song do
   end
 
   defp spotify_get_artists_names(artists) do
-    Enum.map(artists, fn %{"name" => name} -> name end)
+    Enum.map(artists, fn %DeSpotify.SimplifiedArtist{name: name} -> name end)
   end
 end

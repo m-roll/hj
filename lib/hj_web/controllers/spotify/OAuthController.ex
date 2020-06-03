@@ -5,12 +5,12 @@ defmodule SpotifyController.OAuthController do
 
   alias HillsideJukebox.Accounts
 
-  def authorize(conn, room_code) do
+  def authorize(conn, params) do
     {:ok,
      session_opts = %{url: redirect_url, session_params: session_params = %{state: state_nonce}}} =
       DeSpotify.Auth.authorize_url()
 
-    UserSession.save_state(state_nonce, Map.put(session_opts, :room_code, room_code))
+    UserSession.save_state(state_nonce, Map.merge(session_opts, params))
     redirect(conn, external: redirect_url)
   end
 
@@ -25,6 +25,12 @@ defmodule SpotifyController.OAuthController do
 
     {:ok, user} = Accounts.register_or_update_auth(tokens, spotify_user)
 
-    HjWeb.Guardian.Plug.sign_in(conn, user)
+    redirect_url =
+      case session_opts do
+        %{room_code: room_code} -> "/room/#{room_code}/listen"
+        _ -> "/"
+      end
+
+    {HjWeb.Guardian.Plug.sign_in(conn, user), redirect_url}
   end
 end

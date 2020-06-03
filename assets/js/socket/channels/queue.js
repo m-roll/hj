@@ -24,7 +24,7 @@ export default class QueueChannel {
     });
   }
   fetch(roomCode, fetchCb) {
-    let req = this.queueChannel.push('queue:fetch:' + roomCode);
+    let req = this.queueChannel.push('queue:fetch');
     req.receive("ok", fetchCb);
     return req;
   }
