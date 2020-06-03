@@ -4,21 +4,22 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   require Logger
 
   def play_track(
-        %HillsideJukebox.User{device_id: device_id, user_id: user_id},
+        user = %HillsideJukebox.User{id: user_id},
         %HillsideJukebox.Song{platform: :spotify, id: song_id},
         users_pid
       ) do
     %HillsideJukebox.User.State{spotify_credentials: creds} =
       HillsideJukebox.Users.get_state(users_pid, user_id)
 
-    refresh_do(users_pid, user_id, creds, &Spotify.Player.play/3, [
+    refresh_do(user, &DeSpotify.Player.play/4, [
       generate_body(song_id),
-      device_id
+      0,
+      %{}
     ])
   end
 
   def play_track(
-        %HillsideJukebox.User{device_id: device_id, user_id: user_id},
+        user = %HillsideJukebox.User{id: user_id},
         %HillsideJukebox.Song{platform: :spotify, id: song_id},
         offset_ms,
         users_pid
@@ -26,9 +27,10 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
     %HillsideJukebox.User.State{spotify_credentials: creds} =
       HillsideJukebox.Users.get_state(users_pid, user_id)
 
-    refresh_do(users_pid, user_id, creds, &Spotify.Player.play/3, [
-      generate_body(song_id, offset_ms),
-      device_id
+    refresh_do(user, &DeSpotify.Player.play/4, [
+      song_id,
+      offset_ms,
+      %{}
     ])
   end
 

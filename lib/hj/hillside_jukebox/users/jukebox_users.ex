@@ -8,11 +8,9 @@ defmodule HillsideJukebox.Users do
     Agent.start_link(fn -> [] end)
   end
 
-  def add_user(pid, id, new_credentials = %Spotify.Credentials{}, device_id) do
+  def add_user(pid, user) do
     Agent.get_and_update(pid, fn users ->
-      new_user =
-        {%HillsideJukebox.User{user_id: id, device_id: device_id},
-         %HillsideJukebox.User.State{spotify_credentials: new_credentials}}
+      new_user = {user, %HillsideJukebox.User.State{}}
 
       updated_list = [new_user | users]
       {new_user, updated_list}
@@ -98,7 +96,7 @@ defmodule HillsideJukebox.Users do
 
         Enum.find(users, fn {user, _state} ->
           case user do
-            %HillsideJukebox.User{user_id: ^user_id} -> true
+            %HillsideJukebox.User{id: ^user_id} -> true
             _ -> false
           end
         end)
@@ -131,7 +129,7 @@ defmodule HillsideJukebox.Users do
   defp map_user_with_user_id(user_id, match_fun, else_fun) do
     fn pair =
          {%HillsideJukebox.User{
-            user_id: id
+            id: id
           }, _} ->
       if(user_id == id) do
         match_fun.(pair)

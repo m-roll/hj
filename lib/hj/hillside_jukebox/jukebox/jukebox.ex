@@ -30,10 +30,6 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.cast(via_tuple(room_name), {:set_workers, queue_pid, timer_pid, users_pid})
   end
 
-  def add_user(room_name, user_id, creds = %Spotify.Credentials{}, device_id) do
-    GenServer.cast(via_tuple(room_name), {:add_user, user_id, creds, device_id})
-  end
-
   def sync_audio(room_name, user) do
     GenServer.cast(via_tuple(room_name), {:sync_audio, user})
   end
@@ -46,16 +42,20 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.call(via_tuple(room_name), :get_queue_pid)
   end
 
-  def vote_skip(room_name, user_id) do
-    GenServer.cast(via_tuple(room_name), {:vote_skip, user_id})
+  def vote_skip(room_name, user) do
+    GenServer.cast(via_tuple(room_name), {:vote_skip, user})
   end
 
   def current_playing(room_name) do
     GenServer.call(via_tuple(room_name), :current)
   end
 
-  def remove_user(room_name, user_id) do
-    GenServer.call(via_tuple(room_name), {:remove_user, user_id})
+  def add_user(room_name, user) do
+    GenServer.cast(via_tuple(room_name), {:add_user, user})
+  end
+
+  def remove_user(room_name, user) do
+    GenServer.cast(via_tuple(room_name), {:remove_user, user})
   end
 
   defp via_tuple(room_name) do
@@ -78,18 +78,22 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_call(
-        {:add_to_queue, url: url},
+        {:add_to_queue, url: "spotify:track:" <> track_id},
         _from,
         server = %HillsideJukebox.JukeboxServer{
           users_pid: users_pid
         }
       ) do
-    {%HillsideJukebox.User{user_id: user_id},
-     %HillsideJukebox.User.State{spotify_credentials: creds}} =
-      HillsideJukebox.Users.get_host(users_pid)
+    {user, _} = HillsideJukebox.Users.get_host(users_pid)
 
-    song = HillsideJukebox.URLs.get_song(url, creds, users_pid, user_id)
+    {:ok, spotify_track} =
+      HillsideJukebox.Auth.Spotify.refresh_do(
+        user,
+        &DeSpotify.Tracks.get_track/3,
+        [track_id, %{}]
+      )
 
+    song = HillsideJukebox.Song.from(spotify_track, :largest)
     add_internal(server, song)
     {:reply, song, server}
   end
@@ -130,10 +134,20 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   def handle_cast(
-        {:remove_user, user_id},
+        {:add_user, user},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
-    HillsideJukebox.Users.remove_with_user_id(users_pid, user_id)
+    HillsideJukebox.Users.add_user(users_pid, user)
+    Logger.debug("Adding user to room pool: #{inspect(user)}")
+    # Need to make sure we actually removed someone before decrementing - security hole
+    {:noreply, %{state | num_users: num_users + 1}}
+  end
+
+  def handle_cast(
+        {:remove_user, %HillsideJukebox.User{id: id}},
+        state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
+      ) do
+    HillsideJukebox.Users.remove_with_user_id(users_pid, id)
     # Need to make sure we actually removed someone before decrementing - security hole
     {:noreply, %{state | num_users: num_users - 1}}
   end
@@ -158,19 +172,7 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_cast(
-        {:add_user, user_id, creds, device_id},
-        server = %HillsideJukebox.JukeboxServer{
-          users_pid: users_pid,
-          num_users: num_users
-        }
-      ) do
-    _new_user = HillsideJukebox.Users.add_credentials(users_pid, user_id, creds, device_id)
-    {:noreply, %{server | num_users: num_users + 1}}
-  end
-
-  @impl true
-  def handle_cast(
-        {:vote_skip, user_id},
+        {:vote_skip, %HillsideJukebox.User{id: user_id}},
         server = %HillsideJukebox.JukeboxServer{
           users_pid: users_pid,
           num_skip_vote: num_skip_vote,

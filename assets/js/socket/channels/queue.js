@@ -1,6 +1,7 @@
 export default class QueueChannel {
-  constructor(socket) {
-    this.queueChannel = socket.channel("queue", {});
+  constructor(socket, ...args) {
+    let roomCode = args[0]
+    this.queueChannel = socket.channel("queue:" + roomCode, {});
   }
   onSongProcessed(roomCode, songProcessedCb) {
     console.log('song:processed:' + roomCode);
@@ -17,13 +18,13 @@ export default class QueueChannel {
     })
   }
   addSong(roomCode, url) {
-    this.queueChannel.push('queue:add:' + roomCode, {
+    this.queueChannel.push('queue:add', {
       songInput: url,
       user: "Anonymous user"
     });
   }
   fetch(roomCode, fetchCb) {
-    let req = this.queueChannel.push('queue:fetch:' + roomCode);
+    let req = this.queueChannel.push('queue:fetch');
     req.receive("ok", fetchCb);
     return req;
   }

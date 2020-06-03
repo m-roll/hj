@@ -11,7 +11,11 @@ defmodule Hj.Application do
       # Start the endpoint when the application starts
       HjWeb.Endpoint,
       HillsideJukebox.Room.Supervisor,
-      HillsideJukebox.Room.CodesRegistry
+      HillsideJukebox.Room.CodesRegistry,
+      # keeps track of user state for spotify oauth redirect
+      HillsideJukebox.Auth.UserSession,
+      # Add repo to supervision tree
+      {Hj.Repo, []}
       # Starts a worker by calling: Hj.Worker.start_link(arg)
       # {Hj.Worker, arg},
     ]

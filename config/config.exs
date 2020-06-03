@@ -7,6 +7,12 @@
 # General application configuration
 use Mix.Config
 
+config :hj, Hj.Repo,
+  database: "hj_repo",
+  username: "user",
+  password: "pass",
+  hostname: "localhost"
+
 import_config "config.secret.exs"
 
 # Configures the endpoint
@@ -24,6 +30,21 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :despotify, api_base_url: "https://api.spotify.com/v1"
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
+# Configure postgrex. Config for username/pw should be set in `config.secret.exs'
+config :hj, Hj.Repo,
+  database: "hj_repo",
+  hostname: "localhost"
+
+# Configure ecto repository list
+config :hj,
+  ecto_repos: [Hj.Repo]
+
+config :hj, HjWeb.Guardian,
+  issuer: "HillsideJukebox",
+  # use strong secret in prod
+  secret_key: "some-secret"
