@@ -15,6 +15,6 @@ defmodule HillsideJukebox.Player do
 
   def play_at_for_user(users_pid, user, song, offset_ms) do
     Logger.debug("Playing for user: #{inspect(user)}")
-    HillsideJukebox.Player.SpotifyPlayer.play_track(user, song, offset_ms, users_pid)
+    HillsideJukebox.Player.SpotifyPlayer.play_track(user, song, offset_ms)
   end
 end
