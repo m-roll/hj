@@ -11,8 +11,9 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
     %HillsideJukebox.User.State{spotify_credentials: creds} =
       HillsideJukebox.Users.get_state(users_pid, user_id)
 
-    refresh_do(user, &DeSpotify.Player.play/3, [
+    refresh_do(user, &DeSpotify.Player.play/4, [
       generate_body(song_id),
+      0,
       %{}
     ])
   end
@@ -26,7 +27,7 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
     %HillsideJukebox.User.State{spotify_credentials: creds} =
       HillsideJukebox.Users.get_state(users_pid, user_id)
 
-    refresh_do(user, &DeSpotify.Player.play/3, [
+    refresh_do(user, &DeSpotify.Player.play/4, [
       song_id,
       offset_ms,
       %{}

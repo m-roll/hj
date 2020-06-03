@@ -78,17 +78,22 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_call(
-        {:add_to_queue, url: url},
+        {:add_to_queue, url: "spotify:track:" <> track_id},
         _from,
         server = %HillsideJukebox.JukeboxServer{
           users_pid: users_pid
         }
       ) do
-    {%HillsideJukebox.User{id: user_id}, %HillsideJukebox.User.State{spotify_credentials: creds}} =
-      HillsideJukebox.Users.get_host(users_pid)
+    {user, _} = HillsideJukebox.Users.get_host(users_pid)
 
-    song = HillsideJukebox.URLs.get_song(url, creds, users_pid, user_id)
+    {:ok, spotify_track} =
+      HillsideJukebox.Auth.Spotify.refresh_do(
+        user,
+        &DeSpotify.Tracks.get_track/3,
+        [track_id, %{}]
+      )
 
+    song = HillsideJukebox.Song.from(spotify_track, :largest)
     add_internal(server, song)
     {:reply, song, server}
   end

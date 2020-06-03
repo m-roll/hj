@@ -18,7 +18,7 @@ export default class QueueChannel {
     })
   }
   addSong(roomCode, url) {
-    this.queueChannel.push('queue:add:' + roomCode, {
+    this.queueChannel.push('queue:add', {
       songInput: url,
       user: "Anonymous user"
     });
