@@ -25,8 +25,8 @@ import DevicesController from "./jukebox/devices.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
-  statusView = new StatusView();
   playerView = new PlayerView();
+  statusView = new StatusView(this.playerView);
   audioActivatorView = new AudioActivatorView();
   listenInAndProgressBarView = new ListenInAndProgressBarView();
   joinRoomView = new JoinRoomView();

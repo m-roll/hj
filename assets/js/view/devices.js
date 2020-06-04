@@ -3,7 +3,7 @@ export default class DevicesView {
   constructor() {
     this.devicesListModal = new DeviceListModal();
     this.devicesListModal.init();
-    document.getElementById("btn-device-popover").addEventListener("click", ((e) => {
+    document.getElementById("btn-devices").addEventListener("click", ((e) => {
       this.devicesListModal.show();
       this.deviceListRefreshCb();
     }).bind(this));

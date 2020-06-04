@@ -6,7 +6,7 @@ defmodule HillsideJukebox.Song do
             track_name: "Untitled",
             track_artists: ["Unknown"],
             track_art_url: "",
-            duration: 1000
+            duration: nil
 
   def from(
         %DeSpotify.Track{

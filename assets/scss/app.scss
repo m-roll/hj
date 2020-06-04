@@ -340,4 +340,33 @@ tr td {
     height: 100%;
     width: auto;
   }
+
+  &.devices-disabled {
+    @extend .strikethrough;
+  }
+
+  &:hover {
+    scale: 1;
+  }
+}
+
+.strikethrough {
+  position: relative;
+}
+
+.strikethrough:before {
+  position: absolute;
+  content: "";
+  left: 35%;
+  top: 50%;
+  right: 35%;
+  border-top: 3px solid white;
+  background-color: white;
+  border-radius: 3px;
+  border-color: inherit;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
 }

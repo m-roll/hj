@@ -42,6 +42,10 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.call(via_tuple(room_name), :get_queue_pid)
   end
 
+  def get_timer_pid(room_name) do
+    GenServer.call(via_tuple(room_name), :get_timer_pid)
+  end
+
   def vote_skip(room_name, user) do
     GenServer.cast(via_tuple(room_name), {:vote_skip, user})
   end
@@ -112,6 +116,14 @@ defmodule HillsideJukebox.JukeboxServer do
         server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid}
       ) do
     {:reply, queue_pid, server}
+  end
+
+  def handle_call(
+        :get_timer_pid,
+        _from,
+        server = %HillsideJukebox.JukeboxServer{timer_pid: timer_pid}
+      ) do
+    {:reply, timer_pid, server}
   end
 
   def handle_call(:current, _from, server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid}) do
