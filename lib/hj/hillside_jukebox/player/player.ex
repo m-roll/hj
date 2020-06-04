@@ -3,7 +3,8 @@ defmodule HillsideJukebox.Player do
 
   def play(users_pid, room_code, song = %HillsideJukebox.Song{platform: :spotify}) do
     # TODO only need to broadcast to a room
-    HjWeb.Endpoint.broadcast!("status", "status:play:" <> room_code, song)
+    Logger.debug("PLAYING FOR ALL: #{inspect(song)} in room #{room_code}")
+    HjWeb.Endpoint.broadcast!("status:" <> room_code, "status:play", song)
     # TODO spawn a bunch of tasks that do this in parallel. A lot of users slows this down and
     # gets audio out of sync.
     users = HillsideJukebox.Users.get_all(users_pid)

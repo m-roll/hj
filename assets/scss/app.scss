@@ -11,7 +11,7 @@
 
 header {
   background: none;
-  z-index: 1000;
+  z-index: 200;
 }
 
 html,
@@ -237,7 +237,7 @@ tr td {
 }
 
 #audio-play-overlay {
-  z-index: 100;
+  z-index: 300;
   height: 100%;
   position: absolute;
   bottom: 0;
@@ -257,7 +257,7 @@ tr td {
 
 #audio-play-overlay p {
   margin: auto;
-  z-index: 30;
+  z-index: 301;
   font-weight: bold;
 }
 

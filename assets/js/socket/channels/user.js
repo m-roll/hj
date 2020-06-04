@@ -11,7 +11,12 @@ export default class UserChannel {
       spotifyAccessToken: access_token,
       spotifyRefreshToken: refresh_token,
       deviceId: deviceId
+    }).receive("ok", resp => {
+      this.songStatusUpdateCb(resp);
     })
+  }
+  onSongStatusUpdate(songStatusUpdateCb) {
+    this.songStatusUpdateCb = songStatusUpdateCb;
   }
   join() {
     this.userChannel.join().receive("ok", resp => {

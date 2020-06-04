@@ -51,20 +51,21 @@ export default class JukeboxController {
     status: null,
     search: null
   }
+  //misc providers
   // thunks
   getRoomChannelThunk = () => this.roomChannel;
   getSearchControllerThunk = () => this.roomedChannels.search;
-  getStatusProviderThunk = () => this.roomedChannels.status;
+  getStatusChannelThunk = () => this.roomedChannels.status;
   getQueueProviderThunk = () => this.roomedChannels.queue;
-  getUserProviderThunk = () => this.roomedChannels.user;
+  getUserChannelThunk = () => this.roomedChannels.user;
   // secondary controllers
   roomController = new RoomController(this.joinRoomView, this.roomNotFoundView, this.getRoomChannelThunk, this.setupRoom.bind(this));
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
-  statusController = new StatusController(this.statusView, this.getStatusProviderThunk, this.roomController.getRoomCode);
+  statusController = new StatusController(this.statusView, this.getStatusChannelThunk, this.roomController.getRoomCode);
   queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView);
   localPlaybackController = new SpotifyPlaybackController(new SpotifyPlayer(), this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
-  devicesController = new DevicesController(this.devicesView, this.getUserProviderThunk, this.roomController.getRoomCode);
+  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode);
   constructor() {
     this.setupEvents();
     this.isLoggedIn = typeof hj_resource_token !== 'undefined';

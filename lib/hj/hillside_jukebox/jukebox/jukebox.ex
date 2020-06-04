@@ -248,9 +248,8 @@ defmodule HillsideJukebox.JukeboxServer do
            users_pid: users_pid
          }
        ) do
-    Logger.debug("Playing with offset: #{offset_ms}")
     current_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
-    HillsideJukebox.Player.play_at_for_user(users_pid, user, current_song, offset_ms)
+    HillsideJukebox.Player.play_at_for_user(user, current_song, offset_ms)
   end
 
   defp add_internal(
