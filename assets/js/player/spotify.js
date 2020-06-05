@@ -4,6 +4,9 @@ const getOAuthToken = (cb) => {
   return cb(hj_spotify_access_token);
 }
 export default class SpotifyPlayer {
+  constructor(oAuthThunk) {
+    this.getOAuthToken = oAuthThunk;
+  }
   initSpotifyScript() {
     $.getScript("https://sdk.scdn.co/spotify-player.js");
   }
@@ -17,9 +20,10 @@ export default class SpotifyPlayer {
     this.updateCb = cb;
   }
   onSpotifyWebPlaybackSDKReady() {
+    console.log("Web playback ready");
     const player = new Spotify.Player({
       name: player_name,
-      getOAuthToken: getOAuthToken
+      getOAuthToken: this.getOAuthToken
     });
     // Error handling
     let browserNotSupportedError = this.browserNotSupportedErrorCb;
@@ -53,8 +57,8 @@ export default class SpotifyPlayer {
     player.addListener('ready', ({
       device_id
     }) => {
-      readyCb(device_id);
       console.log('Ready with Device ID', device_id);
+      readyCb(device_id);
     });
     // Not Ready
     player.addListener('not_ready', ({

@@ -12,7 +12,6 @@ export default class PlayerView {
   animate(absTimestamp) {
     if (this.trackLength && !this.isPaused) {
       let ratio = (absTimestamp - this.startTimestamp) / this.trackLength;
-      console.log(ratio);
       if (ratio > 1) ratio = 1;
       this._setTrackProgress(ratio);
     }

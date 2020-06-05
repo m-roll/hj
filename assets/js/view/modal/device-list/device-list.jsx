@@ -20,7 +20,20 @@ export default class DeviceListView {
           <div className="row">
             <div className="col device-meta">
               <div className="row mb-1">
-                <button value={device["id"]}><p id="device-name" className="my-auto font-weight-bold">{device["name"]}</p></button>
+                <button className="btn btn-device" value={device["id"]}>
+                  <div className="row">
+                    <div className="col-2">
+                      <div className="row device-icon-holder d-flex">
+                        <i className={"fas fa-" + this._getFaIconForDeviceType(device["type"]) + " device-icon"}></i>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="row">
+                        <span className="device-name">{device["name"]}</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
           </div>
@@ -28,5 +41,20 @@ export default class DeviceListView {
       )
       }
     </div>)
+  }
+
+  //if changing this list, make sure the necessary icons are registered with FA in app.js
+  _getFaIconForDeviceType(deviceType) {
+    switch (deviceType.toLowerCase()) {
+      case "tablet": return "tablet";
+      case "computer": return "laptop";
+      case "smartphone": return "mobile";
+      //case "tv": return "television";
+      //case "audiodongle": return "bluetooth";
+      //case "castvideo": return "feed";
+      //case "castaudio": return "feed";
+      case "automobile": return "car";
+      default: return "headphones-alt";
+    }
   }
 }

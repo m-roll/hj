@@ -4,7 +4,6 @@ export default class QueueChannel {
     this.queueChannel = socket.channel("queue:" + roomCode, {});
   }
   onSongProcessed(roomCode, songProcessedCb) {
-    console.log('song:processed:' + roomCode);
     this.queueChannel.on('song:processed:' + roomCode, songProcessedCb);
   }
   onQueuePop(roomCode, popCb) {

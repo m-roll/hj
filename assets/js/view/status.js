@@ -10,7 +10,6 @@ export default class StatusView {
     this.playerView = playerView;
   }
   updateStatusView(songData) {
-    console.log(songData);
     let newEntry = songData.song;
     let playbackPos = songData.playback_pos;
     this.playerView.updatePlayer({

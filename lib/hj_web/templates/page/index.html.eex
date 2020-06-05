@@ -60,10 +60,11 @@
             <div id="listening-progress-bar" class="progress-outer my-auto">
               <div id="track-progress" class="progress-inner"></div>
             </div>
-            <p id="listen-in-indicator">Want to listen in? Click <a id="listen-in-link" href="">here</a>
           </div>
           <div class="col col-1 d-flex">
-            <a tabindex="0" class="btn btn-device-playback devices-disabled" id="btn-devices" role="button" data-placement="top" data-toggle="popover" title="Switch device" data-content="Loading devices..."><i class="fas fa-headphones-alt playback-device-icon"></i></a></button>
+            <a tabindex="0" class="btn btn-device-playback devices-disabled" id="btn-devices" role="button" data-placement="top" data-toggle="popover" title="Switch device" data-content="Loading devices...">
+              <i class="fas fa-headphones-alt playback-device-icon"></i>
+            </a></button>
           </div>
           <div class="col-1 col-sm-2 d-flex">
             <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>

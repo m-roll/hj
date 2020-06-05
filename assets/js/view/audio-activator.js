@@ -7,6 +7,9 @@ export default class AudioActivatorView {
   show() {
     this.activator.classList.remove("hidden");
   }
+  hide() {
+    this.activator.classList.add("hidden");
+  }
   setContents(str) {
     $("#audio-play-overlay p").text(str);
   }

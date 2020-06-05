@@ -6,11 +6,10 @@ export default class UserChannel {
   onAuthUpdate(authUpdateCb) {
     this.userChannel.on("auth:update", authUpdateCb);
   }
-  register(roomCode, access_token, refresh_token, deviceId) {
+  register(roomCode, access_token, refresh_token, ) {
     this.userChannel.push('user:register', {
       spotifyAccessToken: access_token,
-      spotifyRefreshToken: refresh_token,
-      deviceId: deviceId
+      spotifyRefreshToken: refresh_token
     }).receive("ok", resp => {
       this.songStatusUpdateCb(resp);
     })
@@ -41,14 +40,17 @@ export default class UserChannel {
     });
   }
   getDevices(roomCode) {
-    this.receiveDevicesCb([{
-      name: "dummy device",
-      id: 1
-    }]);
-    this.userChannel.push("user:get_devices:" + roomCode).receive("ok", (resp => {
+    this.userChannel.push("user:get_devices").receive("ok", (resp => {
       this.receiveDevicesCb(resp);
     }).bind(this)).receive("error", resp => {
       console.warn("error retrieving user devices", resp);
+    });
+  }
+  refreshCredentials(cb) {
+    this.userChannel.push("user:refresh_credentials").receive("ok", (resp => {
+      cb(resp);
+    }).bind(this)).receive("error", resp => {
+      console.warn("error refreshing user credentials", resp);
     });
   }
   onReceiveDevices(cb) {

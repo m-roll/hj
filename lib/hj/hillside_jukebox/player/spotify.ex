@@ -28,4 +28,9 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   def play_track(user = %HillsideJukebox.User{}) do
     Logger.debug("User is not ready to play but is attempting to anyway. #{inspect(user)}")
   end
+
+  def pause_track(user) do
+    Logger.debug("Pausing playback")
+    {:ok, :no_content} = refresh_do(user, &DeSpotify.Player.pause_playback/2, [%{}])
+  end
 end

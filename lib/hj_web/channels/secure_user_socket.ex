@@ -23,6 +23,10 @@ defmodule HjWeb.SecureUserSocket do
 
   def id(_socket), do: nil
 
+  def assign_user(socket, user) do
+    assign(socket, :user, user)
+  end
+
   channel("queue:*", HjWeb.QueueChannel)
   channel("user:*", HjWeb.SecureUserChannel)
   channel("status:*", HjWeb.StatusChannel)

@@ -8,9 +8,17 @@ import {
   dom
 } from '@fortawesome/fontawesome-svg-core'
 import {
-  faHeadphonesAlt
+  faHeadphonesAlt,
+  faLaptop,
+  faTablet,
+  faMobile,
+  faCar
 } from '@fortawesome/free-solid-svg-icons'
 import JukeboxController from "./controller/jukebox";
 library.add(faHeadphonesAlt);
+library.add(faLaptop);
+library.add(faTablet);
+library.add(faMobile);
+library.add(faCar);
 dom.watch();
 let controller = new JukeboxController();

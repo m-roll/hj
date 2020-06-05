@@ -5,7 +5,20 @@ export default class DevicesController {
     this.roomCodeThunk = roomCodeThunk;
   }
   _setupListeners() {
-    this.devicesProviderThunk().onReceiveDevices(this.devicesView.updateDevices.bind(this.devicesView));
+    this.devicesProviderThunk().onReceiveDevices((payload) => {
+      //intercept and add some mock data.
+      payload.devices.push({
+        name: "test1",
+        active: false,
+        type: "smartphone"
+      });
+      payload.devices.push({
+        name: "test2",
+        active: false,
+        type: "tablet"
+      })
+      this.devicesView.updateDevices(payload.devices);
+    });
     this.devicesView.onDeviceListRefresh((() => {
       this.devicesProviderThunk().getDevices(this.roomCodeThunk());
     }).bind(this));

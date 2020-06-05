@@ -20,7 +20,7 @@ export default class AddTrackModal {
   }
   init() {
     $(modalSelector).modal({
-      backdrop: "static",
+      backdrop: true,
       keyboard: true,
       focus: true,
       show: false

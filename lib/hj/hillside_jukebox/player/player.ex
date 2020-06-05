@@ -19,6 +19,10 @@ defmodule HillsideJukebox.Player do
     )
   end
 
+  def stop_playback_for_user(user) do
+    HillsideJukebox.Player.SpotifyPlayer.pause_track(user)
+  end
+
   def play_at_for_user(user, song, offset_ms) do
     HillsideJukebox.Player.SpotifyPlayer.play_track(user, song, offset_ms)
   end
