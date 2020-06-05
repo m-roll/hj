@@ -43,6 +43,7 @@ export default class JukeboxController {
   isLoggedIn;
   onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
   roomChannel;
+  isReadyForPlayback;
   roomedChannels = {
     queue: null,
     user: null,
@@ -76,6 +77,13 @@ export default class JukeboxController {
   setupEvents() {
     this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
     this.roomController.onRoomJoined(this.setupRoom.bind(this));
+    this.devicesController.onReadyForPlayback((() => {
+      this.roomedChannels.user.register();
+    }).bind(this));
+    this.devicesController.onNotReadyForPlayback((() => {
+      //if the user does not have an active device, remove them from the user pool.
+      this.roomedChannels.user.unregister();
+    }).bind(this));
   }
   setupRoom(roomCode, isListening) {
     this.setupRoomedChannels(roomCode);
@@ -88,7 +96,7 @@ export default class JukeboxController {
         //this.audioActivatorView.show();
       }).bind(this));
     }
-    this.initAudio()
+    this.roomedChannels.queue.fetch(this.roomCode, this.onFetchQueue.bind(this));
     this.statusController.ready();
     this.queueController.ready();
     this.devicesController.ready();
@@ -106,11 +114,6 @@ export default class JukeboxController {
       search: this.socket.joinChannel(SearchChannel, roomCode)
     }
     this.roomCode = roomCode;
-  }
-  initAudio() {
-    this.audioActivatorView.hide();
-    this.roomedChannels.user.register(this.roomCode, this.spotify_access_token, this.spotify_refresh_token);
-    this.roomedChannels.queue.fetch(this.roomCode, this.onFetchQueue.bind(this));
   }
   onFetchQueue(payload) {
     payload.queue.forEach(song => this.queueView.addToQueueDisplay.call(this.queueView, {

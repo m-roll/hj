@@ -7,7 +7,6 @@ export default class StatusController {
   ready() {
     this.statusProducerThunk().getCurrent(this.roomCodeThunk(), this.statusView.updateStatusView.bind(this.statusView));
     this.statusProducerThunk().onSongStatusUpdate((update) => {
-      console.log("playback updated!")
       this.statusView.updateStatusView(update);
     });
   }

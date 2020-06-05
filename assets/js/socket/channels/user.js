@@ -6,13 +6,16 @@ export default class UserChannel {
   onAuthUpdate(authUpdateCb) {
     this.userChannel.on("auth:update", authUpdateCb);
   }
-  register(roomCode, access_token, refresh_token, ) {
-    this.userChannel.push('user:register', {
-      spotifyAccessToken: access_token,
-      spotifyRefreshToken: refresh_token
-    }).receive("ok", resp => {
+  register() {
+    this.userChannel.push('user:register').receive("ok", resp => {
       this.songStatusUpdateCb(resp);
+      //should throw some error if we cannot add to user pool. Maybe "could not sync with queue"
     })
+  }
+  unregister() {
+    this.userChannel.pus('user:unregister').receive("ok", resp => {
+      // fire and forget
+    });
   }
   onSongStatusUpdate(songStatusUpdateCb) {
     this.songStatusUpdateCb = songStatusUpdateCb;
@@ -34,12 +37,12 @@ export default class UserChannel {
       console.warn("Error creating room", resp);
     })
   }
-  setDeviceId(roomCode, newId) {
+  setDeviceId(newId) {
     this.userChannel.push("user:set_device", {
       deviceId: newId
     });
   }
-  getDevices(roomCode) {
+  getDevices() {
     this.userChannel.push("user:get_devices").receive("ok", (resp => {
       this.receiveDevicesCb(resp);
     }).bind(this)).receive("error", resp => {

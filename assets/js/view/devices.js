@@ -3,7 +3,8 @@ export default class DevicesView {
   constructor() {
     this.devicesListModal = new DeviceListModal();
     this.devicesListModal.init();
-    document.getElementById("btn-devices").addEventListener("click", ((e) => {
+    this.devicesBtn = document.getElementById("btn-devices");
+    this.devicesBtn.addEventListener("click", ((e) => {
       this.devicesListModal.show();
       this.deviceListRefreshCb();
     }).bind(this));
@@ -12,10 +13,17 @@ export default class DevicesView {
     this.devicesListModal.populateDevicesList(devices);
   }
   onDeviceChangeSubmit(cb) {
-    console.log("set cb from view", this.devicesListModal);
     this.devicesListModal.onChangeDevice(cb);
   }
   onDeviceListRefresh(cb) {
     this.deviceListRefreshCb = cb;
+  }
+  setHasActiveDevice(hasActiveDevice) {
+    this.hasActiveDevice = hasActiveDevice;
+    if (hasActiveDevice) {
+      this.devicesBtn.classList.remove("devices-disabled");
+    } else {
+      this.devicesBtn.classList.add("devices-disabled");
+    }
   }
 }

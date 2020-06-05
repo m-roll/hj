@@ -22,6 +22,10 @@ defmodule HjWeb.SecureUserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("user:unregister", _payload, socket) do
+    remove_user_from_pool(socket)
+  end
+
   def handle_in("user:refresh_credentials", _payload, socket) do
     user = %HillsideJukebox.User{refresh_token: refresh_token} = socket_user(socket)
     Logger.debug("Attempting refresh for AT: #{inspect(refresh_token)}")
@@ -67,7 +71,7 @@ defmodule HjWeb.SecureUserChannel do
 
   def terminate(_reason, socket) do
     HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
-    HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))
+    remove_user_from_pool(socket)
   end
 
   defp room_code(socket) do
@@ -78,5 +82,9 @@ defmodule HjWeb.SecureUserChannel do
   defp socket_user(socket) do
     %Phoenix.Socket{assigns: %{user: user}} = socket
     user
+  end
+
+  defp remove_user_from_pool(socket) do
+    HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))
   end
 end

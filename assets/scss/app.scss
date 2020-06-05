@@ -377,6 +377,18 @@ tr td {
   border-radius: 0;
   text-align: left;
   scale: 1;
+
+  &.btn-device-active .device-icon-holder::after {
+    position: absolute;
+    height: 0.3rem;
+    width: 0.3rem;
+    border-radius: 0.15rem;
+    background-color: #1DB954;
+    top: 0.3rem;
+    right: 1rem;
+    content: ' ';
+    display: block;
+  }
 }
 
 .device-name {

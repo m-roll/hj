@@ -32,7 +32,7 @@ export default class DeviceListView {
           <div className="row">
             <div className="col device-meta">
               <div className="row mb-1">
-                <button className="btn btn-device" value={device["id"]}>
+                <button className={"btn btn-device " + (device["is_active"] ? "btn-device-active" : "")} value={device["id"]}>
                   <div className="row">
                     <div className="col-2">
                       <div className="row device-icon-holder d-flex">
