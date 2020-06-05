@@ -9,10 +9,10 @@ export default class DevicesView {
     }).bind(this));
   }
   updateDevices(devices) {
-    console.log(devices);
     this.devicesListModal.populateDevicesList(devices);
   }
   onDeviceChangeSubmit(cb) {
+    console.log("set cb from view", this.devicesListModal);
     this.devicesListModal.onChangeDevice(cb);
   }
   onDeviceListRefresh(cb) {

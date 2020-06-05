@@ -52,6 +52,19 @@ defmodule HjWeb.SecureUserChannel do
     {:noreply, socket}
   end
 
+  def handle_in("user:set_device", payload, socket) do
+    user = socket_user(socket)
+    device_id = payload["deviceId"]
+
+    {:ok, :no_content} =
+      HillsideJukebox.Auth.Spotify.refresh_do(user, &DeSpotify.Player.transfer_device/3, [
+        [device_id],
+        %{}
+      ])
+
+    {:reply, :ok, socket}
+  end
+
   def terminate(_reason, socket) do
     HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
     HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))

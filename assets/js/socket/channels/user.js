@@ -35,7 +35,7 @@ export default class UserChannel {
     })
   }
   setDeviceId(roomCode, newId) {
-    this.userChannel.push("user:set_device:" + roomCode, {
+    this.userChannel.push("user:set_device", {
       deviceId: newId
     });
   }

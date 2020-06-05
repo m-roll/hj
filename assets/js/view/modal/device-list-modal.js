@@ -26,7 +26,7 @@ export default class DeviceListModal {
     });
   }
   onChangeDevice(cb) {
-    this.onSelectDeviceCb = cb;
+    this.deviceListView.onSelectDevice(cb);
   }
   show() {
     $(modalSelector).modal('show');

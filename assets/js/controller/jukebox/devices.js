@@ -6,17 +6,6 @@ export default class DevicesController {
   }
   _setupListeners() {
     this.devicesProviderThunk().onReceiveDevices((payload) => {
-      //intercept and add some mock data.
-      payload.devices.push({
-        name: "test1",
-        active: false,
-        type: "smartphone"
-      });
-      payload.devices.push({
-        name: "test2",
-        active: false,
-        type: "tablet"
-      })
       this.devicesView.updateDevices(payload.devices);
     });
     this.devicesView.onDeviceListRefresh((() => {
@@ -24,7 +13,7 @@ export default class DevicesController {
     }).bind(this));
     this.devicesView.onDeviceChangeSubmit(((newDevice) => {
       this.devicesProviderThunk().setDeviceId(this.roomCodeThunk(), newDevice);
-    }).bind(this));
+    }).bind(this.devicesView));
   }
   ready() {
     this._setupListeners();

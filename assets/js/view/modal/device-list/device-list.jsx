@@ -11,6 +11,18 @@ export default class DeviceListView {
     let deviceListGroup = document.getElementById(deviceListGroupId);
     let newDom = this._render(devices);
     deviceListGroup.parentNode.replaceChild(newDom, deviceListGroup);
+    this._updateListeners();
+  }
+
+  onSelectDevice(cb) {
+    console.log('set change device cb');
+    this.buttonClickCb = cb;
+  }
+
+  _updateListeners() {
+    $('.btn-device').on("click", (e) => {
+      this.buttonClickCb(e.currentTarget.value);
+    });
   }
 
   _render(deviceList) {
