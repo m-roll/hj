@@ -1,141 +1,72 @@
-defmodule HillsideJukebox.Users do
+defmodule HillsideJukebox.UserPool do
   use Agent
   require Logger
+  alias HillsideJukebox.{User}
 
-  # Agent stores a list of tuple {user, user_state}
+  # Agent stores a map of user_id -> {user, user_state}
 
   def start_link(_) do
-    Agent.start_link(fn -> [] end)
+    Agent.start_link(fn -> %{} end)
   end
 
-  def add_user(pid, user) do
+  def add_user(pid, user = %User{id: user_id}) do
     Agent.get_and_update(pid, fn users ->
-      new_user = {user, %HillsideJukebox.User.State{}}
+      if Map.has_key?(users, user_id) do
+        {{:error, :already_in_pool}, users}
+      else
+        new_user = {user, %HillsideJukebox.User.State{}}
 
-      updated_list = [new_user | users]
-      {new_user, updated_list}
+        updated_user_map = Map.put(users, user_id, new_user)
+        {{:ok, new_user}, updated_user_map}
+      end
     end)
   end
 
   def get_by_user_id(pid, user_id) do
     {user, _state} =
       Agent.get(pid, fn users ->
-        Enum.find(
-          users,
-          map_user_with_user_id(user_id, fn _ -> true end, fn _ -> false end)
-        )
+        Map.get(users, user_id)
       end)
 
     user
   end
 
   def get_all(pid) do
-    Agent.get(pid, &Function.identity/1)
+    Agent.get(pid, &Map.values/1)
   end
 
   def remove_with_user_id(pid, user_id) do
-    Agent.update(pid, fn users ->
-      Enum.reject(
-        users,
-        map_user_with_user_id(
-          user_id,
-          fn {user, _state} ->
-            Logger.debug("Rejecting user #{inspect(user)} because they disconnected")
-            true
-          end,
-          fn _ -> false end
-        )
-      )
-    end)
-  end
-
-  def is_registered(creds) do
-    users = Agent.get(__MODULE__, &Function.identity/1)
-
-    match =
-      Enum.find(users, fn {_user,
-                           %HillsideJukebox.User.State{
-                             spotify_credentials: credentials
-                           }} ->
-        credentials == creds
-      end)
-
-    case match do
-      nil ->
-        false
-
-      _ ->
-        true
-    end
-  end
-
-  def get_host(pid) do
-    Agent.get(pid, fn users ->
-      Logger.debug("get host: #{inspect(users)}")
-      List.last(users)
-    end)
-  end
-
-  def update_with_id(users_pid, user_id, new_user) do
-    Agent.update(users_pid, fn users ->
-      Enum.map(
-        users,
-        map_user_with_user_id(
-          user_id,
-          fn {_user, state} -> {new_user, state} end,
-          &Function.identity/1
-        )
-      )
+    Agent.get_and_update(pid, fn users ->
+      Map.pop(users, user_id)
     end)
   end
 
   def get_state(users_pid, user_id) do
-    {_user, state} =
-      Agent.get(users_pid, fn users ->
-        Logger.debug("Getting user state: user_id #{user_id} all users: #{inspect(users)}")
-
-        Enum.find(users, fn {user, _state} ->
-          case user do
-            %HillsideJukebox.User{id: ^user_id} -> true
-            _ -> false
-          end
-        end)
-      end)
-
-    state
+    case Agent.get(users_pid, fn users ->
+           Map.fetch(users, user_id)
+         end) do
+      {:ok, {_user, state}} -> {:ok, state}
+      error -> error
+    end
   end
 
   def set_state(users_pid, user_id, new_state) do
     Agent.update(users_pid, fn users ->
-      Enum.map(
-        users,
-        map_user_with_user_id(
-          user_id,
-          fn {user, _state} ->
-            {user, new_state}
-          end,
-          &Function.identity/1
-        )
-      )
+      case Map.fetch(users, user_id) do
+        {:ok, {user, old_state}} -> Map.replace!(users, user_id, new_state)
+        error -> users
+      end
     end)
   end
 
   def reset_skip_votes(users_pid) do
     Agent.update(users_pid, fn users ->
-      Enum.map(users, fn {user, state} -> {user, %{state | voted_skip: false}} end)
+      Enum.into(
+        Enum.map(users, fn {user_id, {user, state}} ->
+          {user_id, {user, %{state | voted_skip: false}}}
+        end),
+        %{}
+      )
     end)
-  end
-
-  defp map_user_with_user_id(user_id, match_fun, else_fun) do
-    fn pair =
-         {%HillsideJukebox.User{
-            id: id
-          }, _} ->
-      if(user_id == id) do
-        match_fun.(pair)
-      else
-        else_fun.(pair)
-      end
-    end
   end
 end

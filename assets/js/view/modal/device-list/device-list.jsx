@@ -1,58 +1,97 @@
 /** @jsxRuntime classic */
 import $ from "jquery";
 import React from '../../util/react-polyfill.js';
-const deviceListGroupId = "device-list-group";
+const modalCardGroupId = "device-list-modal-body";
 export default class DeviceListView {
   constructor() {
 
   }
 
   updateDevices(devices) {
-    let deviceListGroup = document.getElementById(deviceListGroupId);
-    let newDom = this._render(devices);
-    deviceListGroup.parentNode.replaceChild(newDom, deviceListGroup);
+    this._update((() => {
+      return this._renderDevices(devices);
+    }).bind(this));
     this._updateListeners();
   }
 
   onSelectDevice(cb) {
-    console.log('set change device cb');
     this.buttonClickCb = cb;
+  }
+
+  hasNoDevices() {
+    this._update(this._renderNoDevices);
+  }
+
+  onDismiss(cb) {
+    this.onDismissCb = cb;
+  }
+
+  onMute(cb) {
+    this.onMuteCb = cb;
   }
 
   _updateListeners() {
     $('.btn-device').on("click", (e) => {
-      this.buttonClickCb(e.currentTarget.value);
+      if (e.currentTarget.value === 'none') {
+        this.onMuteCb();
+      } else {
+        this.buttonClickCb(e.currentTarget.value);
+      }
     });
   }
 
-  _render(deviceList) {
-    return (<div id="device-list-group" className="device-list-group list-group">
-      {deviceList.map(device =>
-        (<div className="list-group-item">
-          <div className="row">
-            <div className="col device-meta">
-              <div className="row mb-1">
-                <button className={"btn btn-device " + (device["is_active"] ? "btn-device-active" : "")} value={device["id"]}>
-                  <div className="row">
-                    <div className="col-2">
-                      <div className="row device-icon-holder d-flex">
-                        <i className={"fas fa-" + this._getFaIconForDeviceType(device["type"]) + " device-icon"}></i>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="row">
-                        <span className="device-name">{device["name"]}</span>
-                      </div>
+  _update(renderFun) {
+    let deviceListGroup = document.getElementById(modalCardGroupId);
+    let newDom = renderFun();
+    deviceListGroup.parentNode.replaceChild(newDom, deviceListGroup);
+    $('#' + modalCardGroupId).fadeIn();
+    $('#device-list-close-btn').click((e => {
+      this.onDismissCb();
+      $('#' + modalCardGroupId).fadeOut();
+    }).bind(this));
+  }
+
+  _renderDevices(deviceList) {
+    console.log("rendering devices", deviceList);
+    return (
+      <div id="device-list-modal-body" className="modal-body">
+        <h5 class="card-title mb-4"> Select playback device </h5>
+        <div id="device-list-group" className="device-list-group list-group">
+          {deviceList.map(device =>
+            (<div className="list-group-item btn-list-item">
+              <button className={"btn btn-list-button btn-device " + (device["is_active"] ? "btn-device-active" : "")} value={device["id"]}>
+                <div className="row">
+                  <div className="col-2">
+                    <div className="row device-icon-holder d-flex">
+                      <i className={"fas fa-" + this._getFaIconForDeviceType(device["type"]) + " device-icon"}></i>
                     </div>
                   </div>
-                </button>
-              </div>
-            </div>
+                  <div className="col">
+                    <div className="row">
+                      <span className="device-name">{device["name"]}</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>)
+          )
+          }
+        </div>
+        <button id="device-list-close-btn" type="button" className="btn btn-secondary">Done</button>
+      </div>);
+  }
+
+  _renderNoDevices() {
+    return (
+      <div id="device-list-modal-body" className="modal-body">
+        <h5 class="card-title mb-4"> Launch Spotify </h5>
+        <div className="col">
+          <div className="row">
+            <p>Please launch Spotify on one of your devices. Once you do, you will have the option to connect to it here.</p>
           </div>
-        </div>)
-      )
-      }
-    </div>)
+        </div>
+        <button id="device-list-close-btn" type="button" className="btn btn-secondary">Okay</button>
+      </div>);
   }
 
   //if changing this list, make sure the necessary icons are registered with FA in app.js
@@ -66,6 +105,7 @@ export default class DeviceListView {
       //case "castvideo": return "feed";
       //case "castaudio": return "feed";
       case "automobile": return "car";
+      case "mute": return "volume-mute";
       default: return "headphones-alt";
     }
   }

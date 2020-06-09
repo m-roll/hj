@@ -11,9 +11,8 @@
                 </div>
               </div>
               <div id="row-create-room-btns" class="row">
-                <div id="div-create-room" class="col d-flex">
-                  <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-primary">CREATE</a>
-                </div>
+                <div id="div-create-room" class="col d-flex"> <%= if @has_credentials do %> <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-secondary">CREATE</a> <%= else %> <p>To create a room, you must first log in</p>
+                  <a href="/authorize" type="button" id="enter-modal-room-create" class="btn btn-secondary">LOG IN</a> <%= end %> </div>
               </div>
             </div>
             <div class="col-md-6">

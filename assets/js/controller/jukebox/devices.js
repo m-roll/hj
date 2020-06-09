@@ -1,9 +1,12 @@
 export default class DevicesController {
-  constructor(devicesView, devicesProviderThunk, roomCodeThunk) {
+  devicesListCache;
+  isListening;
+  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening) {
     this.devicesView = devicesView;
     this.devicesProviderThunk = devicesProviderThunk;
     this.roomCodeThunk = roomCodeThunk;
     this.isDeviceReady = false;
+    this.isListening = isListening;
   }
   ready() {
     this._setupListeners();
@@ -15,25 +18,54 @@ export default class DevicesController {
   onNotReadyForPlayback(cb) {
     this._onNotReadyForPlaybackCb = cb;
   }
+  onMute(cb) {
+    this.onMuteCb = cb;
+  }
+  onListen(cb) {
+    this.onListenCb = cb;
+  }
   _setupListeners() {
     this.devicesProviderThunk().onReceiveDevices((payload) => {
-      this.devicesView.updateDevices(payload.devices);
-      let hasActiveDevice = this._hasActiveDevice(payload.devices);
-      this.devicesView.setHasActiveDevice(hasActiveDevice);
-      if (hasActiveDevice && !this.isDeviceReady) {
-        this.isDeviceReady = true;
-        this._onReadyForPlaybackCb();
-      } else if (!hasActiveDevice && this.isDeviceReady) {
-        this.isDeviceReady = false;
-        this._onNotReadyForPlaybackCb();
-      }
+      this.devicesListCache = payload.devices;
+      this._updateDevices(payload.devices, this.isListening);
     });
     this.devicesView.onDeviceListRefresh((() => {
       this.devicesProviderThunk().getDevices();
     }).bind(this));
     this.devicesView.onDeviceChangeSubmit(((newDevice) => {
-      this.devicesProviderThunk().setDeviceId(newDevice);
+      this.devicesProviderThunk().setDeviceId(newDevice, this._onChangeDevice.bind(this));
     }).bind(this.devicesView));
+    this.devicesView.onMute(() => {
+      if (this.isListening === true) {
+        //this._onNotReadyForPlaybackCb();
+      }
+      this.isListening = false;
+      this._updateDevices(this.devicesListCache, this.isListening);
+    });
+  }
+  _updateDevices(devices) {
+    this.devicesView.updateDevices(devices, this.isListening);
+    let hasActiveDevice = this._hasActiveDevice(devices);
+    this.devicesView.setHasActiveDevice(hasActiveDevice);
+    if (hasActiveDevice && !this.isDeviceReady) {
+      this.isDeviceReady = true;
+      this._onReadyForPlaybackCb();
+    } else if (!hasActiveDevice && this.isDeviceReady) {
+      this.isDeviceReady = false;
+      this._onNotReadyForPlaybackCb();
+    }
+  }
+  _onChangeDevice(deviceId) {
+    if (!this.isListening) {
+      this.isListening = true;
+      //this._onReadyForPlaybackCb();
+    }
+    for (let i = 0; i < this.devicesListCache.length; i++) {
+      let device = this.devicesListCache[i];
+      device.is_active = device.id === deviceId;
+      this.devicesListCache[i] = device;
+    }
+    this._updateDevices(this.devicesListCache, this.isListening);
   }
   _hasActiveDevice(devices) {
     for (let i = 0; i < devices.length; i++) {

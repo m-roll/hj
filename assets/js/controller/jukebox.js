@@ -66,13 +66,14 @@ export default class JukeboxController {
   spotifyPlayer = new SpotifyPlayer(this.getSpotifyOAuthThunk);
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
-  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode);
+  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening);
   constructor() {
     this.setupEvents();
     this.isLoggedIn = typeof hj_resource_token !== 'undefined';
     this.socket = new JukeboxSocket(this.isLoggedIn);
     this.roomChannel = this.socket.joinChannel(RoomChannel);
     this.roomController.ready();
+    this.isListening = hj_listening;
   }
   setupEvents() {
     this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
@@ -85,12 +86,10 @@ export default class JukeboxController {
       this.roomedChannels.user.unregister();
     }).bind(this));
   }
-  setupRoom(roomCode, isListening) {
+  setupRoom(roomCode) {
     this.setupRoomedChannels(roomCode);
-    isListening = typeof hj_spotify_access_token !== 'undefined';
-    if (isListening) {
+    if (this.isListening) {
       this.roomedChannels.user.refreshCredentials(((creds) => {
-        console.log(creds);
         this.spotify_access_token = creds.access_token;
         //this.localPlaybackController.ready();
         //this.audioActivatorView.show();

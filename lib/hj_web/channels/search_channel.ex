@@ -7,7 +7,7 @@ defmodule HjWeb.SearchChannel do
   end
 
   def handle_in("search:query", payload, socket) do
-    results = HillsideJukebox.Search.song(room_code(socket), payload["query"])
+    results = HillsideJukebox.Search.song(payload["query"])
     {:reply, {:ok, %{truncated_results: results}}, socket}
   end
 

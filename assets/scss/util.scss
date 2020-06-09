@@ -12,7 +12,3 @@
 @mixin smooth-scroll {
   scroll-behavior: smooth;
 }
-
-@mixin gradient-to-black($direction, $opacity) {
-  background-image: linear-gradient(to $direction, rgba(25, 20, 20, 0), rgba(25, 20, 20, $opacity));
-}

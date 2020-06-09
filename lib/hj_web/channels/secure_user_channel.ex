@@ -23,12 +23,14 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   def handle_in("user:unregister", _payload, socket) do
+    HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
     remove_user_from_pool(socket)
+
+    {:noreply, socket}
   end
 
   def handle_in("user:refresh_credentials", _payload, socket) do
     user = %HillsideJukebox.User{refresh_token: refresh_token} = socket_user(socket)
-    Logger.debug("Attempting refresh for AT: #{inspect(refresh_token)}")
     res = {:ok, new_access_token} = DeSpotify.Auth.refresh(refresh_token)
 
     user_socket =
@@ -42,7 +44,7 @@ defmodule HjWeb.SecureUserChannel do
 
   def handle_in("user:get_devices", _payload, socket) do
     user = socket_user(socket)
-    res = HillsideJukebox.Auth.Spotify.refresh_do(user, &DeSpotify.Player.get_devices/2, [%{}])
+    res = HillsideJukebox.Auth.Spotify.call_for_user(user, &DeSpotify.Player.get_devices/2, [%{}])
     {:reply, res, socket}
   end
 
@@ -61,7 +63,7 @@ defmodule HjWeb.SecureUserChannel do
     device_id = payload["deviceId"]
 
     {:ok, :no_content} =
-      HillsideJukebox.Auth.Spotify.refresh_do(user, &DeSpotify.Player.transfer_device/3, [
+      HillsideJukebox.Auth.Spotify.call_for_user(user, &DeSpotify.Player.transfer_device/3, [
         [device_id],
         %{}
       ])
@@ -70,7 +72,11 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   def terminate(_reason, socket) do
+    user = socket_user(socket)
+
+    # TODO only pause if the current song is the same one currently in queue.
     HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
+
     remove_user_from_pool(socket)
   end
 

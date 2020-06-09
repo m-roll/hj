@@ -28,41 +28,38 @@ defmodule HjWeb.PageController do
 
   def jukebox(conn, params) do
     fields =
-      if Map.has_key?(params, "room_code") do
-        load_credentials =
-          case Map.fetch(params, "listen") do
-            {:ok, true} -> true
-            _ -> false
-          end
-
-        room_code = Map.fetch!(params, "room_code")
-
-        if load_credentials do
-          resource_token = Guardian.Plug.current_token(conn)
-
-          user =
-            %HillsideJukebox.User{access_token: access_token} =
-            Guardian.Plug.current_resource(conn)
-
-          if resource_token == nil do
-            redirect(conn, to: "/authorize")
-          end
-
-          %{
-            has_room_code: true,
-            room_code: room_code,
-            has_credentials: true,
-            hj_resource_token: resource_token,
-            spotify_access_token: access_token
-          }
-        else
-          %{has_room_code: true, room_code: room_code, has_credentials: false}
-        end
-      else
-        %{has_room_code: false, has_credentials: false}
-      end
+      %{}
+      |> Map.merge(handle_room_fields(conn, params))
+      |> Map.merge(handle_user_fields(conn, params))
+      |> Map.merge(handle_meta_fields(conn, params))
 
     render(conn, "index.html", fields)
+  end
+
+  defp handle_room_fields(_conn, params) do
+    fields = %{}
+
+    case Map.fetch(params, "room_code") do
+      {:ok, room_code} -> %{has_room_code: true, room_code: room_code}
+      _ -> %{has_room_code: false}
+    end
+  end
+
+  defp handle_user_fields(conn, params) do
+    case Guardian.Plug.current_token(conn) do
+      nil ->
+        %{has_credentials: false}
+
+      resource_token ->
+        %{has_credentials: true, hj_resource_token: resource_token, spotify_access_token: nil}
+    end
+  end
+
+  defp handle_meta_fields(conn, params) do
+    case Map.fetch(params, "listen") do
+      {:ok, true} -> %{hj_listening: true}
+      _ -> %{hj_listening: false}
+    end
   end
 
   def queue(conn, _params) do

@@ -1,3 +1,3 @@
 export function getArtistString(artists) {
-  return artists.join(",");
+  return artists.join(", ");
 }

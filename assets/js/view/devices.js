@@ -9,11 +9,14 @@ export default class DevicesView {
       this.deviceListRefreshCb();
     }).bind(this));
   }
-  updateDevices(devices) {
-    this.devicesListModal.populateDevicesList(devices);
+  updateDevices(devices, isListening) {
+    this.devicesListModal.populateDevicesList(devices, isListening);
   }
   onDeviceChangeSubmit(cb) {
     this.devicesListModal.onChangeDevice(cb);
+  }
+  onMute(cb) {
+    this.devicesListModal.onMute(cb);
   }
   onDeviceListRefresh(cb) {
     this.deviceListRefreshCb = cb;

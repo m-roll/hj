@@ -7,7 +7,8 @@ defmodule HillsideJukebox.Player do
       playback_pos: 0
     })
 
-    users = HillsideJukebox.Users.get_all(users_pid)
+    users = HillsideJukebox.UserPool.get_all(users_pid)
+    Logger.debug("All users: #{inspect(users)}")
 
     Enum.each(
       users,

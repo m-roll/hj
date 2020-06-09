@@ -8,12 +8,11 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
   end
 
   def init(name) do
-    Logger.debug("Starting supervisor with name #{inspect(name)}")
     me = self()
     setup_jukebox = fn -> setup(name, me) end
 
     children = [
-      HillsideJukebox.Users,
+      HillsideJukebox.UserPool,
       {HillsideJukebox.SongQueue.Server, :queue.new()},
       {HillsideJukebox.SongQueue.Timer, fn -> HillsideJukebox.JukeboxServer.play_next(name) end},
       %{
@@ -28,7 +27,7 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
   end
 
   defp setup(name, pid) do
-    users_pid = find_child(pid, HillsideJukebox.Users)
+    users_pid = find_child(pid, HillsideJukebox.UserPool)
     queue_pid = find_child(pid, HillsideJukebox.SongQueue.Server)
     timer_pid = find_child(pid, HillsideJukebox.SongQueue.Timer)
     HillsideJukebox.JukeboxServer.set_workers(name, queue_pid, timer_pid, users_pid)

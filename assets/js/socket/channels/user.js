@@ -13,7 +13,7 @@ export default class UserChannel {
     })
   }
   unregister() {
-    this.userChannel.pus('user:unregister').receive("ok", resp => {
+    this.userChannel.push('user:unregister').receive("ok", resp => {
       // fire and forget
     });
   }
@@ -28,7 +28,9 @@ export default class UserChannel {
     })
   }
   voteSkip(roomCode) {
-    this.userChannel.push("user:vote_skip:" + roomCode);
+    this.userChannel.push("user:vote_skip").receive(resp => {
+      //TODO maybe grey out the skip button
+    });
   }
   createRoom(cb) {
     this.userChannel.push("user:create_room").receive("ok", resp => {
@@ -37,9 +39,11 @@ export default class UserChannel {
       console.warn("Error creating room", resp);
     })
   }
-  setDeviceId(newId) {
+  setDeviceId(newId, successCb) {
     this.userChannel.push("user:set_device", {
       deviceId: newId
+    }).receive("ok", () => {
+      successCb(newId);
     });
   }
   getDevices() {

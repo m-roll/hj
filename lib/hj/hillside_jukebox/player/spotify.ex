@@ -16,10 +16,9 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
         offset_ms
       ) do
     body_params = %{"uris" => ["spotify:track:" <> song_id], "position_ms" => offset_ms}
-    Logger.debug("Play req: #{inspect(body_params)}")
 
     {:ok, :no_content} =
-      refresh_do(user, &DeSpotify.Player.play/3, [
+      call_for_user(user, &DeSpotify.Player.play/3, [
         body_params,
         %{}
       ])
@@ -30,7 +29,6 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   end
 
   def pause_track(user) do
-    Logger.debug("Pausing playback")
-    {:ok, :no_content} = refresh_do(user, &DeSpotify.Player.pause_playback/2, [%{}])
+    {:ok, :no_content} = call_for_user(user, &DeSpotify.Player.pause_playback/2, [%{}])
   end
 end

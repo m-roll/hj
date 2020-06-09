@@ -1,11 +1,15 @@
 defmodule HjWeb.Auth.ErrorHandler do
   use Phoenix.Controller
+  require Logger
   import Plug.Conn
 
   def auth_error(conn, error = {type, _reason}, opts) do
     case type do
-      :unauthenticated -> redirect(conn, to: "/authorize")
-      _ -> other_error(conn, error, opts)
+      :unauthenticated ->
+        redirect(conn, to: "/authorize")
+
+      _ ->
+        other_error(conn, error, opts)
     end
   end
 

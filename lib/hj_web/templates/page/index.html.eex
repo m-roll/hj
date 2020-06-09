@@ -1,16 +1,16 @@
 <div class="headline-main-content">
   <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
-    <header class="row pb-4 pt-4 px-5 hud-overlay hud-top d-flex">
+    <header class="row pt-4 px-5 hud-overlay hud-top d-flex">
       <div class="col-3 my-auto">
         <section class="row">
-          <p class="my-auto"><span class="font-weight-bold">Hillside Jukebox</span></p>
+          <p class="my-auto"><span class="font-weight-bold">Social for Spotify</span></p>
         </section>
         <div class="row">
-          <p class="my-auto title-author">Built by Matt Rollender</p>
+          <p class="my-auto title-sub">A social centric Spotify client</p>
         </div>
       </div>
       <div class="col-1">
-        <button id="add-track-button" class="btn btn-primary">add</button>
+        <button id="add-track-button" class="btn add-track-btn"><i class="fas fa-plus add-track-icon"></i></button>
       </div>
       <div class="col">
       </div>
@@ -26,13 +26,14 @@
       </div>
     </header>
     <main id="main" role="main" class="d-flex flex-column"> <script>
+        let hj_listening = "<%= @hj_listening%>";
         <%= if @has_room_code do %>
           let hj_room_code = "<%= @room_code%>";
         <%end%>
          <%= if @has_credentials do %>
           let hj_spotify_access_token = "<%= @spotify_access_token%>";
           let hj_resource_token = "<%= @hj_resource_token%>";
-        <%end%>
+        <% end %>
       </script>
       <div id="audio-play-overlay" class="d-flex">
         <p>Setting things up...</p>
@@ -42,6 +43,7 @@
       </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
         <div class="col px-auto preview-container d-flex">
           <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+          <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at sfs.tv</p> <%end%> </div>
         </div>
       </div>
       <div class="hud-bottom">
@@ -50,10 +52,18 @@
           </div>
           <div class="col-3 col-sm-2">
             <div class="row mb-1">
-              <p id="status-song-title" class="my-auto font-weight-bold">Song title</p>
+              <p class="my-auto font-weight-bold">
+                <div class="overflow-marquee">
+                  <span id="status-song-title" class="overflow-marquee-inner">Song title</span>
+                </div>
+              </p>
             </div>
             <div class="row">
-              <p id="status-song-artist" class="my-auto ">Song artist</p>
+              <p class="my-auto overflow-marquee">
+                <div class="overflow-marquee">
+                  <span id="status-song-artist" class="overflow-marquee-inner">Song artist</span>
+                </div>
+              </p>
             </div>
           </div>
           <div class="col-5 col-sm-6 d-flex">

@@ -12,13 +12,19 @@ import {
   faLaptop,
   faTablet,
   faMobile,
-  faCar
+  faPlus,
+  faCar,
+  faSpinner,
+  faVolumeMute
 } from '@fortawesome/free-solid-svg-icons'
 import JukeboxController from "./controller/jukebox";
 library.add(faHeadphonesAlt);
 library.add(faLaptop);
 library.add(faTablet);
 library.add(faMobile);
+library.add(faPlus);
 library.add(faCar);
+library.add(faSpinner);
+library.add(faVolumeMute);
 dom.watch();
 let controller = new JukeboxController();

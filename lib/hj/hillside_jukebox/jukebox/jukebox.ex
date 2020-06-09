@@ -6,8 +6,6 @@ defmodule HillsideJukebox.JukeboxServer do
   ## API
 
   def start_link(_, room_name) do
-    Logger.debug("Starting jukebox with name #{inspect(room_name)}")
-
     GenServer.start_link(
       __MODULE__,
       %HillsideJukebox.JukeboxServer{
@@ -88,11 +86,8 @@ defmodule HillsideJukebox.JukeboxServer do
           users_pid: users_pid
         }
       ) do
-    {user, _} = HillsideJukebox.Users.get_host(users_pid)
-
     {:ok, spotify_track} =
-      HillsideJukebox.Auth.Spotify.refresh_do(
-        user,
+      HillsideJukebox.Auth.Spotify.call_for_client(
         &DeSpotify.Tracks.get_track/3,
         [track_id, %{}]
       )
@@ -133,7 +128,7 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_cast({:set_workers, queue_pid, timer_pid, users_pid}, state) do
-    num_users = length(HillsideJukebox.Users.get_all(users_pid))
+    num_users = length(HillsideJukebox.UserPool.get_all(users_pid))
 
     {:noreply,
      %{
@@ -149,17 +144,17 @@ defmodule HillsideJukebox.JukeboxServer do
         {:add_user, user},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
-    HillsideJukebox.Users.add_user(users_pid, user)
-    Logger.debug("Adding user to room pool: #{inspect(user)}")
-    # Need to make sure we actually removed someone before decrementing - security hole
-    {:noreply, %{state | num_users: num_users + 1}}
+    case HillsideJukebox.UserPool.add_user(users_pid, user) do
+      {:error, :already_in_pool} -> {:noreply, state}
+      {:ok, _new_user} -> {:noreply, %{state | num_users: num_users + 1}}
+    end
   end
 
   def handle_cast(
         {:remove_user, %HillsideJukebox.User{id: id}},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
-    HillsideJukebox.Users.remove_with_user_id(users_pid, id)
+    HillsideJukebox.UserPool.remove_with_user_id(users_pid, id)
     # Need to make sure we actually removed someone before decrementing - security hole
     {:noreply, %{state | num_users: num_users - 1}}
   end
@@ -172,7 +167,6 @@ defmodule HillsideJukebox.JukeboxServer do
         }
       ) do
     offset = HillsideJukebox.SongQueue.Timer.get_offset(timer_pid)
-    Logger.debug("Sync attempt: offset: #{inspect(offset)}")
 
     case offset do
       :not_started -> nil
@@ -192,14 +186,14 @@ defmodule HillsideJukebox.JukeboxServer do
         }
       ) do
     state =
-      %HillsideJukebox.User.State{voted_skip: has_voted?} =
-      HillsideJukebox.Users.get_state(users_pid, user_id)
+      {:ok, %HillsideJukebox.User.State{voted_skip: has_voted?}} =
+      HillsideJukebox.UserPool.get_state(users_pid, user_id)
 
     new_num_skip_vote = num_skip_vote
 
     if(!has_voted?) do
       new_state = %HillsideJukebox.User.State{state | voted_skip: true}
-      HillsideJukebox.Users.set_state(users_pid, user_id, new_state)
+      HillsideJukebox.UserPool.set_state(users_pid, user_id, new_state)
       new_num_skip_vote = new_num_skip_vote + 1
 
       if(new_num_skip_vote > num_users / 2) do
@@ -224,7 +218,7 @@ defmodule HillsideJukebox.JukeboxServer do
     # Again, need a way to broadcast this only to a room code
     HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, next)
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
-    HillsideJukebox.Users.reset_skip_votes(users_pid)
+    HillsideJukebox.UserPool.reset_skip_votes(users_pid)
     play_and_autoplay_next(next_song, server)
     {:reply, next_song, server}
   end

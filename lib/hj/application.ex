@@ -14,6 +14,8 @@ defmodule Hj.Application do
       HillsideJukebox.Room.CodesRegistry,
       # keeps track of user state for spotify oauth redirect
       HillsideJukebox.Auth.UserSession,
+      # maintains server -> server auth token
+      HillsideJukebox.Auth.Spotify,
       # Add repo to supervision tree
       {Hj.Repo, []}
       # Starts a worker by calling: Hj.Worker.start_link(arg)
