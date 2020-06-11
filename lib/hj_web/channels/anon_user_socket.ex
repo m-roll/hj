@@ -13,4 +13,5 @@ defmodule HjWeb.AnonUserSocket do
   channel("status:*", HjWeb.StatusChannel)
   channel("room", HjWeb.RoomChannel)
   channel("search:*", HjWeb.SearchChannel)
+  channel("user_anon:*", HjWeb.AnonUserChannel)
 end

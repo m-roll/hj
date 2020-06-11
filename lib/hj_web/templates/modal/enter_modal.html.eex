@@ -22,9 +22,11 @@
                 </div>
               </div>
               <div class="row">
-                <div id="div-join-room" class="col d-flex">
-                  <input type="text" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
-                  <button type="button" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
+                <div id="div-join-room" class="col">
+                  <form id="enter-modal-join-room-form" class="join-room-form d-flex">
+                    <input type="text" name="enter-modal-join-room-code" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
+                    <button type="submit" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
+                  </form>
                 </div>
               </div>
             </div>

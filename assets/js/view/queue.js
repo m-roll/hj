@@ -4,9 +4,6 @@ import {
 export default class QueueView {
   constructor() {
     this.queueDisp = document.getElementById("song-list");
-    document.getElementById("queue-skip").addEventListener("click", e => {
-      this.onSkipRequestCb();
-    });
     let queueHeader = document.getElementById("queue-table-header");
     document.getElementById("queue-peek-btn").addEventListener("click", e => {
       queueHeader.scrollIntoView(true);
@@ -40,8 +37,5 @@ export default class QueueView {
   }
   pop() {
     this.queueDisp.removeChild(this.queueDisp.childNodes[2]);
-  }
-  onSkipRequest(cb) {
-    this.onSkipRequestCb = cb;
   }
 }

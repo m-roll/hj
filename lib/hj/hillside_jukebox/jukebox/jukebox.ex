@@ -1,7 +1,15 @@
 defmodule HillsideJukebox.JukeboxServer do
-  defstruct([:room_code, :queue_pid, :timer_pid, :users_pid, :num_users, :num_skip_vote])
+  defstruct ~w[room_code
+               queue_pid
+               timer_pid
+               users_pid
+               num_users
+               skip_thresh
+               num_skip_votes
+               skip_log]a
   use GenServer
   require Logger
+  alias HillsideJukebox.{User}
 
   ## API
 
@@ -9,53 +17,113 @@ defmodule HillsideJukebox.JukeboxServer do
     GenServer.start_link(
       __MODULE__,
       %HillsideJukebox.JukeboxServer{
-        num_skip_vote: 0,
-        room_code: room_name
+        num_skip_votes: 0,
+        skip_thresh: 3,
+        room_code: room_name,
+        skip_log: MapSet.new()
       },
       name: via_tuple(room_name)
     )
   end
 
+  @doc """
+  Adds the song, specified by Spotify track URI, to the room given by the room code
+  """
   def add_to_queue(room_name, url) do
     GenServer.call(via_tuple(room_name), {:add_to_queue, url: url})
   end
 
+  @doc """
+  Plays the next song in the queue. This kicks off the entire queue to play until it is
+  empty, so subsequent calls do not need to be made.
+  """
   def play_next(room_name) do
     GenServer.call(via_tuple(room_name), :play_next)
   end
 
+  @doc """
+  Set the worker PIDs for the jukebox. The worker pids are the processes
+  for the queue state, the timer state, and the user pool. This is
+  a utility function for setting the PIDs when the supervisor
+  restarts any of the processes.
+  """
   def set_workers(room_name, queue_pid, timer_pid, users_pid) do
     GenServer.cast(via_tuple(room_name), {:set_workers, queue_pid, timer_pid, users_pid})
   end
 
+  @doc """
+  For the given user, sync their spotify account playback to the rest of the room. This
+  will immediately transfer playback of the given user's spotify account to the currently
+  playing song at the current song position.
+  """
   def sync_audio(room_name, user) do
     GenServer.cast(via_tuple(room_name), {:sync_audio, user})
   end
 
+  @doc """
+  Get the PID for the song queue process. Useful when inspecting the entire queue
+  """
   def get_users_pid(room_name) do
     GenServer.call(via_tuple(room_name), :get_users_pid)
   end
 
+  @doc """
+  Get the PID for the song queue process. Useful when inspecting the entire queue
+  """
   def get_queue_pid(room_name) do
     GenServer.call(via_tuple(room_name), :get_queue_pid)
   end
 
-  def get_timer_pid(room_name) do
-    GenServer.call(via_tuple(room_name), :get_timer_pid)
+  @doc """
+  Get the playback position of the current track.
+  """
+  def get_playback_pos(room_name) do
+    GenServer.call(via_tuple(room_name), :get_playback_pos)
   end
 
-  def vote_skip(room_name, user) do
-    GenServer.cast(via_tuple(room_name), {:vote_skip, user})
-  end
-
+  @doc """
+  Gets the currently playing track in the room, or :empty if the queue is empty.
+  """
   def current_playing(room_name) do
     GenServer.call(via_tuple(room_name), :current)
   end
 
-  def add_user(room_name, user) do
-    GenServer.cast(via_tuple(room_name), {:add_user, user})
+  @doc """
+  Add a user to the pool of users for the given room specified by the room code.
+  """
+  def add_user(room_code, user) do
+    GenServer.cast(via_tuple(room_code), {:add_user, user})
   end
 
+  @doc """
+  Check if the given user is the host for the room
+  """
+  def is_host?(room_code, user) do
+    GenServer.call(via_tuple(room_code), {:is_host?, user})
+  end
+
+  @doc """
+  Set the threshold for number of votes to skip a song. Can only be set by the host
+  of the room.
+  """
+  @spec set_skip_vote_threshold(room_code :: String.t(), user :: any, threshold :: pos_integer) ::
+          {:ok, new_threshold :: pos_integer} | {:error, error_reason :: String.t()}
+  def set_skip_vote_threshold(room_code, user, threshold) do
+    GenServer.call(via_tuple(room_code), {:set_skip_thresh, user, threshold})
+  end
+
+  @doc """
+  Votes to skip the track, with some identifier of the source of the skip (typically IP address). If
+  there is already a vote to skip from this identifier, return {:error, "already voted"}
+  Else, return {:ok, %{num_skips: _, skips_needed: _}, calculated AFTER the skip takes place.
+  """
+  def vote_skip(room_code, identifier) do
+    GenServer.call(via_tuple(room_code), {:vote_skip, identifier})
+  end
+
+  @doc """
+  Remove a user from the pool of users for the given room specified by the room code.
+  """
   def remove_user(room_name, user) do
     GenServer.cast(via_tuple(room_name), {:remove_user, user})
   end
@@ -65,7 +133,6 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   ## Genserver impl
-  ## State is a {pid, pid} tuple where the first pid is the queue process and the second the timer process
 
   @impl true
   def handle_call(
@@ -75,7 +142,8 @@ defmodule HillsideJukebox.JukeboxServer do
           queue_pid: queue_pid
         }
       ) do
-    play_next_internal(server)
+    next_song = play_next_internal(server)
+    {:reply, next_song, server}
   end
 
   @impl true
@@ -114,11 +182,11 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   def handle_call(
-        :get_timer_pid,
+        :get_playback_pos,
         _from,
         server = %HillsideJukebox.JukeboxServer{timer_pid: timer_pid}
       ) do
-    {:reply, timer_pid, server}
+    {:reply, HillsideJukebox.SongQueue.Timer.get_offset(timer_pid), server}
   end
 
   def handle_call(:current, _from, server = %HillsideJukebox.JukeboxServer{queue_pid: queue_pid}) do
@@ -150,6 +218,106 @@ defmodule HillsideJukebox.JukeboxServer do
     end
   end
 
+  def handle_call(
+        {:is_host?, %User{id: user_id}},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{users_pid: users_pid}
+      ) do
+    result = is_host_int?(users_pid, user_id)
+    {:reply, result, state}
+  end
+
+  defp is_host_int?(users_pid, user_id) do
+    case HillsideJukebox.UserPool.get_host(users_pid) do
+      {:ok, host_user_id} -> {:ok, user_id == host_user_id}
+      error -> error
+    end
+  end
+
+  def handle_call(
+        {:set_skip_thresh, user, threshold},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{users_pid: users_pid}
+      ) do
+    case(is_host_int?(users_pid, user.id)) do
+      {:ok, true} -> {:reply, {:ok, threshold}, set_vote_threshold(state, threshold)}
+      _ -> {:reply, {:error, "not a host"}, state}
+    end
+  end
+
+  def handle_call(
+        {:vote_skip, identifier},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
+      ) do
+    if MapSet.member?(skip_log, identifier) do
+      {:reply, {:error, "already voted"}, state}
+    else
+      new_state = vote_for_identifier(state, identifier)
+      new_skip_state = %{num_skips: new_state.num_skip_votes, skips_needed: new_state.skip_thresh}
+
+      {:reply, {:ok, new_skip_state}, new_state}
+    end
+  end
+
+  defp vote_for_identifier(
+         state = %HillsideJukebox.JukeboxServer{
+           skip_log: skip_log,
+           skip_thresh: skip_thresh,
+           num_skip_votes: old_vote_num
+         },
+         identifier
+       ) do
+    new_skip_log = MapSet.put(skip_log, identifier)
+    new_skip_votes = MapSet.size(new_skip_log)
+
+    new_state = %{state | skip_log: new_skip_log, num_skip_votes: new_skip_votes}
+    Logger.debug("Skip state old #{inspect(old_vote_num)} new #{inspect(new_skip_votes)}")
+
+    if old_vote_num != new_skip_votes do
+      update_skip_state(new_state)
+    else
+      new_state
+    end
+  end
+
+  defp set_vote_threshold(state, threshold) do
+    new_state = %{state | skip_thresh: threshold}
+    update_skip_state(new_state)
+  end
+
+  defp check_skip!(
+         state = %HillsideJukebox.JukeboxServer{
+           skip_thresh: skip_thresh,
+           num_skip_votes: num_skip_votes
+         }
+       ) do
+    if num_skip_votes >= skip_thresh do
+      skip!(state)
+    else
+      state
+    end
+  end
+
+  defp update_skip_state(state) do
+    new_skip_state = check_skip!(state)
+
+    HjWeb.Endpoint.broadcast(
+      "user_anon:" <> state.room_code,
+      "user_anon:skip_state",
+      %{num_skips: state.num_skip_votes, skips_needed: state.skip_thresh}
+    )
+
+    new_skip_state
+  end
+
+  defp skip!(state) do
+    # actually do the skipping here
+    %{state | num_skip_votes: 0, skip_log: MapSet.new()}
+    new_song = skip_current_song(state)
+    HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", new_song)
+  end
+
   def handle_cast(
         {:remove_user, %HillsideJukebox.User{id: id}},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
@@ -176,36 +344,6 @@ defmodule HillsideJukebox.JukeboxServer do
     {:noreply, server}
   end
 
-  @impl true
-  def handle_cast(
-        {:vote_skip, %HillsideJukebox.User{id: user_id}},
-        server = %HillsideJukebox.JukeboxServer{
-          users_pid: users_pid,
-          num_skip_vote: num_skip_vote,
-          num_users: num_users
-        }
-      ) do
-    state =
-      {:ok, %HillsideJukebox.User.State{voted_skip: has_voted?}} =
-      HillsideJukebox.UserPool.get_state(users_pid, user_id)
-
-    new_num_skip_vote = num_skip_vote
-
-    if(!has_voted?) do
-      new_state = %HillsideJukebox.User.State{state | voted_skip: true}
-      HillsideJukebox.UserPool.set_state(users_pid, user_id, new_state)
-      new_num_skip_vote = new_num_skip_vote + 1
-
-      if(new_num_skip_vote > num_users / 2) do
-        skip_current_song(server)
-      end
-
-      {:noreply, %HillsideJukebox.JukeboxServer{server | num_skip_vote: new_num_skip_vote}}
-    else
-      {:noreply, server}
-    end
-  end
-
   defp play_next_internal(
          server = %HillsideJukebox.JukeboxServer{
            room_code: room_code,
@@ -215,12 +353,11 @@ defmodule HillsideJukebox.JukeboxServer do
        ) do
     # Why are we popping and then getting current? Really could be done in one step
     next = HillsideJukebox.SongQueue.Server.next(queue_pid)
-    # Again, need a way to broadcast this only to a room code
     HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, next)
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
-    HillsideJukebox.UserPool.reset_skip_votes(users_pid)
+    # HillsideJukebox.UserPool.reset_skip_votes(users_pid)
     play_and_autoplay_next(next_song, server)
-    {:reply, next_song, server}
+    next_song
   end
 
   defp skip_current_song(
@@ -244,6 +381,14 @@ defmodule HillsideJukebox.JukeboxServer do
     HillsideJukebox.Player.play(users_pid, room_code, song)
     HillsideJukebox.SongQueue.Timer.timeout(timer_pid, duration)
     song
+  end
+
+  defp play_and_autoplay_next(:empty, %HillsideJukebox.JukeboxServer{
+         room_code: room_code,
+         users_pid: users_pid
+       }) do
+    HjWeb.Endpoint.broadcast!("queue:" <> room_code, "queue:empty", %{})
+    HillsideJukebox.Player.pause(users_pid, room_code)
   end
 
   defp play_with_offset_for_user(

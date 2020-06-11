@@ -29,6 +29,9 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   end
 
   def pause_track(user) do
-    {:ok, :no_content} = call_for_user(user, &DeSpotify.Player.pause_playback/2, [%{}])
+    case call_for_user(user, &DeSpotify.Player.pause_playback/2, [%{}]) do
+      {:ok, _} -> {:ok}
+      error_tuple -> error_tuple
+    end
   end
 end

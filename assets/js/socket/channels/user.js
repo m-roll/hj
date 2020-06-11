@@ -8,8 +8,12 @@ export default class UserChannel {
   }
   register() {
     this.userChannel.push('user:register').receive("ok", resp => {
-      this.songStatusUpdateCb(resp);
-      //should throw some error if we cannot add to user pool. Maybe "could not sync with queue"
+      if (resp.error) {
+        this.onUserRegisterErrorCb(resp.error)
+      } else {
+        this.onRegisterCb();
+        this.songStatusUpdateCb(resp);
+      }
     })
   }
   unregister() {
@@ -20,17 +24,18 @@ export default class UserChannel {
   onSongStatusUpdate(songStatusUpdateCb) {
     this.songStatusUpdateCb = songStatusUpdateCb;
   }
+  onRegister(cb) {
+    this.onRegisterCb = cb;
+  }
+  onUserRegisterError(cb) {
+    this.onUserRegisterErrorCb = cb;
+  }
   join() {
     this.userChannel.join().receive("ok", resp => {
       console.log("Joined user channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join user channel", resp)
     })
-  }
-  voteSkip(roomCode) {
-    this.userChannel.push("user:vote_skip").receive(resp => {
-      //TODO maybe grey out the skip button
-    });
   }
   createRoom(cb) {
     this.userChannel.push("user:create_room").receive("ok", resp => {
@@ -39,11 +44,15 @@ export default class UserChannel {
       console.warn("Error creating room", resp);
     })
   }
-  setDeviceId(newId, successCb) {
+  setDeviceId(newId, successCb, failureCb) {
     this.userChannel.push("user:set_device", {
       deviceId: newId
-    }).receive("ok", () => {
-      successCb(newId);
+    }).receive("ok", (payload) => {
+      if (payload && payload.error) {
+        failureCb(payload.error);
+      } else {
+        successCb(newId);
+      }
     });
   }
   getDevices() {

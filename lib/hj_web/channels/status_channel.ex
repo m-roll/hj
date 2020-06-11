@@ -13,13 +13,9 @@ defmodule HjWeb.StatusChannel do
     room_code = socket |> room_code
     current = HillsideJukebox.JukeboxServer.current_playing(room_code)
 
-    offset =
-      room_code
-      |> HillsideJukebox.JukeboxServer.get_timer_pid()
-      |> HillsideJukebox.SongQueue.Timer.get_offset()
+    playback_pos = HillsideJukebox.JukeboxServer.get_playback_pos(room_code)
 
-    timer_pid = HillsideJukebox.JukeboxServer.get_timer_pid(room_code)
-    {:reply, {:ok, %{song: current, playback_pos: offset}}, socket}
+    {:reply, {:ok, %{song: current, playback_pos: playback_pos}}, socket}
   end
 
   defp room_code(socket) do

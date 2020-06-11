@@ -1,4 +1,6 @@
 export const mockRedirectHome = () => {
   history.pushState({}, document.title, '/');
-  hj_room_code = null;
+  if (hj_has_room_code) {
+    hj_room_code = null;
+  }
 }

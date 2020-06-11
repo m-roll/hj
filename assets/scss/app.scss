@@ -103,6 +103,11 @@ main {
 .btn:hover {
   scale: 1.05;
   transition: scale ease 0.05s;
+
+  &.disabled {
+    scale: 1;
+    cursor: not-allowed;
+  }
 }
 
 .btn-secondary {
@@ -114,6 +119,13 @@ main {
 .btn-secondary:hover {
   background-color: rgba(25, 20, 20, 1.0);
   box-shadow: 0 0 0 1px rgb(255, 255, 255);
+
+  &.disabled {
+    color: #ced4da;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    box-shadow: 0 0 0 1px #d7d7d7;
+  }
 }
 
 .card {
@@ -203,7 +215,7 @@ tr td {
   max-height: 90vh;
 }
 
-#div-join-room,
+.join-room-form,
 #div-create-room {
   flex-direction: column;
   justify-content: space-around;

@@ -29,4 +29,7 @@ export default class DevicesView {
       this.devicesBtn.classList.add("devices-disabled");
     }
   }
+  hide() {
+    this.devicesListModal.dismiss();
+  }
 }

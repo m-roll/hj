@@ -2,6 +2,8 @@ defmodule HjWeb.SecureUserChannel do
   use Phoenix.Channel
   require Logger
 
+  alias HillsideJukebox.{User}
+
   def join("user:" <> _roomCode, _payload, socket) do
     {:ok, socket}
   end
@@ -16,15 +18,22 @@ defmodule HjWeb.SecureUserChannel do
         _payload,
         socket
       ) do
-    HillsideJukebox.JukeboxServer.add_user(room_code(socket), socket_user(socket))
+    {:reply, register_user(room_code(socket), live_user(socket)), socket}
+  end
 
-    HillsideJukebox.JukeboxServer.sync_audio(room_code(socket), socket_user(socket))
-    {:noreply, socket}
+  defp register_user(room_code, user = %User{room_active: nil}) do
+    HillsideJukebox.JukeboxServer.add_user(room_code, user)
+    HillsideJukebox.Accounts.set_active_room(user, room_code)
+    HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
+    :ok
+  end
+
+  defp register_user(room_code, _) do
+    {:ok, error_already_active(room_code)}
   end
 
   def handle_in("user:unregister", _payload, socket) do
-    HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
-    remove_user_from_pool(socket)
+    eject_user_sync(socket)
 
     {:noreply, socket}
   end
@@ -48,36 +57,76 @@ defmodule HjWeb.SecureUserChannel do
     {:reply, res, socket}
   end
 
-  def handle_in(
-        "user:vote_skip",
-        _payload,
-        socket
-      ) do
-    HillsideJukebox.JukeboxServer.vote_skip(room_code(socket), socket_user(socket))
-
-    {:noreply, socket}
-  end
-
   def handle_in("user:set_device", payload, socket) do
-    user = socket_user(socket)
+    user = live_user(socket)
     device_id = payload["deviceId"]
 
+    case check_correct_room(socket, user) do
+      :ok ->
+        do_transfer_device(user, device_id)
+        {:reply, :ok, socket}
+
+      {:error, :not_set} ->
+        do_transfer_device(user, device_id)
+        {:reply, :ok, socket}
+
+      {:error, %{active_room: active_room}} ->
+        {:reply, {:ok, error_already_active(active_room)}, socket}
+    end
+  end
+
+  defp do_transfer_device(user, device_id) do
     {:ok, :no_content} =
       HillsideJukebox.Auth.Spotify.call_for_user(user, &DeSpotify.Player.transfer_device/3, [
         [device_id],
         %{}
       ])
+  end
 
-    {:reply, :ok, socket}
+  def handle_in("user:get_authority", _payload, socket) do
+    user = socket_user(socket)
+    is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(user)
+    {:reply, is_host_or_error, socket}
   end
 
   def terminate(_reason, socket) do
     user = socket_user(socket)
 
-    # TODO only pause if the current song is the same one currently in queue.
-    HillsideJukebox.Player.stop_playback_for_user(socket_user(socket))
+    eject_user_sync(socket)
+  end
 
-    remove_user_from_pool(socket)
+  defp eject_user_sync(socket) do
+    user = live_user(socket)
+
+    case check_correct_room(socket, user) do
+      :ok ->
+        HillsideJukebox.Player.stop_playback_for_user(user)
+        remove_user_from_pool(socket)
+        HillsideJukebox.Accounts.set_active_room(user, nil)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp error_already_active(room_code) do
+    %{error: %{message: "already active", room_code: room_code}}
+  end
+
+  def broadcast_new_host(room_code) do
+    HjWeb.broadcast!("user:" <> room_code, "user:new_host")
+  end
+
+  defp check_correct_room(socket, user) do
+    if (active_room = user.room_active) == room_code(socket) do
+      :ok
+    else
+      if active_room == nil do
+        {:error, :not_set}
+      else
+        {:error, %{active_room: active_room}}
+      end
+    end
   end
 
   defp room_code(socket) do
@@ -88,6 +137,11 @@ defmodule HjWeb.SecureUserChannel do
   defp socket_user(socket) do
     %Phoenix.Socket{assigns: %{user: user}} = socket
     user
+  end
+
+  defp live_user(socket) do
+    %Phoenix.Socket{assigns: %{user: %User{id: user_id}}} = socket
+    HillsideJukebox.Accounts.get(user_id)
   end
 
   defp remove_user_from_pool(socket) do

@@ -12,7 +12,7 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
     setup_jukebox = fn -> setup(name, me) end
 
     children = [
-      HillsideJukebox.UserPool,
+      {HillsideJukebox.UserPool, name},
       {HillsideJukebox.SongQueue.Server, :queue.new()},
       {HillsideJukebox.SongQueue.Timer, fn -> HillsideJukebox.JukeboxServer.play_next(name) end},
       %{

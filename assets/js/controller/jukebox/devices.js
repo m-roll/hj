@@ -1,12 +1,13 @@
 export default class DevicesController {
   devicesListCache;
   isListening;
-  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening) {
+  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening, errorView) {
     this.devicesView = devicesView;
     this.devicesProviderThunk = devicesProviderThunk;
     this.roomCodeThunk = roomCodeThunk;
     this.isDeviceReady = false;
     this.isListening = isListening;
+    this.errorView = errorView
   }
   ready() {
     this._setupListeners();
@@ -24,6 +25,9 @@ export default class DevicesController {
   onListen(cb) {
     this.onListenCb = cb;
   }
+  setAlreadyJoined(hasAlreadyJoined) {
+    this.hasAlreadyJoined = hasAlreadyJoined;
+  }
   _setupListeners() {
     this.devicesProviderThunk().onReceiveDevices((payload) => {
       this.devicesListCache = payload.devices;
@@ -33,12 +37,14 @@ export default class DevicesController {
       this.devicesProviderThunk().getDevices();
     }).bind(this));
     this.devicesView.onDeviceChangeSubmit(((newDevice) => {
-      this.devicesProviderThunk().setDeviceId(newDevice, this._onChangeDevice.bind(this));
+      this.devicesProviderThunk().setDeviceId(newDevice, this._onChangeDevice.bind(this), ((error) => {
+        if (error.message === "already active") {
+          this.devicesView.hide();
+          this.errorView.error("Already playing music", `A device is already connected in queue '${error.room_code}'. Please disconnect audio there to listen to this queue.`)
+        }
+      }).bind(this));
     }).bind(this.devicesView));
     this.devicesView.onMute(() => {
-      if (this.isListening === true) {
-        //this._onNotReadyForPlaybackCb();
-      }
       this.isListening = false;
       this._updateDevices(this.devicesListCache, this.isListening);
     });

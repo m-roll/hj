@@ -11,5 +11,6 @@ defmodule HillsideJukebox.User do
     field(:refresh_token, :string)
     field(:expires_at, :naive_datetime)
     field(:scope, {:array, :string})
+    field(:room_active, :string)
   end
 end

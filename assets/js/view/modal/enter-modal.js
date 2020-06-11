@@ -1,4 +1,10 @@
 import $ from 'jquery'; // let's keep jquery out of other stuff
+import {
+  getInputValueFromForm
+} from '../util/jquery';
+const roomCodeInputName = "enter-modal-join-room-code";
+const joinRoomFormId = 'enter-modal-join-room-form';
+const modalId = 'enter-modal';
 export default class EnterModal {
   constructor() {
     this.modalElement = $('#enter-modal');
@@ -21,8 +27,18 @@ export default class EnterModal {
   }
   onJoinRoomSubmit(cb) {
     const dismiss = () => {
-      $('#enter-modal').modal('hide');
+      $('#' + modalId).modal('hide');
     }
+    $('#' + joinRoomFormId).on('submit', (event) => {
+      let roomCode = getInputValueFromForm($(event.currentTarget), roomCodeInputName);
+      history.pushState({}, document.title, roomCode);
+      cb(roomCode);
+      dismiss();
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    })
+    /*
     $('#enter-modal-room-join').click(e => {
       let roomCode = $('#enter-modal-room-code').val();
       $('#enter-modal-room-code').val('');
@@ -30,5 +46,6 @@ export default class EnterModal {
       cb(roomCode);
       dismiss();
     });
+    */
   }
 }

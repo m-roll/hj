@@ -12,12 +12,22 @@ defmodule HillsideJukebox.Player do
 
     Enum.each(
       users,
-      fn {user, _state} ->
+      fn user ->
         Task.start(fn ->
           play_at_for_user(user, song, 0)
         end)
       end
     )
+  end
+
+  def pause(users_pid, room_code) do
+    users = HillsideJukebox.UserPool.get_all(users_pid)
+
+    Enum.each(users, fn user ->
+      Task.start(fn ->
+        HillsideJukebox.Player.SpotifyPlayer.pause_track(user)
+      end)
+    end)
   end
 
   def stop_playback_for_user(user) do

@@ -9,6 +9,9 @@ export default class QueueChannel {
   onQueuePop(roomCode, popCb) {
     this.queueChannel.on('queue:pop:' + roomCode, popCb);
   }
+  onQueueEmpty(cb) {
+    this.queueChannel.on('queue:empty', cb);
+  }
   join() {
     this.queueChannel.join().receive("ok", resp => {
       console.log("Joined queue channel successfully", resp)

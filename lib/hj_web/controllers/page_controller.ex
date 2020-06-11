@@ -33,6 +33,7 @@ defmodule HjWeb.PageController do
       |> Map.merge(handle_user_fields(conn, params))
       |> Map.merge(handle_meta_fields(conn, params))
 
+    Logger.debug("Jukebox fields: #{inspect(fields)}")
     render(conn, "index.html", fields)
   end
 
@@ -56,13 +57,23 @@ defmodule HjWeb.PageController do
   end
 
   defp handle_meta_fields(conn, params) do
-    case Map.fetch(params, "listen") do
-      {:ok, true} -> %{hj_listening: true}
-      _ -> %{hj_listening: false}
-    end
+    listening_map =
+      case Map.fetch(params, "listen") do
+        {:ok, true} -> %{hj_listening: true}
+        _ -> %{hj_listening: false}
+      end
+
+    Map.merge(%{hj_web_host: get_host()}, listening_map)
   end
 
   def queue(conn, _params) do
     render(conn, "queue.html")
+  end
+
+  defp get_host() do
+    endpoint_config = Application.get_env(:hj, HjWeb.Endpoint, :url)
+    url_config = Keyword.get(endpoint_config, :url)
+    %URI{host: host_name} = URI.parse(Keyword.get(url_config, :host))
+    host_name
   end
 end

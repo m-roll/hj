@@ -28,6 +28,10 @@ export default class StatusView {
       this._setTrackArtwork(newEntry.track_art_url)
     }
   }
+  setEmpty() {
+    this._setTrackArtwork('');
+    this.statusEmptyView.show();
+  }
   _setTrackName(trackName) {
     this.trackPlayingName.textContent = trackName;
   }

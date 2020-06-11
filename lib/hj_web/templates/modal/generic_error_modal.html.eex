@@ -1,0 +1,15 @@
+<div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div id="error-modal-body" class="modal-body">
+        <h5 id="error-modal-title" class="card-title mb-4">Error</h5>
+        <div class="col">
+          <div id="error-modal-content" class="row">
+            <p>Please launch Spotify on one of your devices. Once you do, you will have the option to connect to it here.</p>
+          </div>
+        </div>
+        <button id="error-modal-close-btn" type="button" class="btn btn-secondary">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>

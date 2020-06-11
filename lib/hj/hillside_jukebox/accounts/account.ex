@@ -40,6 +40,14 @@ defmodule HillsideJukebox.Accounts do
     |> Repo.update()
   end
 
+  def set_active_room(user, active_room) do
+    user
+    |> Ecto.Changeset.cast(%{room_active: active_room}, [
+      :room_active
+    ])
+    |> Repo.update()
+  end
+
   def get_by_email(email) do
     Repo.one(query_user_by_email(email))
   end

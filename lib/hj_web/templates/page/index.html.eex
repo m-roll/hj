@@ -26,7 +26,8 @@
       </div>
     </header>
     <main id="main" role="main" class="d-flex flex-column"> <script>
-        let hj_listening = "<%= @hj_listening%>";
+        let hj_listening = <%= @hj_listening%>;
+        let hj_has_room_code = <%= @has_room_code %>;
         <%= if @has_room_code do %>
           let hj_room_code = "<%= @room_code%>";
         <%end%>
@@ -40,10 +41,10 @@
         <div class="cover"></div>
       </div>
       <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
-      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
+      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "generic_error_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
         <div class="col px-auto preview-container d-flex">
           <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-          <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at sfs.tv</p> <%end%> </div>
+          <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at <%= @hj_web_host%> </p> <%end%> </div>
         </div>
       </div>
       <div class="hud-bottom">
