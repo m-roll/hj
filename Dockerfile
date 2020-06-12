@@ -4,6 +4,7 @@ FROM elixir:1.10.2-alpine AS build
 RUN apk add --no-cache build-base npm git python
 
 # prepare build dir
+RUN mkdir /app
 WORKDIR /app
 
 # install hex + rebar
@@ -16,7 +17,8 @@ ENV MIX_ENV=prod
 # install mix dependencies
 COPY mix.exs mix.lock ./
 COPY config config
-RUN mix do deps.get, deps.compile
+RUN mix do deps.get --only $MIX_ENV
+RUN mix deps.compile
 
 # build assets
 COPY assets/package.json assets/package-lock.json ./assets/
@@ -35,7 +37,7 @@ RUN mix do compile, release
 
 # prepare release image
 FROM alpine:3.9 AS app
-RUN apk add --no-cache openssl ncurses-libs
+RUN apk add --no-cache bash openssl ncurses-libs postgresql-client
 
 WORKDIR /app
 
@@ -45,6 +47,8 @@ USER nobody:nobody
 
 COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/hj ./
 
+COPY entrypoint.sh .
+USER nobody
 ENV HOME=/app
 
-CMD ["bin/hj", "start"]
+CMD ["bash", "/app/entrypoint.sh"]

@@ -90,8 +90,6 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   def terminate(_reason, socket) do
-    user = socket_user(socket)
-
     eject_user_sync(socket)
   end
 
