@@ -12,7 +12,7 @@ services:
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - POSTGRES_DB=hj_repo
-      - POSTGRES_HOSTNAME=localhost
+      - POSTGRES_HOSTNAME=db
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
       - GUARDIAN_SECRET=${GUARDIAN_SECRET}
@@ -33,6 +33,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=hj_repo
     networks:
       - internal

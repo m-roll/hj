@@ -20,7 +20,7 @@ secret_key_base =
 
 db_username = System.get_env("POSTGRES_USERNAME") || "postgres"
 db_password = System.get_env("POSTGRES_PASSWORD") || "postgres"
-db_hostname = System.get_env("POSTGRES_HOSTNAME") || "localhost"
+db_hostname = System.get_env("POSTGRES_HOSTNAME") || "db"
 db_database = System.get_env("POSTGRES_DB") || "hj_repo"
 
 db_url = "ecto://#{db_username}:#{db_password}@#{db_hostname}/#{db_database}"
