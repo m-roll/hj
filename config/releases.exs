@@ -11,12 +11,17 @@ import Config
 # - POSTGRES_PASSWORD: password for logging into postgres
 # - POSTGRES_HOSTNAME: Host name for logging into postgres (probably localhost)
 
-secret_key_base =
-  System.get_env("SECRET_KEY_BASE") ||
+get_or_raise_env = fn env_name ->
+  System.get_env(env_name) ||
     raise """
-    environment variable SECRET_KEY_BASE is missing.
-    You can generate one by calling: mix phx.gen.secret
+    environment variable #{env_name} is missing.
     """
+end
+
+secret_key_base = get_or_raise_env.("SECRET_KEY_BASE")
+
+spotify_client_id = get_or_raise_env.("SPOTIFY_CLIENT_ID")
+spotify_client_secret = get_or_raise_env.("SPOTIFY_CLIENT_SECRET")
 
 db_username = System.get_env("POSTGRES_USERNAME") || "postgres"
 db_password = System.get_env("POSTGRES_PASSWORD") || "postgres"
@@ -42,6 +47,10 @@ config :spotify_ex,
     "user-modify-playback-state"
   ],
   callback_url: System.get_env("APP_REDIRECT_URI")
+
+config :despotify,
+  client_id: spotify_client_id,
+  client_secret: spotify_client_secret
 
 config :hj, HjWeb.Guardian,
   issuer: "HillsideJukebox",

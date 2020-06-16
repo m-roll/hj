@@ -19,8 +19,10 @@ services:
       - APP_REDIRECT_URI=${APP_REDIRECT_URI}
       - APP_HOST=${APP_HOST}
       - APP_PORT=${APP_PORT}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_ID}
     ports:
-      - 4000:4000
+      - 80:${APP_PORT}
     networks:
       - internal
     depends_on:
