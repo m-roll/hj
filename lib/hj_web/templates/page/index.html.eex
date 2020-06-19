@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="col-1">
-        <button id="add-track-button" class="btn add-track-btn"><i class="fas fa-plus add-track-icon"></i></button>
+        <button id="add-track-button" class="btn add-track-btn"><%= svg_image("plus") %></button>
       </div>
       <div class="col">
       </div>
@@ -25,7 +25,62 @@
         </div>
       </div>
     </header>
-    <main id="main" role="main" class="d-flex flex-column"> <script>
+    <div id="audio-play-overlay" class="d-flex">
+      <p>Setting things up...</p>
+      <div class="cover"></div>
+    </div>
+    <div id="background">
+    </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "generic_error_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
+      <div class="col px-auto preview-container d-flex">
+        <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+        <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at <%= @hj_web_host%> </p> <%end%> </div>
+      </div>
+    </div>
+    <div class="hud-bottom row px-5">
+      <div class="col">
+        <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
+          <div class="col-4">
+            <div class="row mb-1">
+              <div class="col">
+                <p class="my-auto font-weight-bold">
+                  <div class="overflow-marquee">
+                    <span id="status-song-title" class="overflow-marquee-inner">Song title</span>
+                  </div>
+                </p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p class="my-auto overflow-marquee">
+                  <div class="overflow-marquee">
+                    <span id="status-song-artist" class="overflow-marquee-inner">Song artist</span>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col d-flex">
+            <div id="listening-progress-bar" class="progress-outer my-auto">
+              <div id="track-progress" class="progress-inner"></div>
+            </div>
+          </div>
+          <div class="col-2 d-flex">
+            <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
+          </div>
+          <div class="col-2 d-flex">
+            <a tabindex="0" class="btn btn-device-playback devices-disabled" id="btn-devices" role="button" data-placement="top" data-toggle="popover" title="Switch device" data-content="Loading devices...">
+              <i class="fas fa-headphones-alt playback-device-icon"></i>
+            </a></button>
+          </div>
+        </div>
+        <div class="queue-peek row">
+          <div class="col queue-peek-holder">
+            <button class="queue-peek-button btn" id="queue-peek-btn">view queue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
         let hj_listening = <%= @hj_listening%>;
         let hj_has_room_code = <%= @has_room_code %>;
         <%= if @has_room_code do %>
@@ -36,58 +91,6 @@
           let hj_resource_token = "<%= @hj_resource_token%>";
         <% end %>
       </script>
-      <div id="audio-play-overlay" class="d-flex">
-        <p>Setting things up...</p>
-        <div class="cover"></div>
-      </div>
-      <div id="background" style="background-image: url('<%= Routes.static_path(@conn, "/images/samg.bmp") %>')">
-      </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "generic_error_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
-        <div class="col px-auto preview-container d-flex">
-          <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-          <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at <%= @hj_web_host%> </p> <%end%> </div>
-        </div>
-      </div>
-      <div class="hud-bottom">
-        <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
-          <div class="col-1 col-sm-1">
-          </div>
-          <div class="col-3 col-sm-2">
-            <div class="row mb-1">
-              <p class="my-auto font-weight-bold">
-                <div class="overflow-marquee">
-                  <span id="status-song-title" class="overflow-marquee-inner">Song title</span>
-                </div>
-              </p>
-            </div>
-            <div class="row">
-              <p class="my-auto overflow-marquee">
-                <div class="overflow-marquee">
-                  <span id="status-song-artist" class="overflow-marquee-inner">Song artist</span>
-                </div>
-              </p>
-            </div>
-          </div>
-          <div class="col-5 col-sm-6 d-flex">
-            <div id="listening-progress-bar" class="progress-outer my-auto">
-              <div id="track-progress" class="progress-inner"></div>
-            </div>
-          </div>
-          <div class="col col-1 d-flex">
-            <a tabindex="0" class="btn btn-device-playback devices-disabled" id="btn-devices" role="button" data-placement="top" data-toggle="popover" title="Switch device" data-content="Loading devices...">
-              <i class="fas fa-headphones-alt playback-device-icon"></i>
-            </a></button>
-          </div>
-          <div class="col-1 col-sm-2 d-flex">
-            <button type="button fl" id="queue-skip" class="btn btn-secondary my-auto mx-auto">Skip</button>
-          </div>
-        </div>
-        <div class="queue-peek row">
-          <div class="col queue-peek-holder">
-            <button class="queue-peek-button btn" id="queue-peek-btn">view queue</button>
-          </div>
-        </div>
-      </div>
-    </main>
   </div>
 </div>
 <div class="container-fluid bottom-readable">

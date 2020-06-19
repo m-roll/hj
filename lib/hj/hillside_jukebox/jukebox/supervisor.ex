@@ -3,7 +3,7 @@ defmodule HillsideJukebox.Jukebox.Supervisor do
   use Supervisor
 
   def start_link(name) do
-    result = {:ok, pid} = Supervisor.start_link(__MODULE__, name)
+    result = {:ok, _pid} = Supervisor.start_link(__MODULE__, name)
     result
   end
 

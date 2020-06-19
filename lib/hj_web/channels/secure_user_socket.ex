@@ -1,10 +1,9 @@
 defmodule HjWeb.SecureUserSocket do
   require Logger
   use Phoenix.Socket
-  alias HillsideJukebox.{User}
 
   def connect(params = %{"user_token" => jwt}, socket, _connect_info) do
-    case sign_in(socket, jwt, params) do
+    case sign_in(socket, jwt) do
       {:ok, authed_socket} ->
         {:ok, assign(authed_socket, room_code: params["room_code"])}
 
@@ -16,7 +15,7 @@ defmodule HjWeb.SecureUserSocket do
     end
   end
 
-  defp sign_in(socket, jwt, params) do
+  defp sign_in(socket, jwt) do
     HjWeb.Guardian.resource_from_token(jwt)
     |> extract_user()
     |> validate_user()
@@ -42,7 +41,7 @@ defmodule HjWeb.SecureUserSocket do
     {:ok, assign(socket, user: user)}
   end
 
-  def assign_user(error_tuple, socket) do
+  def assign_user(error_tuple, _socket) do
     {:error, %{message: "Could not assign user to socket connection", reason: error_tuple}}
   end
 

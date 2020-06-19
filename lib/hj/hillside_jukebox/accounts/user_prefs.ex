@@ -1,7 +1,7 @@
 defmodule HillsideJukebox.UserPref do
   use Ecto.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:id, :id, autogenerate: true}
   schema "hj_user_prefs" do
     belongs_to(:hj_users, HillsideJukebox.User)
     field(:nickname, :string)

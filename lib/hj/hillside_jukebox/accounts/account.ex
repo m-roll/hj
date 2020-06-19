@@ -68,10 +68,8 @@ defmodule HillsideJukebox.Accounts do
          %DeSpotify.Auth.Tokens{access_token: at, refresh_token: rt},
          %DeSpotify.PrivateUser{id: id, display_name: dn, email: email}
        ) do
-    {id_int, _} = Integer.parse(id)
-
     %HillsideJukebox.User{
-      id: id_int,
+      id: id,
       access_token: at,
       refresh_token: rt,
       display_name: dn,

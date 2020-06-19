@@ -22,6 +22,7 @@ secret_key_base = get_or_raise_env.("SECRET_KEY_BASE")
 
 spotify_client_id = get_or_raise_env.("SPOTIFY_CLIENT_ID")
 spotify_client_secret = get_or_raise_env.("SPOTIFY_CLIENT_SECRET")
+redirect_uri = get_or_raise_env.("APP_REDIRECT_URI")
 
 db_username = System.get_env("POSTGRES_USERNAME") || "postgres"
 db_password = System.get_env("POSTGRES_PASSWORD") || "postgres"
@@ -37,20 +38,10 @@ config :hj, HjWeb.Endpoint,
 
 config :hj, HjWeb.Endpoint, server: true
 
-config :spotify_ex,
-  user_id: "<YOUR SPOTIFY USER ID>",
-  scopes: [
-    "streaming",
-    "user-read-email",
-    "user-read-private",
-    "user-read-playback-state",
-    "user-modify-playback-state"
-  ],
-  callback_url: System.get_env("APP_REDIRECT_URI")
-
 config :despotify,
   client_id: spotify_client_id,
-  client_secret: spotify_client_secret
+  client_secret: spotify_client_secret,
+  redirect_uri: redirect_uri
 
 config :hj, HjWeb.Guardian,
   issuer: "HillsideJukebox",

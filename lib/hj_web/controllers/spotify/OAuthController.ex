@@ -6,8 +6,7 @@ defmodule SpotifyController.OAuthController do
   alias HillsideJukebox.Accounts
 
   def authorize(conn, params) do
-    {:ok,
-     session_opts = %{url: redirect_url, session_params: session_params = %{state: state_nonce}}} =
+    {:ok, session_opts = %{url: redirect_url, session_params: %{state: state_nonce}}} =
       DeSpotify.Auth.authorize_url()
 
     conn_with_query_params = Plug.Conn.fetch_query_params(conn)

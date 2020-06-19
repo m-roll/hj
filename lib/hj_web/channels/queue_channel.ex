@@ -2,7 +2,7 @@ defmodule HjWeb.QueueChannel do
   require Logger
   use Phoenix.Channel
 
-  def join("queue:" <> room_code, _payload, socket) do
+  def join("queue:" <> _room_code, _payload, socket) do
     {:ok, socket}
   end
 

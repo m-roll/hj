@@ -21,17 +21,6 @@ defmodule HjWeb.SecureUserChannel do
     {:reply, register_user(room_code(socket), live_user(socket)), socket}
   end
 
-  defp register_user(room_code, user = %User{room_active: nil}) do
-    HillsideJukebox.JukeboxServer.add_user(room_code, user)
-    HillsideJukebox.Accounts.set_active_room(user, room_code)
-    HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
-    :ok
-  end
-
-  defp register_user(room_code, _) do
-    {:ok, error_already_active(room_code)}
-  end
-
   def handle_in("user:unregister", _payload, socket) do
     eject_user_sync(socket)
 
@@ -75,14 +64,6 @@ defmodule HjWeb.SecureUserChannel do
     end
   end
 
-  defp do_transfer_device(user, device_id) do
-    {:ok, :no_content} =
-      HillsideJukebox.Auth.Spotify.call_for_user(user, &DeSpotify.Player.transfer_device/3, [
-        [device_id],
-        %{}
-      ])
-  end
-
   def handle_in("user:get_authority", _payload, socket) do
     user = socket_user(socket)
     is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(user)
@@ -91,6 +72,14 @@ defmodule HjWeb.SecureUserChannel do
 
   def terminate(_reason, socket) do
     eject_user_sync(socket)
+  end
+
+  defp do_transfer_device(user, device_id) do
+    {:ok, :no_content} =
+      HillsideJukebox.Auth.Spotify.call_for_user(user, &DeSpotify.Player.transfer_device/3, [
+        [device_id],
+        %{}
+      ])
   end
 
   defp eject_user_sync(socket) do
@@ -144,5 +133,16 @@ defmodule HjWeb.SecureUserChannel do
 
   defp remove_user_from_pool(socket) do
     HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))
+  end
+
+  defp register_user(room_code, user = %User{room_active: nil}) do
+    HillsideJukebox.JukeboxServer.add_user(room_code, user)
+    HillsideJukebox.Accounts.set_active_room(user, room_code)
+    HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
+    :ok
+  end
+
+  defp register_user(room_code, _) do
+    {:ok, error_already_active(room_code)}
   end
 end

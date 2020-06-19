@@ -14,7 +14,7 @@ defmodule HjWeb.AnonUserChannel do
     {:reply, ok_tuple, socket}
   end
 
-  defp get_skip_response({:error, err_message} = error_tuple, socket) do
+  defp get_skip_response({:error, err_message}, socket) do
     {:reply, {:ok, %{error_message: err_message}}, socket}
   end
 

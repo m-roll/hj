@@ -20,7 +20,7 @@ defmodule HillsideJukebox.Player do
     )
   end
 
-  def pause(users_pid, room_code) do
+  def pause(users_pid) do
     users = HillsideJukebox.UserPool.get_all(users_pid)
 
     Enum.each(users, fn user ->

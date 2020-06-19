@@ -39,6 +39,9 @@ defmodule HjWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      # Allow inline SVG caching
+      use PhoenixInlineSvg.Helpers, otp_app: :hj
+
       import HjWeb.ErrorHelpers
       import HjWeb.Gettext
       alias HjWeb.Router.Helpers, as: Routes

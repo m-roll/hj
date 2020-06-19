@@ -43,7 +43,8 @@ defmodule Hj.MixProject do
       {:gproc, "~> 0.8.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:guardian, "~> 2.0"}
+      {:guardian, "~> 2.0"},
+      {:phoenix_inline_svg, "~> 1.3"}
     ]
   end
 end

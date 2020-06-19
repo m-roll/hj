@@ -10,9 +10,4 @@ defmodule HjWeb.SearchChannel do
     results = HillsideJukebox.Search.song(payload["query"])
     {:reply, {:ok, %{truncated_results: results}}, socket}
   end
-
-  defp room_code(socket) do
-    %Phoenix.Socket{topic: "search:" <> room_code} = socket
-    room_code
-  end
 end

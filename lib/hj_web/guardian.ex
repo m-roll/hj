@@ -1,7 +1,6 @@
 defmodule HjWeb.Guardian do
   use Guardian, otp_app: :hj
 
-  alias Hj.Repo
   alias HillsideJukebox.User
 
   def subject_for_token(resource = %User{}, _claims) do

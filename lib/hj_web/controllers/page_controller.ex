@@ -1,6 +1,4 @@
 defmodule HjWeb.PageController do
-  require Logger
-  import Plug.Conn
   use HjWeb, :controller
 
   def index(conn, _params) do
@@ -33,20 +31,17 @@ defmodule HjWeb.PageController do
       |> Map.merge(handle_user_fields(conn, params))
       |> Map.merge(handle_meta_fields(conn, params))
 
-    Logger.debug("Jukebox fields: #{inspect(fields)}")
     render(conn, "index.html", fields)
   end
 
   defp handle_room_fields(_conn, params) do
-    fields = %{}
-
     case Map.fetch(params, "room_code") do
       {:ok, room_code} -> %{has_room_code: true, room_code: room_code}
       _ -> %{has_room_code: false}
     end
   end
 
-  defp handle_user_fields(conn, params) do
+  defp handle_user_fields(conn, _params) do
     case Guardian.Plug.current_token(conn) do
       nil ->
         %{has_credentials: false}
@@ -56,7 +51,7 @@ defmodule HjWeb.PageController do
     end
   end
 
-  defp handle_meta_fields(conn, params) do
+  defp handle_meta_fields(_conn, params) do
     listening_map =
       case Map.fetch(params, "listen") do
         {:ok, true} -> %{hj_listening: true}
@@ -64,10 +59,6 @@ defmodule HjWeb.PageController do
       end
 
     Map.merge(%{hj_web_host: get_host()}, listening_map)
-  end
-
-  def queue(conn, _params) do
-    render(conn, "queue.html")
   end
 
   defp get_host() do

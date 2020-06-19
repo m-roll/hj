@@ -49,7 +49,7 @@ defmodule HillsideJukebox.UserPool do
   end
 
   def remove_with_user_id(pid, user_id) do
-    Agent.get_and_update(pid, fn state = %__MODULE__{user_map: users, room_code: room_code} ->
+    Agent.get_and_update(pid, fn state = %__MODULE__{user_map: users} ->
       {user, new_map} = Map.pop(users, user_id)
       maybe_new_host = determine_new_host(state)
       broadcast_new_host(maybe_new_host)
@@ -58,7 +58,7 @@ defmodule HillsideJukebox.UserPool do
   end
 
   def get_host(pid) do
-    Agent.get(pid, fn state = %__MODULE__{host_queue: host_queue} ->
+    Agent.get(pid, fn %__MODULE__{host_queue: host_queue} ->
       case :queue.peek(host_queue) do
         {:value, host_id} -> {:ok, host_id}
         _ -> {:error, "no host"}
@@ -81,7 +81,7 @@ defmodule HillsideJukebox.UserPool do
     end
   end
 
-  defp broadcast_new_host({:ok, new_host_id}) do
+  defp broadcast_new_host({:ok, _new_host_id}) do
     # do the broadcast here
   end
 

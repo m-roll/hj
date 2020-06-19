@@ -4,14 +4,14 @@ defmodule HillsideJukebox.Player.SpotifyPlayer do
   require Logger
 
   def play_track(
-        user = %HillsideJukebox.User{id: user_id},
+        user,
         song
       ) do
     play_track(user, song, 0)
   end
 
   def play_track(
-        user = %HillsideJukebox.User{id: user_id},
+        user,
         %HillsideJukebox.Song{platform: :spotify, id: song_id},
         offset_ms
       ) do

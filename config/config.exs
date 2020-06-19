@@ -9,9 +9,8 @@ use Mix.Config
 
 config :hj, Hj.Repo,
   database: "hj_repo",
-  username: "user",
-  password: "pass",
-  hostname: "localhost"
+  hostname: "localhost",
+  port: 5432
 
 import_config "config.secret.exs"
 
