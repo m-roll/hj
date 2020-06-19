@@ -165,10 +165,6 @@ body {
   min-height: 0;
 }
 
-#status-bar {
-  width: 100vw;
-}
-
 #main {
   min-height: 0;
 }
@@ -221,6 +217,11 @@ tr td {
   justify-content: space-around;
 }
 
+.join-room-form {
+  text-align: center;
+  width: 100%;
+}
+
 #col-create-room {
   flex-direction: column;
 }
@@ -229,9 +230,14 @@ tr td {
   flex: 1;
 }
 
-.enter-modal-header-col h5 {
+.enter-modal-header h5 {
   font-weight: bold;
   text-align: center;
+  width: 100%;
+}
+
+#enter-modal-room-create {
+  width: 100%;
 }
 
 .form-control-roomcode {
@@ -441,6 +447,45 @@ tr td {
   }
 }
 
+.settings-btn {
+  scale: 1 !important;
+
+  .icon-settings {
+    width: 2em;
+    height: 2em;
+  }
+}
+
+.modal-dismiss-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 10px;
+  height: 2rem;
+  width: 2rem;
+  cursor: pointer;
+  padding: 0 !important;
+  z-index: 7000;
+
+  &:before,
+  &:after {
+    position: absolute;
+    top: 0;
+    content: ' ';
+    height: 33px;
+    width: 2px;
+    background-color: #333;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+
+  &:after {
+    transform: rotate(-45deg);
+  }
+}
+
 .add-track-icon {
   scale: 1.5;
 
@@ -509,6 +554,10 @@ tr td {
   overflow: hidden;
   cursor: default;
   min-width: 100%;
+}
+
+.overlay-text {
+  text-shadow: 0 0 3px rgba(25, 20, 20, 0.4);
 }
 
 #status-song-title {

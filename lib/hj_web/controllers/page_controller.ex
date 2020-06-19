@@ -64,7 +64,7 @@ defmodule HjWeb.PageController do
   defp get_host() do
     endpoint_config = Application.get_env(:hj, HjWeb.Endpoint, :url)
     url_config = Keyword.get(endpoint_config, :url)
-    %URI{host: host_name} = URI.parse(Keyword.get(url_config, :host))
-    host_name
+    %URI{host: host_name, path: path_name} = URI.parse(Keyword.get(url_config, :host))
+    host_name || path_name
   end
 end

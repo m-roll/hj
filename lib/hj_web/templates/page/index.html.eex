@@ -1,18 +1,9 @@
 <div class="headline-main-content">
   <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
     <header class="row pt-4 px-5 hud-overlay hud-top d-flex">
-      <div class="col-3 my-auto">
-        <section class="row">
-          <p class="my-auto"><span class="font-weight-bold">Social for Spotify</span></p>
-        </section>
-        <div class="row">
-          <p class="my-auto title-sub">A social centric Spotify client</p>
-        </div>
-      </div>
-      <div class="col-1">
-        <button id="add-track-button" class="btn add-track-btn"><%= svg_image("plus") %></button>
-      </div>
       <div class="col">
+        <button id="add-track-button" class="btn add-track-btn"><%= svg_image("plus") %></button>
+        <button id="settings-button" class="btn settings-btn"><i class="icon-settings fas fa-ellipsis-h"></i></button>
       </div>
       <div class="col-6 my-auto spotify-branding-container">
         <div class="row d-flex">
@@ -33,18 +24,18 @@
     </div> <%= render HjWeb.ModalView, "enter_modal.html", assigns %> <%= render HjWeb.ModalView, "generic_error_modal.html", assigns %> <%= render HjWeb.ModalView, "room_not_found_modal.html", assigns %> <%= render HjWeb.ModalView, "add_track_modal.html", assigns %> <%= render HjWeb.ModalView, "device_list_modal.html", assigns %> <div id="card-area" class=" pb-3 pt-3 songs row d-flex">
       <div class="col px-auto preview-container d-flex">
         <img id="preview-image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
-        <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Join room '<span class="room-code"><%= @room_code%></span>' at <%= @hj_web_host%> </p> <%end%> </div>
+        <div id="preview-container-overlay" class="preview-container-overlay"> <%= if @has_room_code do %> <p id="preview-overlay-text" class="preview-container-overlay-content">The queue is empty. Use sesh code '<span class="room-code"><%= @room_code%></span>' at <%= @hj_web_host%> </p> <%end%> </div>
       </div>
     </div>
     <div class="hud-bottom row px-5">
       <div class="col">
-        <div id="status-bar" class="row headsup py-3 hud-overlay d-flex">
+        <div id="status-bar" class="row headsup hud-overlay d-flex">
           <div class="col-4">
             <div class="row mb-1">
               <div class="col">
                 <p class="my-auto font-weight-bold">
                   <div class="overflow-marquee">
-                    <span id="status-song-title" class="overflow-marquee-inner">Song title</span>
+                    <span id="status-song-title" class="overlay-text overflow-marquee-inner">Song title</span>
                   </div>
                 </p>
               </div>
@@ -53,13 +44,13 @@
               <div class="col">
                 <p class="my-auto overflow-marquee">
                   <div class="overflow-marquee">
-                    <span id="status-song-artist" class="overflow-marquee-inner">Song artist</span>
+                    <span id="status-song-artist" class="overlay-text overflow-marquee-inner">Song artist</span>
                   </div>
                 </p>
               </div>
             </div>
           </div>
-          <div class="col d-flex">
+          <div class="col-4 d-flex">
             <div id="listening-progress-bar" class="progress-outer my-auto">
               <div id="track-progress" class="progress-inner"></div>
             </div>

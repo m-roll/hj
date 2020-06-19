@@ -3,30 +3,40 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="container-fluid">
-          <div class="row pb-2">
-            <div id="col-create-room" class="col-md-6 border-right d-flex">
-              <div class="row">
-                <div class="col enter-modal-header-col">
+          <div class="col">
+            <div class="row pb-4">
+              <div class="col">
+                <div class="row enter-modal-header">
                   <h5>CREATE</h5>
                 </div>
-              </div>
-              <div id="row-create-room-btns" class="row">
-                <div id="div-create-room" class="col d-flex"> <%= if @has_credentials do %> <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-secondary">CREATE</a> <% else %> <p>To create a room, you must first log in</p>
-                  <a href="/authorize" type="button" id="enter-modal-room-create" class="btn btn-secondary">LOG IN</a> <% end %> </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="row">
-                <div class="col enter-modal-header-col">
-                  <h5>JOIN</h5>
+                <div class="row"> <%= if @has_credentials do %> <div class="col">
+                    <div class="row">
+                      <p>Click "create" to host your own sesh</p>
+                    </div>
+                    <div class="row">
+                      <a href="/createroom" type="button" id="enter-modal-room-create" class="btn btn-secondary">CREATE</a>
+                    </div>
+                  </div> <% else %> <div class="col">
+                    <div class="row">
+                      <p>To create a sesh, you must first log in</p>
+                    </div>
+                    <div class="row">
+                      <a href="/authorize" type="button" id="enter-modal-room-create" class="btn btn-secondary">LOG IN</a>
+                    </div> <% end %>
+                  </div>
                 </div>
               </div>
-              <div class="row">
-                <div id="div-join-room" class="col">
-                  <form id="enter-modal-join-room-form" class="join-room-form d-flex">
-                    <input type="text" name="enter-modal-join-room-code" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
-                    <button type="submit" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
-                  </form>
+              <div class="row pt-4 border-top">
+                <div class="col">
+                  <div class="row enter-modal-header">
+                    <h5>JOIN</h5>
+                  </div>
+                  <div class="row">
+                    <form id="enter-modal-join-room-form" class="join-room-form d-flex">
+                      <input type="text" name="enter-modal-join-room-code" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
+                      <button type="submit" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -35,4 +45,3 @@
       </div>
     </div>
   </div>
-</div>

@@ -77,7 +77,6 @@ export default class DeviceListView {
           )
           }
         </div>
-        <button id="device-list-close-btn" type="button" className="btn btn-secondary">Done</button>
       </div>);
   }
 

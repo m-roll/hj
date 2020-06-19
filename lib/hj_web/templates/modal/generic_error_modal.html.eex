@@ -1,6 +1,7 @@
 <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <button id="enter-modal-dismiss" class="btn modal-dismiss-btn"></button>
       <div id="error-modal-body" class="modal-body">
         <h5 id="error-modal-title" class="card-title mb-4">Error</h5>
         <div class="col">

@@ -50,7 +50,6 @@ export default class SearchResultsView {
           )
           }
         </div>
-        <button id="add-modal-close-btn" type="button" className="btn btn-secondary">Done</button>
       </div>);
   }
 
@@ -62,7 +61,6 @@ export default class SearchResultsView {
         <button name="search-submit" type="submit" className="btn btn-secondary">Submit</button>
       </form>
       <div className="d-flex spinner-holder"><i className="fas fa-spinner search-spinner"></i></div>
-      <button id="add-modal-close-btn" type="button" className="btn btn-secondary">Done</button>
     </div>)
   }
 }

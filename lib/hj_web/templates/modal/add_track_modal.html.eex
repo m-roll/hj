@@ -1,6 +1,7 @@
 <div class="modal fade" id="add-track-modal" tabindex="-1" role="dialog" aria-labelledby="addTrackLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <button id="add-modal-dismiss" class="btn modal-dismiss-btn"></button>
       <div id="modal-body-add-track" class="modal-body">
       </div>
     </div>
