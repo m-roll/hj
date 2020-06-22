@@ -1,7 +1,7 @@
 <div class="modal fade" id="device-list-modal" tabindex="-1" role="dialog" aria-labelledby="deviceListModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <button id="enter-modal-dismiss" class="btn modal-dismiss-btn"></button>
+      <button id="devices-modal-dismiss" class="btn modal-dismiss-btn"></button>
       <div id="device-list-modal-body" class="modal-body">
       </div>
     </div>

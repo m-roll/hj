@@ -19,13 +19,13 @@ export default class QueueChannel {
       console.warn("Unable to join queue channel", resp)
     })
   }
-  addSong(roomCode, url) {
+  addSong(roomCode, url, nickname) {
     this.queueChannel.push('queue:add', {
       songInput: url,
-      user: "Anonymous user"
+      user: nickname
     });
   }
-  fetch(roomCode, fetchCb) {
+  fetch(fetchCb) {
     let req = this.queueChannel.push('queue:fetch');
     req.receive("ok", fetchCb);
     return req;

@@ -4,6 +4,7 @@ defmodule HillsideJukebox.SongQueue.Server do
 
   @moduledoc """
   Maintains the state of a queue [of songs]. First in, first out.
+  This queue contains elements of the form {song, track_info_map}
   """
 
   @doc """

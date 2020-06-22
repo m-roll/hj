@@ -17,12 +17,12 @@ export default class QueueView {
     let row = document.createElement("tr");
     let songCol = document.createElement("td");
     let artistCol = document.createElement("td");
-    let sourceCol = document.createElement("td");
+    let nicknameCol = document.createElement("td");
     let durationCol = document.createElement("td");
     songCol.appendChild(document.createTextNode(newEntry.song["track_name"]));
     let artistStr = getArtistString(newEntry.song["track_artists"]);
     artistCol.appendChild(document.createTextNode(artistStr));
-    sourceCol.appendChild(document.createTextNode(capitalize(newEntry.song["platform"])));
+    nicknameCol.appendChild(document.createTextNode(newEntry.song["submitter"]));
     let ms = newEntry.song["duration"];
     ms = 1000 * Math.round(ms / 1000);
     var d = new Date(ms);
@@ -31,7 +31,7 @@ export default class QueueView {
     durationCol.appendChild(document.createTextNode(durText))
     row.appendChild(songCol);
     row.appendChild(artistCol);
-    row.appendChild(sourceCol);
+    row.appendChild(nicknameCol);
     row.appendChild(durationCol);
     this.queueDisp.appendChild(row);
   }

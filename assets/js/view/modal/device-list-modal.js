@@ -17,6 +17,9 @@ export default class DeviceListModal {
       focus: true,
       show: false
     });
+    $("#devices-modal-dismiss").on("click", ((event) => {
+      this.dismiss();
+    }).bind(this));
   }
   populateDevicesList(devices, isListening) {
     let devicesCopy = devices.slice(0);

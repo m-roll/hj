@@ -21,11 +21,11 @@ defmodule HjWeb.QueueChannel do
     song =
       HillsideJukebox.JukeboxServer.add_to_queue(
         room_code,
-        payload["songInput"]
+        payload["songInput"],
+        payload["user"]
       )
 
     broadcast!(socket, "song:processed:" <> room_code, %{
-      user: "Anonymous user",
       song: song
     })
 

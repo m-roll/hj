@@ -1,0 +1,22 @@
+<div class="modal fade" id="user-prefs-modal" tabindex="-1" role="dialog" aria-labelledby="userPrefsLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <button id="user-prefs-modal-dismiss" class="btn modal-dismiss-btn"></button>
+      <h4 class="modal-header"> Settings </h4>
+      <div id="modal-body-user-prefs" class="modal-body d-flex">
+        <form id="user-prefs-form">
+          <h5>Queueing</h5>
+          <div class="form-group">
+            <label for="user-pref-form-num-skips">Votes required to skip:</label>
+            <input type="number" id="user-pref-form-num-skips" class="form-control" max=10 min=1>
+          </div>
+          <h5>Preferences</h5>
+          <div class="form-group">
+            <label for="user-pref-form-nickname">Display nickname:</label>
+            <input type="text" id="user-pref-form-nickname" class="form-control" value="Anonymous">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

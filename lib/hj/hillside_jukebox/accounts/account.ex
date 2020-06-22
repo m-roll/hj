@@ -6,7 +6,14 @@ defmodule HillsideJukebox.Accounts do
   @spec create(tokens :: %DeSpotify.Auth.Tokens{}, user :: %DeSpotify.PrivateUser{}) ::
           {:ok, %HillsideJukebox.User{}}
   def create(tokens, user) do
-    Repo.insert(user_struct(tokens, user))
+    user_struct = user_struct(tokens, user)
+    do_create(user_struct)
+  end
+
+  # Creates both a user and the preferences for that user, this is important
+  defp do_create(user) do
+    {:ok, new_user} = Repo.insert(user)
+    HillsideJukebox.UserPreferences.create_default(new_user)
   end
 
   @spec create(tokens :: %DeSpotify.Auth.Tokens{}, user :: %DeSpotify.PrivateUser{}) ::
@@ -21,7 +28,7 @@ defmodule HillsideJukebox.Accounts do
       existing_user = get(id)
       update_access_and_refresh_token(existing_user, at, rt)
     else
-      Repo.insert(new_user)
+      do_create(new_user)
     end
   end
 

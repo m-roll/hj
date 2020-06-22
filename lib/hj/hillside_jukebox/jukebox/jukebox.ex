@@ -29,8 +29,8 @@ defmodule HillsideJukebox.JukeboxServer do
   @doc """
   Adds the song, specified by Spotify track URI, to the room given by the room code
   """
-  def add_to_queue(room_name, url) do
-    GenServer.call(via_tuple(room_name), {:add_to_queue, url: url})
+  def add_to_queue(room_name, url, submitter) do
+    GenServer.call(via_tuple(room_name), {:add_to_queue, url: url, submitter: submitter})
   end
 
   @doc """
@@ -122,6 +122,13 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   @doc """
+  Gets the amount of votes needed to skip the current playback
+  """
+  def get_skip_thresh(room_code) do
+    GenServer.call(via_tuple(room_code), :get_skip_thresh)
+  end
+
+  @doc """
   Remove a user from the pool of users for the given room specified by the room code.
   """
   def remove_user(room_name, user) do
@@ -151,7 +158,7 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @impl true
   def handle_call(
-        {:add_to_queue, url: "spotify:track:" <> track_id},
+        {:add_to_queue, url: "spotify:track:" <> track_id, submitter: submitter},
         _from,
         server
       ) do
@@ -162,6 +169,7 @@ defmodule HillsideJukebox.JukeboxServer do
       )
 
     song = HillsideJukebox.Song.from(spotify_track, :largest)
+    song = %{song | submitter: submitter}
     add_internal(server, song)
     {:reply, song, server}
   end
@@ -235,6 +243,15 @@ defmodule HillsideJukebox.JukeboxServer do
 
       {:reply, {:ok, new_skip_state}, new_state}
     end
+  end
+
+  @impl true
+  def handle_call(
+        :get_skip_thresh,
+        _from,
+        state = %HillsideJukebox.JukeboxServer{skip_thresh: thresh}
+      ) do
+    {:reply, thresh, state}
   end
 
   @impl true

@@ -72,4 +72,19 @@ export default class UserChannel {
   onReceiveDevices(cb) {
     this.receiveDevicesCb = cb;
   }
+  onGetUserPrefs(cb) {
+    this.onGetUserPrefsCb = cb;
+  }
+  fetchUserPrefs() {
+    this.userChannel.push("user:prefs_get").receive("ok", (resp => {
+      this.onGetUserPrefsCb(resp);
+    }).bind(this)).receive("error", resp => {
+      console.warn("error retrieving user preferences", resp);
+    });
+  }
+  saveUserPrefs(prefs) {
+    this.userChannel.push("user:prefs_save", prefs).receive("ok", (resp) => {
+      //fire and forget
+    });
+  }
 }

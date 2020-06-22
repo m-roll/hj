@@ -23,6 +23,8 @@ import JoinRoomView from "../view/join-room.js";
 import DevicesView from "../view/devices.js";
 import DevicesController from "./jukebox/devices.js";
 import SkipController from "./jukebox/skip.js";
+import UserPrefsController from "./jukebox/user-prefs.js";
+import UserPrefsView from "../view/user-prefs.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -44,7 +46,7 @@ export default class JukeboxController {
   isPaused = true;
   roomCode;
   isListening;
-  isLoggedIn;
+  isLoggedIn = typeof hj_resource_token !== 'undefined';
   onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
   roomChannel;
   isReadyForPlayback;
@@ -63,20 +65,21 @@ export default class JukeboxController {
   getQueueProviderThunk = () => this.roomedChannels.queue;
   getUserChannelThunk = () => this.roomedChannels.user;
   getUserAnonChannelThunk = () => this.roomedChannels.userAnon;
+  getUserPrefsControllerThunk = () => this.userPrefsController;
   getSpotifyOAuthThunk = (() => this.spotify_access_token).bind(this);
   // secondary controllers
   roomController = new RoomController(this.joinRoomView, this.roomNotFoundView, this.getRoomChannelThunk, this.setupRoom.bind(this));
   addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
   statusController = new StatusController(this.statusView, this.getStatusChannelThunk, this.roomController.getRoomCode);
-  queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.queueView, this.statusView);
+  queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.getUserPrefsControllerThunk, this.queueView, this.statusView);
   spotifyPlayer = new SpotifyPlayer(this.getSpotifyOAuthThunk);
   skipController = new SkipController(this.getUserAnonChannelThunk, this.skipDetailsView);
+  userPrefsController = new UserPrefsController(this.isLoggedIn, this.getUserChannelThunk, new UserPrefsView());
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
   devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal);
   constructor() {
     this.setupEvents();
-    this.isLoggedIn = typeof hj_resource_token !== 'undefined';
     this.socket = new JukeboxSocket(this.isLoggedIn);
     this.roomChannel = this.socket.joinChannel(RoomChannel);
     this.roomController.ready();
@@ -102,11 +105,12 @@ export default class JukeboxController {
         //this.audioActivatorView.show();
       }).bind(this));
     }
-    this.roomedChannels.queue.fetch(this.roomCode, this.onFetchQueue.bind(this));
+    this.roomedChannels.queue.fetch(this.onFetchQueue.bind(this));
     this.statusController.ready();
     this.queueController.ready();
     this.devicesController.ready();
     this.skipController.ready();
+    this.userPrefsController.ready();
     this.roomCode = roomCode;
   }
   setupRoomedChannels(roomCode) {
@@ -123,6 +127,7 @@ export default class JukeboxController {
     this.roomCode = roomCode;
   }
   onFetchQueue(payload) {
+    console.log("fetched queue:", payload)
     payload.queue.forEach(song => this.queueView.addToQueueDisplay.call(this.queueView, {
       song
     }));

@@ -70,6 +70,20 @@ defmodule HjWeb.SecureUserChannel do
     {:reply, is_host_or_error, socket}
   end
 
+  def handle_in("user:prefs_get", _payload, socket) do
+    skip_thresh = HillsideJukebox.JukeboxServer.get_skip_thresh(room_code(socket))
+    user_prefs = HillsideJukebox.UserPreferences.get_or_create(socket_user(socket))
+    {:reply, {:ok, prefs_payload(skip_thresh, user_prefs)}, socket}
+  end
+
+  def handle_in("user:prefs_save", payload, socket) do
+    user = socket_user(socket)
+    HillsideJukebox.UserPreferences.save(user, prefs_changeset_from(payload))
+    # TODO if host, save the vote threshold number
+    {:ok, is_host} = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+    {:reply, :ok, socket}
+  end
+
   def terminate(_reason, socket) do
     eject_user_sync(socket)
   end
@@ -114,6 +128,19 @@ defmodule HjWeb.SecureUserChannel do
         {:error, %{active_room: active_room}}
       end
     end
+  end
+
+  defp prefs_changeset_from(payload) do
+    %{
+      nickname: Map.get(payload, "nickname")
+    }
+  end
+
+  defp prefs_payload(skip_thresh, user_prefs) do
+    %{
+      skip_thresh: skip_thresh,
+      nickname: Map.get(user_prefs, :nickname)
+    }
   end
 
   defp room_code(socket) do
