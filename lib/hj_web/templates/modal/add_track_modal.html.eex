@@ -2,7 +2,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <button id="add-modal-dismiss" class="btn modal-dismiss-btn"></button>
-      <div id="modal-body-add-track" class="modal-body">
+      <div id="modal-body-add-track" class="modal-body d-flex">
+        <h5 class="modal-header mb-4"> Add a song </h5>
+        <form id="song-search-form">
+          <input type="text" name="search-query" id="search-query" class="form-control my-2" placeholder="Search for a track" />
+        </form>
+        <div id="search-list-group" class="search-list-group list-group">
+        </div>
       </div>
     </div>
   </div>

@@ -4,6 +4,7 @@
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
 @import "util.scss";
+$search-filler-color: rgba(255, 255, 255, 0.1);
 
 .hj-header {
   display: flex;
@@ -352,6 +353,10 @@ tr td {
     img {
       width: 100%;
     }
+
+    &.blank img {
+      background-color: $search-filler-color;
+    }
   }
 
   .search-result-meta {
@@ -360,6 +365,22 @@ tr td {
     .status-song-artist {
       font-weight: initial;
     }
+  }
+
+  .search-result-add.blank {
+    cursor: default;
+  }
+
+  .status-song-title.blank {
+    height: 1rem;
+    background-color: $search-filler-color;
+    width: 50%;
+  }
+
+  .status-song-artist.blank {
+    height: 1rem;
+    width: 30%;
+    background-color: $search-filler-color;
   }
 }
 

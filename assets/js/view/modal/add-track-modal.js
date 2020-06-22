@@ -7,7 +7,9 @@ const searchFormSelector = "#song-search-form";
 const modalSelector = '#add-track-modal';
 const addTrackButtonSelector = '.search-result-add';
 const searchFieldInputName = "search-query";
+const searchTimeoutMs = 400;
 export default class AddTrackModal {
+  searchTimeout;
   constructor() {
     this.modalElement = $(modalSelector);
     this.searchResultsView = new SearchResultsView();
@@ -52,10 +54,17 @@ export default class AddTrackModal {
       let searchQuery = getInputValueFromForm($(event.currentTarget), searchFieldInputName);
       this.onSearchQuerySubmitCb(searchQuery);
       this.searchResultsView.showLoading();
-      this._setupEvents();
       return false;
     });
-    $('#add-modal-close-btn').click((e => {
+    $('#search-query').on("input change", ((event) => {
+      clearTimeout(this.searchTimeout);
+      let searchQuery = event.currentTarget.value;
+      this.searchResultsView.showLoading();
+      this.searchTimeout = setTimeout(() => {
+        this.onSearchQuerySubmitCb(searchQuery);
+      }, searchTimeoutMs);
+    }).bind(this));
+    $('#add-modal-dismiss').click((e => {
       this.dismiss();
     }).bind(this));
   }
