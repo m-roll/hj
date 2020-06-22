@@ -13,7 +13,6 @@ defmodule HillsideJukebox.Accounts do
   # Creates both a user and the preferences for that user, this is important
   defp do_create(user) do
     {:ok, new_user} = Repo.insert(user)
-    HillsideJukebox.UserPreferences.create_default(new_user)
   end
 
   @spec create(tokens :: %DeSpotify.Auth.Tokens{}, user :: %DeSpotify.PrivateUser{}) ::
