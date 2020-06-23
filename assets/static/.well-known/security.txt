@@ -1,0 +1,3 @@
+Contact: admin@spotifysesh.com
+Preferred-Languages: en
+Canonical: http://spotifysesh.com/.well-known/security.txt
