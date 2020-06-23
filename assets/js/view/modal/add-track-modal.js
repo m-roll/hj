@@ -56,8 +56,9 @@ export default class AddTrackModal {
       this.searchResultsView.showLoading();
       return false;
     });
-    $('#search-query').on("input change", ((event) => {
+    $('#search-query').on("input", ((event) => {
       clearTimeout(this.searchTimeout);
+      if (!event.currentTarget.focus) return;
       let searchQuery = event.currentTarget.value;
       this.searchResultsView.showLoading();
       this.searchTimeout = setTimeout(() => {

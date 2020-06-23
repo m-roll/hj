@@ -58,6 +58,7 @@ main {
   max-width: 80vw;
   max-height: 80vw;
   margin: auto;
+  justify-self: flex-start;
 }
 
 .progress-outer {
@@ -575,6 +576,14 @@ tr td {
   overflow: hidden;
   cursor: default;
   min-width: 100%;
+
+  &.blank {
+    background-color: $search-filler-color;
+    background-color: $search-filler-color;
+    display: inline-block;
+    min-width: 0;
+    height: 1rem;
+  }
 }
 
 .overlay-text {
@@ -583,6 +592,16 @@ tr td {
 
 #status-song-title {
   font-weight: bold;
+
+  &.blank {
+    width: 10rem;
+  }
+}
+
+#status-song-artist {
+  &.blank {
+    width: 6rem;
+  }
 }
 
 .preview-container-overlay {

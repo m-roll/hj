@@ -25,20 +25,29 @@ export default class StatusView {
       });
       this._setTrackName(newEntry.track_name);
       this._setPlayingArtists(newEntry.track_artists);
-      this._setTrackArtwork(newEntry.track_art_url)
+      this._setTrackArtwork(newEntry.track_art_url);
+      this.trackPlayingName.classList.remove("blank");
+      this.trackPlayingArtist.classList.remove("blank");
     }
   }
   setEmpty() {
     this._setTrackArtwork('');
+    this._setTrackName('');
+    this._setPlayingArtistString()
     this.statusEmptyView.show();
+    this.trackPlayingName.classList.add("blank");
+    this.trackPlayingArtist.classList.add("blank");
   }
   _setTrackName(trackName) {
     this.trackPlayingName.textContent = trackName;
   }
   _setPlayingArtists(artists) {
     if (artists) {
-      this.trackPlayingArtist.textContent = getArtistString(artists);
+      this._setPlayingArtistString(getArtistString(artists));
     }
+  }
+  _setPlayingArtistString(text) {
+    this.trackPlayingArtist.textContent = text;
   }
   _setTrackArtwork(artworkUrl) {
     this.backgroundElem.style.backgroundImage = `url(${artworkUrl})`;

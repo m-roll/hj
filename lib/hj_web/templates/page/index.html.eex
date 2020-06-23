@@ -35,7 +35,7 @@
               <div class="col">
                 <p class="my-auto font-weight-bold">
                   <div class="overflow-marquee">
-                    <span id="status-song-title" class="overlay-text overflow-marquee-inner">Song title</span>
+                    <span id="status-song-title" class="overlay-text overflow-marquee-inner blank"></span>
                   </div>
                 </p>
               </div>
@@ -44,7 +44,7 @@
               <div class="col">
                 <p class="my-auto overflow-marquee">
                   <div class="overflow-marquee">
-                    <span id="status-song-artist" class="overlay-text overflow-marquee-inner">Song artist</span>
+                    <span id="status-song-artist" class="overlay-text overflow-marquee-inner blank"></span>
                   </div>
                 </p>
               </div>
