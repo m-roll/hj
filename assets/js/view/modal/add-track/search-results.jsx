@@ -33,10 +33,10 @@ export default class SearchResultsView {
                 <div className="col-2 search-result-album-cover"><img src={song["track_art_url"]} /></div>
                 <div className="col search-result-meta">
                   <div className="row mb-1">
-                    <p className="my-auto font-weight-bold status-song-title">{song["track_name"]}</p>
+                    <p className="font-weight-bold status-song-title">{song["track_name"]}</p>
                   </div>
                   <div className="row">
-                    <p className="my-auto status-song-artist">{getArtistString(song["track_artists"])}</p>
+                    <p className="status-song-artist">{getArtistString(song["track_artists"])}</p>
                   </div>
                 </div>
               </div>
@@ -59,10 +59,10 @@ export default class SearchResultsView {
                 </div>
                 <div className="col search-result-meta">
                   <div className="row mb-1">
-                    <p className="my-auto font-weight-bold status-song-title blank"></p>
+                    <p className="font-weight-bold status-song-title blank"></p>
                   </div>
                   <div className="row">
-                    <p className="my-auto status-song-artist blank"></p>
+                    <p className="status-song-artist blank"></p>
                   </div>
                 </div>
               </div>

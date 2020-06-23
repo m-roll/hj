@@ -5,6 +5,7 @@
 @import "../node_modules/bootstrap/scss/mixins";
 @import "util.scss";
 $search-filler-color: rgba(255, 255, 255, 0.1);
+$theme-primary-color: #2196f3;
 
 .hj-header {
   display: flex;
@@ -13,6 +14,10 @@ $search-filler-color: rgba(255, 255, 255, 0.1);
 header {
   background: none;
   z-index: 200;
+}
+
+.plus-btn-top-fill {
+  fill: #2196f3;
 }
 
 html,
@@ -92,13 +97,13 @@ main {
 }
 
 .btn-primary {
-  background-color: #1DB954 !important;
-  border-color: #1DB954 !important;
+  background-color: $theme-primary-color !important;
+  border-color: $theme-primary-color !important;
 }
 
 .btn-primary:hover {
-  background-color: #1DB954;
-  border-color: #1DB954;
+  background-color: $theme-primary-color;
+  border-color: $theme-primary-color;
 }
 
 .btn:hover {
@@ -370,16 +375,27 @@ tr td {
     cursor: default;
   }
 
+  .status-song-title {
+    margin: auto 0;
+  }
+
+  .status-song-artist {
+    margin: auto 0;
+  }
+
   .status-song-title.blank {
     height: 1rem;
     background-color: $search-filler-color;
     width: 50%;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .status-song-artist.blank {
     height: 1rem;
     width: 30%;
     background-color: $search-filler-color;
+    border-radius: 0.5rem;
   }
 }
 
@@ -428,7 +444,7 @@ tr td {
     height: 0.3rem;
     width: 0.3rem;
     border-radius: 0.15rem;
-    background-color: #1DB954;
+    background-color: $theme-primary-color;
     top: 0.3rem;
     right: 1rem;
     content: ' ';
@@ -510,7 +526,7 @@ tr td {
   scale: 1.5;
 
   path {
-    fill: #1DB954;
+    fill: $theme-primary-color;
   }
 }
 
@@ -581,6 +597,7 @@ tr td {
     display: inline-block;
     min-width: 0;
     height: 1rem;
+    border-radius: 0.5rem;
   }
 }
 
@@ -615,5 +632,5 @@ tr td {
 }
 
 .room-code {
-  color: #1DB954;
+  color: $theme-primary-color;
 }

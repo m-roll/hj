@@ -3,12 +3,11 @@
 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#1DB954;}
 	.st1{fill:#FFFFFF;}
 </style>
 <g>
 	<g>
-		<path class="st0" d="M276,236V20c0-11-9-20-20-20c-11,0-20,9-20,20v216H20c-11,0-20,9-20,20c0,11,9,20,20,20h216"/>
+		<path class="plus-btn-top-fill" d="M276,236V20c0-11-9-20-20-20c-11,0-20,9-20,20v216H20c-11,0-20,9-20,20c0,11,9,20,20,20h216"/>
 		<path class="st1" d="M236,276v216c0,11,9,20,20,20c11,0,20-9,20-20V276h216c11,0,20-9,20-20c0-11-9-20-20-20H276"/>
 	</g>
 </g>
