@@ -33,7 +33,7 @@
                 </div>
                 <div class="row">
                   <form id="enter-modal-join-room-form" class="join-room-form d-flex">
-                    <input type="text" name="enter-modal-join-room-code" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto" placeholder="abcd" />
+                    <input type="text" autocorrect="off" autocapitalize="off" name="enter-modal-join-room-code" id="enter-modal-room-code" maxlength='4' class="form-control-roomcode my-2 mx-auto text-monospace" placeholder="abcd" />
                     <button type="submit" id="enter-modal-room-join" class="btn btn-secondary">JOIN</button>
                   </form>
                 </div>

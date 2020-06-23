@@ -43,6 +43,7 @@ main {
 .preview-container {
   text-align: center;
   position: relative;
+  justify-content: flex-start;
 }
 
 .preview-image-container {
@@ -52,13 +53,11 @@ main {
 
 #preview-image {
   height: 100%;
-  width: auto;
   box-shadow: 0 0 10vh 10vh rgba(25, 20, 20, 0.2);
   background-size: contain;
   max-width: 80vw;
   max-height: 80vw;
   margin: auto;
-  justify-self: flex-start;
 }
 
 .progress-outer {
@@ -113,7 +112,6 @@ main {
 }
 
 .btn-secondary {
-  color: 191414;
   box-shadow: 0 0 0 1px rgb(215, 215, 215);
   background-color: rgba(25, 20, 20, 0.85)
 }
@@ -252,7 +250,7 @@ tr td {
   letter-spacing: .5ch;
   border: none;
   color: #d3d3d3;
-  font: 3ch consolas, monospace;
+  font-size: 3ch;
   width: 6.0ch;
   text-transform: lowercase;
 }

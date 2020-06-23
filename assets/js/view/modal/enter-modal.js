@@ -32,7 +32,7 @@ export default class EnterModal {
     $('#' + joinRoomFormId).on('submit', (event) => {
       let roomCode = getInputValueFromForm($(event.currentTarget), roomCodeInputName);
       history.pushState({}, document.title, roomCode);
-      cb(roomCode);
+      cb(roomCode.toLowerCase());
       dismiss();
       event.preventDefault();
       event.stopPropagation();

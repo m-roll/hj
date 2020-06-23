@@ -36,7 +36,7 @@ defmodule HjWeb.PageController do
 
   defp handle_room_fields(_conn, params) do
     case Map.fetch(params, "room_code") do
-      {:ok, room_code} -> %{has_room_code: true, room_code: room_code}
+      {:ok, room_code} -> %{has_room_code: true, room_code: String.downcase(room_code)}
       _ -> %{has_room_code: false}
     end
   end
