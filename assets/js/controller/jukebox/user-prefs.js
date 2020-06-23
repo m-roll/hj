@@ -7,12 +7,18 @@ export default class UserPrefsController {
   }
   ready() {
     this._setupListeners();
+    if (this.isLoggedIn) {
+      this.prefs = this.userPrefsProviderThunk().fetchUserPrefs();
+    }
   }
   getUserNickname() {
     return this.prefs.nickname;
   }
   _setupListeners() {
-    this.userPrefsProviderThunk().onGetUserPrefs(this.userPrefsView.setUserPrefs.bind(this.userPrefsView));
+    this.userPrefsProviderThunk().onGetUserPrefs(((prefs) => {
+      this.prefs = prefs;
+      this.userPrefsView.setUserPrefs(prefs);
+    }).bind(this));
     this.userPrefsView.onPrefsOpen((() => {
       if (this.isLoggedIn) {
         this.userPrefsProviderThunk().fetchUserPrefs();
