@@ -5,9 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify Sesh</title>
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>" /> <%= render(HjWeb.HeadView, "favicon.html", assigns) %>
-  </head>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>" /> <%= render(HjWeb.HeadView, "favicon.html", assigns) %> <%= render(HjWeb.HeadView, "og.html", assigns) %> </head>
 
   <body> <%= render @view_module, @view_template, assigns %> <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   </body>
