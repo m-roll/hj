@@ -5,6 +5,7 @@ defmodule HjWeb.SecureUserSocket do
   def connect(params = %{"user_token" => jwt}, socket, _connect_info) do
     case sign_in(socket, jwt) do
       {:ok, authed_socket} ->
+        Logger.debug("User signed in: #{inspect(authed_socket)}")
         {:ok, assign(authed_socket, room_code: params["room_code"])}
 
       {:error, "user already connected"} ->
@@ -23,6 +24,7 @@ defmodule HjWeb.SecureUserSocket do
   end
 
   defp extract_user({:ok, user, _claims}) do
+    Logger.debug("User extracted: #{inspect(user)}")
     {:ok, user}
     # {:ok, %{user | room_active: nil}}
   end
@@ -38,6 +40,7 @@ defmodule HjWeb.SecureUserSocket do
   def id(_socket), do: nil
 
   def assign_user({:ok, user}, socket) do
+    Logger.debug("Assigning user")
     {:ok, assign(socket, user: user)}
   end
 

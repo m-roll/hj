@@ -2,8 +2,14 @@
   <div id="outer-container" class="container-fluid wrapper d-flex h-100 flex-column">
     <header class="row pt-4 px-5 hud-overlay hud-top d-flex">
       <div class="col">
-        <button id="add-track-button" class="btn add-track-btn"><%= svg_image("plus", class: "test") %></button>
-        <button id="settings-button" class="btn settings-btn"><%= svg_image("ellipsis", class: "icon-settings") %></button>
+        <div class="row left-nav">
+          <button id="add-track-button" class="btn add-track-btn"><%= svg_image("plus", class: "test") %></button>
+          <button id="settings-button" class="btn settings-btn"><%= svg_image("ellipsis", class: "icon-settings") %></button>
+          <div id="code-disp-label" class="d-flex hidden room-code-group">
+            <span class="room-code-disp-label my-auto overlay-text">code:</span>
+            <span id="code-disp" class="room-code-disp-code my-auto overlay-text"></span>
+          </div>
+        </div>
       </div>
       <div class="col-6 my-auto spotify-branding-container">
         <div class="row d-flex">

@@ -25,6 +25,7 @@ import DevicesController from "./jukebox/devices.js";
 import SkipController from "./jukebox/skip.js";
 import UserPrefsController from "./jukebox/user-prefs.js";
 import UserPrefsView from "../view/user-prefs.js";
+import RoomCodeView from "../view/room-code.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -37,6 +38,7 @@ export default class JukeboxController {
   devicesView = new DevicesView();
   skipDetailsView = new SkipView();
   errorModal = new ErrorModal();
+  roomCodeView = new RoomCodeView();
   // misc.
   spotifyPlayer;
   socket;
@@ -106,11 +108,12 @@ export default class JukeboxController {
       }).bind(this));
     }
     this.roomedChannels.queue.fetch(this.onFetchQueue.bind(this));
-    this.statusController.ready();
     this.queueController.ready();
     this.devicesController.ready();
     this.skipController.ready();
     this.userPrefsController.ready();
+    this.statusController.ready();
+    this.roomCodeView.setRoomCode(roomCode);
     this.roomCode = roomCode;
   }
   setupRoomedChannels(roomCode) {
@@ -136,6 +139,9 @@ export default class JukeboxController {
     userProvider.onAuthUpdate(((auth) => {
       this.spotify_access_token = auth;
     }).bind(this));
+    userProvider.onRegister(() => {
+      console.log("Registered user");
+    })
     userProvider.onUserRegisterError(((error) => {
       console.log("Cant register");
     }).bind(this));

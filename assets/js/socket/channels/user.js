@@ -7,14 +7,14 @@ export default class UserChannel {
     this.userChannel.on("auth:update", authUpdateCb);
   }
   register() {
-    this.userChannel.push('user:register').receive("ok", resp => {
+    this.userChannel.push('user:register').receive("ok", (resp => {
       if (resp.error) {
         this.onUserRegisterErrorCb(resp.error)
       } else {
         this.onRegisterCb();
         this.songStatusUpdateCb(resp);
       }
-    })
+    }).bind(this));
   }
   unregister() {
     this.userChannel.push('user:unregister').receive("ok", resp => {

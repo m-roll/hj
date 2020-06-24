@@ -5,7 +5,7 @@
 @import "../node_modules/bootstrap/scss/mixins";
 @import "util.scss";
 $search-filler-color: rgba(255, 255, 255, 0.1);
-$theme-primary-color: #2196f3;
+$theme-primary-color: #64B5F6;
 
 .hj-header {
   display: flex;
@@ -17,7 +17,7 @@ header {
 }
 
 .plus-btn-top-fill {
-  fill: #2196f3;
+  fill: $theme-primary-color;
 }
 
 html,
@@ -633,4 +633,28 @@ tr td {
 
 .room-code {
   color: $theme-primary-color;
+}
+
+.left-nav {
+  .room-code-group {
+    margin: 0.2rem;
+
+    @include media-breakpoint-up(md) {
+      margin-left: 4rem;
+    }
+  }
+
+  .room-code-disp-label {
+    text-transform: uppercase;
+    font-size: 10px;
+    margin: 15px;
+  }
+
+  .room-code-disp-code {
+    top: -2px;
+    position: relative;
+    font-weight: bold;
+    color: $theme-primary-color;
+    text-transform: uppercase;
+  }
 }

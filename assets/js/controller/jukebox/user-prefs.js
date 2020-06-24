@@ -8,7 +8,7 @@ export default class UserPrefsController {
   ready() {
     this._setupListeners();
     if (this.isLoggedIn) {
-      this.prefs = this.userPrefsProviderThunk().fetchUserPrefs();
+      this.userPrefsProviderThunk().fetchUserPrefs();
     }
   }
   getUserNickname() {
@@ -16,6 +16,7 @@ export default class UserPrefsController {
   }
   _setupListeners() {
     this.userPrefsProviderThunk().onGetUserPrefs(((prefs) => {
+      console.log("Setting prefs", prefs);
       this.prefs = prefs;
       this.userPrefsView.setUserPrefs(prefs);
     }).bind(this));
