@@ -97,6 +97,9 @@ export default class JukeboxController {
       //if the user does not have an active device, remove them from the user pool.
       this.roomedChannels.user.unregister();
     }).bind(this));
+    window.addEventListener("beforeunload", ((event) => {
+      this.roomedChannels.user.unregister();
+    }).bind(this));
   }
   setupRoom(roomCode) {
     this.setupRoomedChannels(roomCode);
