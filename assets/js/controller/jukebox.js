@@ -26,6 +26,7 @@ import SkipController from "./jukebox/skip.js";
 import UserPrefsController from "./jukebox/user-prefs.js";
 import UserPrefsView from "../view/user-prefs.js";
 import RoomCodeView from "../view/room-code.js";
+import HostAlertView from "../view/alert/host.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -39,6 +40,7 @@ export default class JukeboxController {
   skipDetailsView = new SkipView();
   errorModal = new ErrorModal();
   roomCodeView = new RoomCodeView();
+  hostAlertView = new HostAlertView();
   // misc.
   spotifyPlayer;
   socket;
@@ -120,7 +122,7 @@ export default class JukeboxController {
     this.roomCode = roomCode;
   }
   setupRoomedChannels(roomCode) {
-    let userChannel = this.socket.joinChannel(UserChannel, roomCode);
+    let userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);
     let userAnonChannel = this.socket.joinChannel(UserAnonChannel, roomCode);
     this._setupUserEvents(userChannel, this.devicesView);
     this.roomedChannels = {
