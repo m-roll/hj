@@ -66,8 +66,17 @@ defmodule HjWeb.SecureUserChannel do
 
   def handle_in("user:get_authority", _payload, socket) do
     user = socket_user(socket)
-    is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(user)
-    {:reply, is_host_or_error, socket}
+    is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+
+    {:reply, get_host_response(is_host_or_error), socket}
+  end
+
+  defp get_host_response({:ok, is_host}) do
+    {:ok, %{is_host: is_host}}
+  end
+
+  defp get_host_response(error_tuple = {:error, _}) do
+    error_tuple
   end
 
   def handle_in("user:prefs_get", _payload, socket) do
@@ -115,7 +124,7 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   def broadcast_new_host(room_code) do
-    HjWeb.broadcast!("user:" <> room_code, "user:new_host")
+    HjWeb.Endpoint.broadcast!("user:" <> room_code, "user:new_host", %{})
   end
 
   defp check_correct_room(socket, user) do
@@ -166,7 +175,8 @@ defmodule HjWeb.SecureUserChannel do
     HillsideJukebox.JukeboxServer.add_user(room_code, user)
     HillsideJukebox.Accounts.set_active_room(user, room_code)
     HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
-    :ok
+    is_host = HillsideJukebox.JukeboxServer.is_host?(room_code, user)
+    get_host_response(is_host)
   end
 
   defp register_user(room_code, _) do

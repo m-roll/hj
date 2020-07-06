@@ -144,11 +144,11 @@ export default class JukeboxController {
     userProvider.onAuthUpdate(((auth) => {
       this.spotify_access_token = auth;
     }).bind(this));
-    userProvider.onRegister(() => {
-      console.log("Registered user");
-    })
-    userProvider.onUserRegisterError(((error) => {
-      console.log("Cant register");
+    userProvider.onRegister(((payload) => {
+      console.log("Registered: ", payload)
+      if (payload.is_host) {
+        this.hostAlertView.show();
+      }
     }).bind(this));
   }
 }

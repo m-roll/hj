@@ -12,8 +12,7 @@ export default class UserChannel {
       if (resp.error) {
         this.onUserRegisterErrorCb(resp.error)
       } else {
-        this.onRegisterCb();
-        this.songStatusUpdateCb(resp);
+        this.onRegisterCb(resp);
       }
     }).bind(this));
   }
@@ -98,7 +97,7 @@ export default class UserChannel {
       cb(false);
       return;
     }
-    this.userChannel.push("user:is_host?").receive("ok", (resp => {
+    this.userChannel.push("user:get_authority").receive("ok", (resp => {
       cb(resp);
     }).bind(this));
   }
