@@ -24,4 +24,7 @@ export default class UserPrefsView {
   getUserPrefChanges() {
     return this.userPrefsModal.collectUserPrefs();
   }
+  setIsHost(isHost) {
+    this.userPrefsModal.setIsHost(isHost);
+  }
 }

@@ -1,5 +1,5 @@
 defmodule HillsideJukebox.SongQueue.Timer do
-  defstruct([:cb, :time_called, :wait_pid])
+  defstruct([:cb, :time_called, :wait_pid, :timeout])
   use GenServer
 
   # api
@@ -39,25 +39,32 @@ defmodule HillsideJukebox.SongQueue.Timer do
         cb.()
       end)
 
-    {:noreply, %{timer | wait_pid: wait_pid, time_called: get_time_ms()}}
+    {:noreply, %{timer | wait_pid: wait_pid, timeout: time_ms, time_called: get_time_ms()}}
   end
 
   @impl true
   def handle_cast(:cancel, timer = %HillsideJukebox.SongQueue.Timer{wait_pid: wait_pid}) do
     Task.shutdown(wait_pid)
-    {:noreply, %{timer | wait_pid: nil}}
+    {:noreply, %{timer | wait_pid: nil, time_called: :not_started}}
   end
 
   @impl true
   def handle_call(
         :time_diff,
         _from,
-        timer = %HillsideJukebox.SongQueue.Timer{time_called: time_called}
+        timer = %HillsideJukebox.SongQueue.Timer{time_called: time_called, timeout: timeout}
       ) do
     response =
       case time_called do
-        :not_started -> :not_started
-        _ -> get_time_ms() - time_called
+        :not_started ->
+          :not_started
+
+        _ ->
+          if (diff = get_time_ms() - time_called) > timeout do
+            :not_started
+          else
+            diff
+          end
       end
 
     {:reply, response, timer}

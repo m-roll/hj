@@ -41,4 +41,8 @@ export default class UserPrefsModal {
       nickname: $('#user-pref-form-nickname').val()
     }
   }
+  setIsHost(isHost) {
+    $('#user-pref-form-num-skips').prop("disabled", !isHost);
+    $('#user-pref-allow-anon-vote').prop("disabled", !isHost);
+  }
 }

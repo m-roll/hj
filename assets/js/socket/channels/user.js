@@ -17,9 +17,13 @@ export default class UserChannel {
     }).bind(this));
   }
   unregister() {
-    this.userChannel.push('user:unregister').receive("ok", resp => {
-      // fire and forget
-    });
+    this.userChannel.push('user:unregister').receive("ok", (resp => {
+      this.onUnregisterCb(resp);
+      console.log("Unregistered");
+    }).bind(this));
+  }
+  onUnregister(cb) {
+    this.onUnregisterCb = cb;
   }
   onSongStatusUpdate(songStatusUpdateCb) {
     this.songStatusUpdateCb = songStatusUpdateCb;

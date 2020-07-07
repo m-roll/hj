@@ -27,6 +27,7 @@ import UserPrefsController from "./jukebox/user-prefs.js";
 import UserPrefsView from "../view/user-prefs.js";
 import RoomCodeView from "../view/room-code.js";
 import HostAlertView from "../view/alert/host.js";
+import HostsController from "./jukebox/hosts.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -79,6 +80,7 @@ export default class JukeboxController {
   spotifyPlayer = new SpotifyPlayer(this.getSpotifyOAuthThunk);
   skipController = new SkipController(this.getUserAnonChannelThunk, this.skipDetailsView);
   userPrefsController = new UserPrefsController(this.isLoggedIn, this.getUserChannelThunk, new UserPrefsView());
+  hostsController = new HostsController(this.getUserChannelThunk, this.hostAlertView)
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
   devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal);
@@ -88,6 +90,7 @@ export default class JukeboxController {
     this.roomChannel = this.socket.joinChannel(RoomChannel);
     this.roomController.ready();
     this.isListening = hj_listening;
+    this.userPrefsController.setIsHost(false);
   }
   setupEvents() {
     this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
@@ -98,10 +101,12 @@ export default class JukeboxController {
     this.devicesController.onNotReadyForPlayback((() => {
       //if the user does not have an active device, remove them from the user pool.
       this.roomedChannels.user.unregister();
+      console.log("SHould unregister here");
     }).bind(this));
     window.addEventListener("beforeunload", ((event) => {
       this.roomedChannels.user.unregister();
     }).bind(this));
+    this.hostController
   }
   setupRoom(roomCode) {
     this.setupRoomedChannels(roomCode);
@@ -149,6 +154,15 @@ export default class JukeboxController {
       if (payload.is_host) {
         this.hostAlertView.show();
       }
+      this.userPrefsController.setIsHost(payload.is_host);
     }).bind(this));
+    userProvider.onUserRegisterError((resp) => {
+      console.log("Registration error", resp);
+    });
+    userProvider.onUnregister((resp) => {
+      console.log("Unregister");
+      this.userPrefsController.setIsHost(false);
+      this.hostAlertView.hide();
+    });
   }
 }

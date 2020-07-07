@@ -152,6 +152,7 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         server
       ) do
+    Logger.info("Playing next song in room '#{server.room_code}'")
     next_song = play_next_internal(server)
     {:reply, next_song, server}
   end
@@ -162,6 +163,8 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         server
       ) do
+    Logger.info("Adding track with id '#{track_id}' in room '#{server.room_code}'")
+
     {:ok, spotify_track} =
       HillsideJukebox.Auth.Spotify.call_for_client(
         &DeSpotify.Tracks.get_track/3,
@@ -223,6 +226,10 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid}
       ) do
+    Logger.info(
+      "User with ID #{user.id} setting skip threshold to #{threshold} in room '#{state.room_code}'"
+    )
+
     case(is_host_int?(users_pid, user.id)) do
       {:ok, true} -> {:reply, {:ok, threshold}, set_vote_threshold(state, threshold)}
       _ -> {:reply, {:error, "not a host"}, state}
@@ -240,6 +247,12 @@ defmodule HillsideJukebox.JukeboxServer do
     else
       new_state = vote_for_identifier(state, identifier)
       new_skip_state = %{num_skips: new_state.num_skip_votes, skips_needed: new_state.skip_thresh}
+
+      Logger.info(
+        "Some user voting to skip in room '#{state.room_code}'. Skip votes: #{
+          new_skip_state.num_skips
+        }/#{new_skip_state.skips_needed}"
+      )
 
       {:reply, {:ok, new_skip_state}, new_state}
     end
@@ -273,6 +286,8 @@ defmodule HillsideJukebox.JukeboxServer do
         {:add_user, user},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
+    Logger.info("Adding user with id '#{user.id}' to room '#{state.room_code}'")
+
     case HillsideJukebox.UserPool.add_user(users_pid, user) do
       {:error, :already_in_pool} -> {:noreply, state}
       {:ok, _new_user} -> {:noreply, %{state | num_users: num_users + 1}}
@@ -284,6 +299,7 @@ defmodule HillsideJukebox.JukeboxServer do
         {:remove_user, %HillsideJukebox.User{id: id}},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
+    Logger.info("Removing user with id '#{id}' from room '#{state.room_code}'")
     HillsideJukebox.UserPool.remove_with_user_id(users_pid, id)
     # Need to make sure we actually removed someone before decrementing - security hole
     {:noreply, %{state | num_users: num_users - 1}}
@@ -296,6 +312,7 @@ defmodule HillsideJukebox.JukeboxServer do
           timer_pid: timer_pid
         }
       ) do
+    Logger.info("Syncing audio for user with id '#{user.id}' in room '#{server.room_code}'")
     offset = HillsideJukebox.SongQueue.Timer.get_offset(timer_pid)
 
     case offset do

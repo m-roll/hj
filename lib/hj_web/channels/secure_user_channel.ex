@@ -24,7 +24,7 @@ defmodule HjWeb.SecureUserChannel do
   def handle_in("user:unregister", _payload, socket) do
     eject_user_sync(socket)
 
-    {:noreply, socket}
+    {:reply, :ok, socket}
   end
 
   def handle_in("user:refresh_credentials", _payload, socket) do
@@ -127,16 +127,32 @@ defmodule HjWeb.SecureUserChannel do
     HjWeb.Endpoint.broadcast!("user:" <> room_code, "user:new_host", %{})
   end
 
-  defp check_correct_room(socket, user) do
-    if (active_room = user.room_active) == room_code(socket) do
-      :ok
-    else
-      if active_room == nil do
-        {:error, :not_set}
-      else
-        {:error, %{active_room: active_room}}
+  defp check_correct_room(socket, %HillsideJukebox.User{room_active: user_room}) do
+    room_claim = room_code(socket)
+
+    result =
+      case user_room do
+        ^room_claim ->
+          :ok
+
+        nil ->
+          {:error, :not_set}
+
+        active_room ->
+          if HillsideJukebox.Room.Manager.exists?(active_room) do
+            {:error, %{active_room: active_room}}
+          else
+            {:error, :not_set}
+          end
       end
-    end
+
+    Logger.debug(
+      "Checking correcto room. Claiming room #{inspect(room_claim)} but is active in #{
+        inspect(user_room)
+      }. Result: #{inspect(result)}"
+    )
+
+    result
   end
 
   defp prefs_changeset_from(payload) do
@@ -171,15 +187,12 @@ defmodule HjWeb.SecureUserChannel do
     HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))
   end
 
-  defp register_user(room_code, user = %User{room_active: nil}) do
+  defp register_user(room_code, user) do
     HillsideJukebox.JukeboxServer.add_user(room_code, user)
     HillsideJukebox.Accounts.set_active_room(user, room_code)
+    Logger.debug("Should be syncing")
     HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
     is_host = HillsideJukebox.JukeboxServer.is_host?(room_code, user)
     get_host_response(is_host)
-  end
-
-  defp register_user(room_code, _) do
-    {:ok, error_already_active(room_code)}
   end
 end

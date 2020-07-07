@@ -6,9 +6,13 @@ export default class HostsController {
   ready() {
     this.hostProviderThunk().onHostUpdated((() => {
       this.hostProviderThunk().checkIsHost(((hostInfo) => {
+        this.onUpdateHostStatusCb(hostInfo);
         this._updateHostInfo(hostInfo);
       }));
     }).bind(this));
+  }
+  onUpdateHostStatus(cb) {
+    this.onUpdateHostStatusCb = cb;
   }
   _updateHostInfo(hostInfo) {
     if (hostInfo) {

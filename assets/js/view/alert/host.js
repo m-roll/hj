@@ -1,7 +1,16 @@
 import $ from "jquery";
 export default class HostAlertView {
+  constructor() {
+    this.toastElement = document.getElementById("");
+    $('#toast-host-alert').toast({
+      autohide: true,
+      delay: 5 * 60 * 1000
+    });
+  }
   show() {
-    console.log("Show alert")
-    $('#alert-host').alert();
+    $('#toast-host-alert').toast('show');
+  }
+  hide() {
+    $('#toast-host-alert').toast('hide');
   }
 }
