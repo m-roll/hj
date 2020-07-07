@@ -26,6 +26,9 @@ export default class AddTrackModal {
       focus: true,
       show: false
     });
+    $(modalSelector).on("shown.bs.modal", (e) => {
+      $('#search-query').focus();
+    });
   }
   show() {
     $(modalSelector).modal('show');
