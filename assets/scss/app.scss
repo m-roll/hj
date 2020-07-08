@@ -6,6 +6,7 @@
 @import "util.scss";
 $search-filler-color: rgba(255, 255, 255, 0.1);
 $theme-primary-color: #64B5F6;
+$theme-primary-darker: #2196f3;
 
 .hj-header {
   display: flex;
@@ -97,13 +98,18 @@ main {
 }
 
 .btn-primary {
-  background-color: $theme-primary-color !important;
-  border-color: $theme-primary-color !important;
+  background-color: $theme-primary-darker !important;
+  border-color: $theme-primary-darker !important;
 }
 
 .btn-primary:hover {
-  background-color: $theme-primary-color;
-  border-color: $theme-primary-color;
+  background-color: $theme-primary-darker;
+  border-color: $theme-primary-darker;
+}
+
+.toast-icon {
+  height: 1.125rem;
+  width: 1.125rem;
 }
 
 .btn:hover {
@@ -602,7 +608,7 @@ tr td {
 }
 
 .overlay-text {
-  text-shadow: 0 0 3px rgba(25, 20, 20, 0.4);
+  text-shadow: 0 0 3px rgba(25, 20, 20, 0.7);
 }
 
 #status-song-title {
