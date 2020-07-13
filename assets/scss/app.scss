@@ -21,6 +21,17 @@ header {
   fill: $theme-primary-color;
 }
 
+.welcome-img-container {
+  padding: 15px;
+  background-color: white;
+  border-radius: 15px;
+}
+
+.welcome_playlist_img {
+  width: 100%;
+  height: calc(80%);
+}
+
 html,
 body {
   @include hide-scrollbar;

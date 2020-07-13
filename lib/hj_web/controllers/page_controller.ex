@@ -1,5 +1,6 @@
 defmodule HjWeb.PageController do
   use HjWeb, :controller
+  require Logger
 
   def index(conn, _params) do
     render(conn, "index.html")
@@ -17,6 +18,7 @@ defmodule HjWeb.PageController do
 
   def create_room(conn, _params) do
     new_code = HillsideJukebox.Room.Manager.create()
+    Logger.debug("Creating room #{new_code}")
     redirect(conn, to: "/room/#{new_code}/listen")
   end
 

@@ -39,10 +39,6 @@ config :despotify,
     "user-modify-playback-state"
   ]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env()}.exs"
-
 # Configure postgrex. Config for username/pw should be set in `config.secret.exs'
 config :hj, Hj.Repo,
   database: "hj_repo",
@@ -56,3 +52,7 @@ config :hj, HjWeb.Guardian,
   issuer: "HillsideJukebox",
   # use strong secret in prod
   secret_key: "some-secret"
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env()}.exs"

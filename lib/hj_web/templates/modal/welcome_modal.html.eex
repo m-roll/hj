@@ -3,9 +3,16 @@
     <div class="modal-content">
       <button id="welcome-modal-dismiss" class="btn modal-dismiss-btn"></button>
       <div id="modal-body-welcome-modal" class="modal-body d-flex">
-        <h5 class="modal-header mb-4"> Welcome </h5>
-        <p>Welcome to Sesh</p> <%= svg_image("undraw_playlist", class: "welcome_playlist_img") %> <p>Use the plus button to add songs to your sesh. The first song you add will be played immediately in the sesh.</p>
+        <h5 class="modal-header mb-4"> Welcome to Sesh</h5>
+        <h5>Adding songs</h5>
+        <div class="welcome-img-container mb-3"> <%= svg_image("undraw_compose_music", class: "welcome_playlist_img") %> </div>
+        <p>Use the plus button to add songs to your sesh. If the queue is empty, the song will be played immediately in the sesh.</p>
+        <h5>Listening in</h5>
+        <div class="welcome-img-container mb-3"> <%= svg_image("undraw_playlist", class: "welcome_playlist_img") %> </div>
         <p>To listen in, click the headphones button. This will allow you to select a Spotify device to play audio from. You may be prompted to log in.</p>
+        <h5>Skipping</h5>
+        <div class="welcome-img-container mb-3"> <%= svg_image("undraw_walk_in_the_city", class: "welcome_playlist_img") %> </div>
+        <p>Any song may be skipped by way of voting. Click the "skip?" button to vote to skip. This vote can be retracted.</p>
       </div>
     </div>
   </div>

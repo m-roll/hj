@@ -16,10 +16,10 @@ export default class SkipView {
     }
   }
   _activateSkipButton() {
-    this.skipBtn.classList.remove("disabled");
+    this.skipBtn.classList.remove("btn-primary");
   }
   _disableSkipButton() {
-    this.skipBtn.classList.add("disabled");
+    this.skipBtn.classList.add("btn-primary");
   }
   onSkipRequest(cb) {
     this.skipBtn.addEventListener("click", (e) => {

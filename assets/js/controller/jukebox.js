@@ -127,7 +127,7 @@ export default class JukeboxController {
     this.statusController.ready();
     this.roomCodeView.setRoomCode(roomCode);
     this.roomCode = roomCode;
-    //this.welcomeView.show();
+    this.welcomeView.show();
   }
   setupRoomedChannels(roomCode) {
     let userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);

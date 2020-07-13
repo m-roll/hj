@@ -19,6 +19,7 @@ export default class RoomChannel {
     this.roomChannel.push('room:exists', {
       roomCode
     }).receive("ok", res => {
+      console.log("Trying create room", res);
       if (res["created"]) {
         this.onRoomExists(res["room_code"]);
       } else {
