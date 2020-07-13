@@ -28,6 +28,7 @@ import UserPrefsView from "../view/user-prefs.js";
 import RoomCodeView from "../view/room-code.js";
 import HostAlertView from "../view/alert/host.js";
 import HostsController from "./jukebox/hosts.js";
+import WelcomeModal from "../view/modal/welcome-modal.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -42,6 +43,7 @@ export default class JukeboxController {
   errorModal = new ErrorModal();
   roomCodeView = new RoomCodeView();
   hostAlertView = new HostAlertView();
+  welcomeView = new WelcomeModal();
   // misc.
   spotifyPlayer;
   socket;
@@ -125,6 +127,7 @@ export default class JukeboxController {
     this.statusController.ready();
     this.roomCodeView.setRoomCode(roomCode);
     this.roomCode = roomCode;
+    //this.welcomeView.show();
   }
   setupRoomedChannels(roomCode) {
     let userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);

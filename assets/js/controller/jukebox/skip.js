@@ -8,6 +8,7 @@ export default class SkipController {
   }
   _setupListeners() {
     this.skipDetailsProviderThunk().onSkipStateUpdate(((update) => {
+      console.log("Skips updated", update);
       this.skipDetailsView.setSkipValues(update.num_skips, update.skips_needed);
     }).bind(this));
     this.skipDetailsView.onSkipRequest(() => {

@@ -1,4 +1,5 @@
-  <div id="toast-host-alert" class="toast" style="position: absolute; top: 0; right: 0;">
+<div style="position: absolute; top: 0; right: 0; z-index:1000">
+  <div id="toast-host-alert" class="toast hide">
     <div class="toast-header">
       <img src="/images/toast_icon.png" class="toast-icon rounded mr-2" alt="...">
       <strong class="mr-auto">Sesh</strong>
@@ -8,3 +9,14 @@
     </div>
     <div class="toast-body"> You are now the sesh <strong>host</strong>.</div>
   </div>
+  <div id="toast-skip-alert" class="toast hide">
+    <div class="toast-header">
+      <img src="/images/toast_icon.png" class="toast-icon rounded mr-2" alt="...">
+      <strong class="mr-auto">Sesh</strong>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body"> <span id="skip-alert-vote-count"></span> more votes to skip the current song.</div>
+  </div>
+</div>

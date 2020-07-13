@@ -93,8 +93,24 @@ defmodule HjWeb.SecureUserChannel do
     {:reply, :ok, socket}
   end
 
-  def terminate(_reason, socket) do
-    eject_user_sync(socket)
+  def terminate(reason, socket) do
+    case reason do
+      {:shutdown, :closed} ->
+        eject_user_sync(socket)
+        Logger.info("Kicking user with id '#{socket_user(socket).id}' since they left.")
+
+      _ ->
+        nil
+    end
+
+    Logger.info(
+      "User with id '#{socket_user(socket).id}' terminated user connection. Reason: #{
+        inspect(reason)
+      }"
+    )
+
+    # SANITY CHECK: Failure to properly kick a user will result in controlling their account even if they
+    # do not have the page open. It will continue to do so until the room disbands. Bad for user trust.
   end
 
   defp do_transfer_device(user, device_id) do
@@ -190,7 +206,6 @@ defmodule HjWeb.SecureUserChannel do
   defp register_user(room_code, user) do
     HillsideJukebox.JukeboxServer.add_user(room_code, user)
     HillsideJukebox.Accounts.set_active_room(user, room_code)
-    Logger.debug("Should be syncing")
     HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
     is_host = HillsideJukebox.JukeboxServer.is_host?(room_code, user)
     get_host_response(is_host)

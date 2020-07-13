@@ -1,15 +1,19 @@
+import SkipAlertView from "./alert/skip";
 const skipBtnId = "queue-skip";
 export default class SkipView {
   isActive;
   constructor() {
     this.skipBtn = document.getElementById(skipBtnId);
+    this.skipAlertView = new SkipAlertView();
   }
   setSkipValues(numSkipVotes, requiredSkipVotes) {
+    this.skipAlertView.setSkipCount(requiredSkipVotes - numSkipVotes);
     if (numSkipVotes === 0) {
       this._activateButton();
+      this.skipAlertView.hide();
+    } else {
+      this.skipAlertView.show();
     }
-    console.log("node value", this.skipBtn);
-    this.skipBtn.innerText = this._formatText(numSkipVotes, requiredSkipVotes);
   }
   _activateSkipButton() {
     this.skipBtn.classList.remove("disabled");
