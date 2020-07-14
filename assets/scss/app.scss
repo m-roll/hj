@@ -4,6 +4,7 @@
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/mixins";
 @import "util.scss";
+@import "welcome.scss";
 $search-filler-color: rgba(255, 255, 255, 0.1);
 $theme-primary-color: #64B5F6;
 $theme-primary-darker: #2196f3;
@@ -19,17 +20,6 @@ header {
 
 .plus-btn-top-fill {
   fill: $theme-primary-color;
-}
-
-.welcome-img-container {
-  padding: 15px;
-  background-color: white;
-  border-radius: 15px;
-}
-
-.welcome_playlist_img {
-  width: 100%;
-  height: calc(80%);
 }
 
 html,

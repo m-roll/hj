@@ -16,7 +16,7 @@
           <span id="spotify-powered-by" class="my-auto">powered by</span>
           <img class="my-auto" id="spotify-logo" src="<%= Routes.static_path(@conn, "/images/spotify_green.png") %>" />
           <img class="my-auto" id="spotify-icon" src="<%= Routes.static_path(@conn, "/images/spotify_icon_green.png") %>" />
-          <button type="button" class="btn btn-secondary" id="spotify-btn-link">get spotify free</button>
+          <a target="_blank" href="https://www.spotify.com/" type="button" class="btn btn-secondary" id="spotify-btn-link">get spotify free</a>
         </div>
         <div class="row">
         </div>
