@@ -1,5 +1,9 @@
 import $ from "jquery";
 const id = "welcome-modal";
+const formId = "welcome-form";
+import {
+  getInputValueFromForm
+} from '../util/jquery.js';
 export default class WelcomeModal {
   constructor() {
     $('#' + id).modal({
@@ -8,6 +12,17 @@ export default class WelcomeModal {
       focus: false,
       show: false
     });
+  }
+  onWelcomeFormSubmit(cb) {
+    $('#' + formId).on('submit', ((event) => {
+      console.log("welcome form submit", cb);
+      event.preventDefault();
+      event.stopPropagation();
+      let doNotShow = document.getElementById("welcome-do-not-show").checked;
+      cb(doNotShow);
+      this.dismiss();
+      return false;
+    }).bind(this))
   }
   show() {
     $('#' + id).modal("show");

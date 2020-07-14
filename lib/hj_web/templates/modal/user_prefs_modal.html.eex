@@ -19,6 +19,11 @@
             <label for="user-pref-form-nickname">Display nickname:</label>
             <input type="text" id="user-pref-form-nickname" class="form-control" value="Anonymous">
           </div>
+          <h5>Disconnect</h5>
+          <div id="logged-in-disconnect-form">
+            <p>Disconnect your Spotify account from the service and log out. It's easy to re-register.</p>
+            <a class="btn btn-secondary" href="/disconnect">Disconnect</a>
+          </div>
         </form>
       </div>
     </div>

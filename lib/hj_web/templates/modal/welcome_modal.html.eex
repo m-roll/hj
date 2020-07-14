@@ -31,7 +31,13 @@
               <h5>Deleting account</h5>
               <div class="welcome-img-container mb-3"> <%= svg_image("undraw_deliveries", class: "welcome_playlist_img") %> </div>
               <p>Sesh does not save your personal data provided by Spotify. When you close your browser, you will be removed from the sesh and ejected from the queue. However, if you would like completely delete your Sesh account, you can do so at any time by clicking the <%= svg_image("ellipsis", class: "welcome-inline-svg ellipsis") %> button and selecting <span class="welcome-emphasis">disconnect</span>. </p>
-              <button class="btn-secondary btn">Okay</button>
+              <form id="welcome-form">
+                <div class="form-check">
+                  <input type="checkbox" name="welcome-do-not-show" id="welcome-do-not-show" class="form-check-input" />
+                  <label for="welcome-do-not-show">Do not show again</label>
+                </div>
+                <button type="submit" class="btn-secondary btn">Okay</button>
+              </form>
             </div>
           </div>
           <a class="carousel-control carousel-control-prev" role="button" data-slide="prev">

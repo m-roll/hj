@@ -29,6 +29,7 @@ import RoomCodeView from "../view/room-code.js";
 import HostAlertView from "../view/alert/host.js";
 import HostsController from "./jukebox/hosts.js";
 import WelcomeModal from "../view/modal/welcome-modal.js";
+import WelcomeController from "./jukebox/welcome.js";
 export default class JukeboxController {
   // views
   queueView = new QueueView();
@@ -86,6 +87,7 @@ export default class JukeboxController {
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
   devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal);
+  welcomeController = new WelcomeController(this.welcomeView);
   constructor() {
     this.setupEvents();
     this.socket = new JukeboxSocket(this.isLoggedIn);
@@ -108,7 +110,6 @@ export default class JukeboxController {
     window.addEventListener("beforeunload", ((event) => {
       this.roomedChannels.user.unregister();
     }).bind(this));
-    this.hostController
   }
   setupRoom(roomCode) {
     this.setupRoomedChannels(roomCode);
@@ -127,7 +128,7 @@ export default class JukeboxController {
     this.statusController.ready();
     this.roomCodeView.setRoomCode(roomCode);
     this.roomCode = roomCode;
-    this.welcomeView.show();
+    this.welcomeController.onRoomEnter();
   }
   setupRoomedChannels(roomCode) {
     let userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);

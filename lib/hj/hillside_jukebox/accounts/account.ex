@@ -76,6 +76,10 @@ defmodule HillsideJukebox.Accounts do
     Repo.exists?(query_user_by_email(email))
   end
 
+  def disconnect(user = %User{}) do
+    Repo.delete(user)
+  end
+
   defp user_struct(
          %DeSpotify.Auth.Tokens{access_token: at, refresh_token: rt},
          %DeSpotify.PrivateUser{id: id, display_name: dn, email: email}

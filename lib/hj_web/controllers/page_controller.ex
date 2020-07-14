@@ -36,6 +36,18 @@ defmodule HjWeb.PageController do
     render(conn, "index.html", fields)
   end
 
+  def disconnect(conn, params) do
+    user = HjWeb.Guardian.Plug.current_resource(conn)
+    Logger.info("Attempting to disconnect user with id '#{user.id}' at their request.")
+    HillsideJukebox.Accounts.disconnect(user)
+    conn = HjWeb.Guardian.Plug.sign_out(conn)
+    redirect(conn, to: "/disconnect-success")
+  end
+
+  def disconnect_success(conn, _params) do
+    render(conn, "disconnect_success.html", %{hj_web_host: get_host()})
+  end
+
   defp handle_room_fields(_conn, params) do
     case Map.fetch(params, "room_code") do
       {:ok, room_code} -> %{has_room_code: true, room_code: String.downcase(room_code)}
