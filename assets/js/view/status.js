@@ -36,6 +36,8 @@ export default class StatusView {
     this.statusEmptyView.show();
     this.trackPlayingName.classList.add("blank");
     this.trackPlayingArtist.classList.add("blank");
+    console.log("empty")
+    this.playerView.setEmpty();
   }
   _setTrackName(trackName) {
     this.trackPlayingName.textContent = trackName;

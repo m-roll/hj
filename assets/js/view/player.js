@@ -1,12 +1,18 @@
 export default class PlayerView {
   constructor() {
     this.progressBarElement = document.getElementById("track-progress");
+    this.setEmpty();
   }
   updatePlayer(status) {
+    this.progressBarElement.classList.remove('hide');
     let isStarting = !status.paused;
     this.isPaused = status.paused;
     this.startTimestamp = +new Date() - status.position;
     this.trackLength = status.duration;
+    this.isEmpty = false;
+  }
+  setEmpty() {
+    this.progressBarElement.classList.add('hide');
   }
   setTrackPlaybackInfo(startTimestamp, trackLength) {}
   animate(absTimestamp) {

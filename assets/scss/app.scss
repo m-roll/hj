@@ -82,6 +82,10 @@ main {
   height: 100%;
   border-radius: 3px;
   box-shadow: 0 0 1px 1px #191414;
+
+  &.hide {
+    display: none;
+  }
 }
 
 .progress-holder {
@@ -265,7 +269,7 @@ tr td {
   color: #d3d3d3;
   font-size: 3ch;
   width: 6.0ch;
-  text-transform: lowercase;
+  text-transform: uppercase;
 }
 
 #audio-play-overlay {
@@ -644,6 +648,7 @@ tr td {
 .room-code {
   color: $theme-primary-color;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .left-nav {

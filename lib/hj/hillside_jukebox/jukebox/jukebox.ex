@@ -251,22 +251,29 @@ defmodule HillsideJukebox.JukeboxServer do
   def handle_call(
         {:vote_skip, identifier},
         _from,
-        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log, queue_pid: queue_pid}
       ) do
-    # if(HillsideJukebox.SongQueue.Server.is_empty(queue_pid))
-    if MapSet.member?(skip_log, identifier) do
-      {:reply, {:error, "already voted"}, state}
+    if(HillsideJukebox.SongQueue.Server.is_empty(queue_pid)) do
+      {:reply, {:error, "cannot vote when the queue is empty"}, state}
     else
-      new_state = vote_for_identifier(state, identifier)
-      new_skip_state = %{num_skips: new_state.num_skip_votes, skips_needed: new_state.skip_thresh}
+      if MapSet.member?(skip_log, identifier) do
+        {:reply, {:error, "already voted"}, state}
+      else
+        new_state = vote_for_identifier(state, identifier)
 
-      Logger.info(
-        "Some user voting to skip in room '#{state.room_code}'. Skip votes: #{
-          new_skip_state.num_skips
-        }/#{new_skip_state.skips_needed}"
-      )
+        new_skip_state = %{
+          num_skips: new_state.num_skip_votes,
+          skips_needed: new_state.skip_thresh
+        }
 
-      {:reply, {:ok, new_skip_state}, new_state}
+        Logger.info(
+          "Some user voting to skip in room '#{state.room_code}'. Skip votes: #{
+            new_skip_state.num_skips
+          }/#{new_skip_state.skips_needed}"
+        )
+
+        {:reply, {:ok, new_skip_state}, new_state}
+      end
     end
   end
 
@@ -374,7 +381,7 @@ defmodule HillsideJukebox.JukeboxServer do
        ) do
     # Why are we popping and then getting current? Really could be done in one step
     next = HillsideJukebox.SongQueue.Server.next(queue_pid)
-    HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, next)
+    HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, %{next_song: next})
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
     # HillsideJukebox.UserPool.reset_skip_votes(users_pid)
     play_and_autoplay_next(next_song, server)
@@ -511,7 +518,11 @@ defmodule HillsideJukebox.JukeboxServer do
   defp skip!(state) do
     new_song = skip_current_song(state)
     new_state = %{state | num_skip_votes: 0, skip_log: MapSet.new()}
-    HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", new_song)
+
+    HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", %{
+      new_song: new_song
+    })
+
     new_state
   end
 
