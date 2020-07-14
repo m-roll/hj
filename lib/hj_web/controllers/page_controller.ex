@@ -48,6 +48,10 @@ defmodule HjWeb.PageController do
     render(conn, "disconnect_success.html", %{hj_web_host: get_host()})
   end
 
+  def not_premium(conn, _params) do
+    render(conn, "not_premium.html", %{hj_web_host: get_host()})
+  end
+
   defp handle_room_fields(_conn, params) do
     case Map.fetch(params, "room_code") do
       {:ok, room_code} -> %{has_room_code: true, room_code: String.downcase(room_code)}

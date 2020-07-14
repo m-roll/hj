@@ -34,14 +34,18 @@ defmodule SpotifyController.OAuthController do
 
     {:ok, spotify_user} = DeSpotify.Users.get_user(at)
 
-    {:ok, user} = Accounts.register_or_update_auth(tokens, spotify_user)
+    if spotify_user.product != "premium" do
+      {conn, "/not-premium"}
+    else
+      {:ok, user} = Accounts.register_or_update_auth(tokens, spotify_user)
 
-    redirect_url =
-      case session_opts do
-        %{room_code: room_code} -> "/room/#{room_code}/listen"
-        _ -> "/"
-      end
+      redirect_url =
+        case session_opts do
+          %{room_code: room_code} -> "/room/#{room_code}/listen"
+          _ -> "/"
+        end
 
-    {HjWeb.Guardian.Plug.sign_in(conn, user), redirect_url}
+      {HjWeb.Guardian.Plug.sign_in(conn, user), redirect_url}
+    end
   end
 end
