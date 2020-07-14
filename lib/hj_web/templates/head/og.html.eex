@@ -6,3 +6,5 @@
     <meta property="og:site_name" content="Sesh MWM" />
     <meta property="fb:admins" content="USER_ID" />
     <meta property="og:description" content="Play Spotify music with your friends" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
