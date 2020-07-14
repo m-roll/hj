@@ -19,7 +19,14 @@ defmodule SpotifyController.OAuthController do
         _ -> session_opts
       end
 
-    UserSession.save_state(state_nonce, Map.merge(session_opts, params))
+    # prevents atom DoS attack when popping state.
+    other_params =
+      case params do
+        %{"room_code" => room_code} -> %{room_code: room_code}
+        _ -> %{}
+      end
+
+    UserSession.save_state(state_nonce, Map.merge(session_opts, other_params))
     redirect(conn, external: redirect_url)
   end
 
@@ -34,14 +41,18 @@ defmodule SpotifyController.OAuthController do
 
     {:ok, spotify_user} = DeSpotify.Users.get_user(at)
 
-    {:ok, user} = Accounts.register_or_update_auth(tokens, spotify_user)
+    if spotify_user.product != "premium" do
+      {conn, "/not-premium"}
+    else
+      {:ok, user} = Accounts.register_or_update_auth(tokens, spotify_user)
 
-    redirect_url =
-      case session_opts do
-        %{room_code: room_code} -> "/room/#{room_code}/listen"
-        _ -> "/"
-      end
+      redirect_url =
+        case session_opts do
+          %{room_code: room_code} -> "/room/#{room_code}/listen"
+          _ -> "/"
+        end
 
-    {HjWeb.Guardian.Plug.sign_in(conn, user), redirect_url}
+      {HjWeb.Guardian.Plug.sign_in(conn, user), redirect_url}
+    end
   end
 end

@@ -20,7 +20,7 @@ export default class JukeboxSocket {
     this.socket = new Socket(socketUri, {
       params: this.getConnectionParams(isLoggedIn)
     })
-    this.socket.connect();
+    this.socket.connect(null);
   }
   joinChannel(channel, ...args) {
     let newChannel = new channel(this.socket, ...args);

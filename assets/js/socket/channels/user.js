@@ -1,6 +1,7 @@
 export default class UserChannel {
   constructor(socket, ...args) {
     let roomCode = args[0];
+    this.isLoggedIn = args[1];
     this.userChannel = socket.channel("user:" + roomCode, {});
   }
   onAuthUpdate(authUpdateCb) {
@@ -11,15 +12,18 @@ export default class UserChannel {
       if (resp.error) {
         this.onUserRegisterErrorCb(resp.error)
       } else {
-        this.onRegisterCb();
-        this.songStatusUpdateCb(resp);
+        this.onRegisterCb(resp);
       }
     }).bind(this));
   }
   unregister() {
-    this.userChannel.push('user:unregister').receive("ok", resp => {
-      // fire and forget
-    });
+    this.userChannel.push('user:unregister').receive("ok", (resp => {
+      this.onUnregisterCb(resp);
+      console.log("Unregistered");
+    }).bind(this));
+  }
+  onUnregister(cb) {
+    this.onUnregisterCb = cb;
   }
   onSongStatusUpdate(songStatusUpdateCb) {
     this.songStatusUpdateCb = songStatusUpdateCb;
@@ -86,5 +90,19 @@ export default class UserChannel {
     this.userChannel.push("user:prefs_save", prefs).receive("ok", (resp) => {
       //fire and forget
     });
+  }
+  onHostUpdated(cb) {
+    this.userChannel.on("user:new_host", (resp => {
+      cb(resp);
+    }).bind(this));
+  }
+  checkIsHost(cb) {
+    if (!this.isLoggedIn) {
+      cb(false);
+      return;
+    }
+    this.userChannel.push("user:get_authority").receive("ok", (resp => {
+      cb(resp);
+    }).bind(this));
   }
 }

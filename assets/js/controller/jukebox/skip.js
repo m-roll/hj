@@ -5,6 +5,7 @@ export default class SkipController {
   }
   ready() {
     this._setupListeners();
+    this.skipDetailsProviderThunk().getVoteStatus();
   }
   _setupListeners() {
     this.skipDetailsProviderThunk().onSkipStateUpdate(((update) => {
@@ -13,5 +14,11 @@ export default class SkipController {
     this.skipDetailsView.onSkipRequest(() => {
       this.skipDetailsProviderThunk().voteSkip();
     });
+    this.skipDetailsView.onUnSkipRequest(() => {
+      this.skipDetailsProviderThunk().unVoteSkip();
+    });
+    this.skipDetailsProviderThunk().onGetVoteStatus(((resp) => {
+      this.skipDetailsView.setHasVoted(resp.has_voted);
+    }).bind(this));
   }
 }

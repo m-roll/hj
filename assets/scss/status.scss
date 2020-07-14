@@ -1,0 +1,13 @@
+.info-overflow {
+  overflow: hidden;
+  z-index: 500;
+  position: relative;
+
+  &:hover {
+    overflow: visible;
+
+    span {
+      background-color: #191414;
+    }
+  }
+}

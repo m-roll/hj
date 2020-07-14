@@ -1,0 +1,53 @@
+.welcome-emphasis {
+  color: #64B5F6;
+}
+
+.welcome-inline-svg {
+  height: 1rem;
+  display: inline-block;
+
+  &.ellipsis {
+    height: 0.3rem;
+    margin: 0.35rem;
+  }
+}
+
+.welcome-img-container {
+  padding: 15px;
+  background-color: white;
+  border-radius: 15px;
+}
+
+.welcome_playlist_img {
+  width: 100%;
+  height: 28em;
+}
+
+#welcome-carousel {
+  .carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23191414' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E");
+  }
+
+  .carousel-control-next-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23191414' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
+  }
+
+  .carousel-inner {
+    min-height: 200px;
+  }
+
+  .carousel-indicators {
+    top: 28em;
+    bottom: initial;
+
+    li {
+      background-color: #191414;
+    }
+  }
+
+  .carousel-control {
+    cursor: pointer;
+    height: 28em;
+    bottom: initial;
+  }
+}

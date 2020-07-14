@@ -24,7 +24,7 @@ defmodule HjWeb.SecureUserChannel do
   def handle_in("user:unregister", _payload, socket) do
     eject_user_sync(socket)
 
-    {:noreply, socket}
+    {:reply, :ok, socket}
   end
 
   def handle_in("user:refresh_credentials", _payload, socket) do
@@ -66,8 +66,17 @@ defmodule HjWeb.SecureUserChannel do
 
   def handle_in("user:get_authority", _payload, socket) do
     user = socket_user(socket)
-    is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(user)
-    {:reply, is_host_or_error, socket}
+    is_host_or_error = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+
+    {:reply, get_host_response(is_host_or_error), socket}
+  end
+
+  defp get_host_response({:ok, is_host}) do
+    {:ok, %{is_host: is_host}}
+  end
+
+  defp get_host_response(error_tuple = {:error, _}) do
+    error_tuple
   end
 
   def handle_in("user:prefs_get", _payload, socket) do
@@ -80,12 +89,46 @@ defmodule HjWeb.SecureUserChannel do
     user = socket_user(socket)
     HillsideJukebox.UserPreferences.save(user, prefs_changeset_from(payload))
     # TODO if host, save the vote threshold number
-    {:ok, is_host} = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+    is_host = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+    save_host_prefs(room_code(socket), user, payload)
     {:reply, :ok, socket}
   end
 
-  def terminate(_reason, socket) do
-    eject_user_sync(socket)
+  defp save_host_prefs(room_code, user, prefs) do
+    case Integer.parse(prefs["skipThreshold"]) do
+      :error ->
+        nil
+
+      {thresh, _} when thresh > 0 ->
+        HillsideJukebox.JukeboxServer.set_skip_vote_threshold(
+          room_code,
+          user,
+          thresh
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  def terminate(reason, socket) do
+    case reason do
+      {:shutdown, :closed} ->
+        eject_user_sync(socket)
+        Logger.info("Kicking user with id '#{socket_user(socket).id}' since they left.")
+
+      _ ->
+        nil
+    end
+
+    Logger.info(
+      "User with id '#{socket_user(socket).id}' terminated user connection. Reason: #{
+        inspect(reason)
+      }"
+    )
+
+    # SANITY CHECK: Failure to properly kick a user will result in controlling their account even if they
+    # do not have the page open. It will continue to do so until the room disbands. Bad for user trust.
   end
 
   defp do_transfer_device(user, device_id) do
@@ -115,19 +158,35 @@ defmodule HjWeb.SecureUserChannel do
   end
 
   def broadcast_new_host(room_code) do
-    HjWeb.broadcast!("user:" <> room_code, "user:new_host")
+    HjWeb.Endpoint.broadcast!("user:" <> room_code, "user:new_host", %{})
   end
 
-  defp check_correct_room(socket, user) do
-    if (active_room = user.room_active) == room_code(socket) do
-      :ok
-    else
-      if active_room == nil do
-        {:error, :not_set}
-      else
-        {:error, %{active_room: active_room}}
+  defp check_correct_room(socket, %HillsideJukebox.User{room_active: user_room}) do
+    room_claim = room_code(socket)
+
+    result =
+      case user_room do
+        ^room_claim ->
+          :ok
+
+        nil ->
+          {:error, :not_set}
+
+        active_room ->
+          if HillsideJukebox.Room.Manager.exists?(active_room) do
+            {:error, %{active_room: active_room}}
+          else
+            {:error, :not_set}
+          end
       end
-    end
+
+    Logger.debug(
+      "Checking correcto room. Claiming room #{inspect(room_claim)} but is active in #{
+        inspect(user_room)
+      }. Result: #{inspect(result)}"
+    )
+
+    result
   end
 
   defp prefs_changeset_from(payload) do
@@ -162,14 +221,11 @@ defmodule HjWeb.SecureUserChannel do
     HillsideJukebox.JukeboxServer.remove_user(room_code(socket), socket_user(socket))
   end
 
-  defp register_user(room_code, user = %User{room_active: nil}) do
+  defp register_user(room_code, user) do
     HillsideJukebox.JukeboxServer.add_user(room_code, user)
     HillsideJukebox.Accounts.set_active_room(user, room_code)
     HillsideJukebox.JukeboxServer.sync_audio(room_code, user)
-    :ok
-  end
-
-  defp register_user(room_code, _) do
-    {:ok, error_already_active(room_code)}
+    is_host = HillsideJukebox.JukeboxServer.is_host?(room_code, user)
+    get_host_response(is_host)
   end
 end

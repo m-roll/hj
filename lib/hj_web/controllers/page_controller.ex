@@ -1,5 +1,6 @@
 defmodule HjWeb.PageController do
   use HjWeb, :controller
+  require Logger
 
   def index(conn, _params) do
     render(conn, "index.html")
@@ -17,6 +18,7 @@ defmodule HjWeb.PageController do
 
   def create_room(conn, _params) do
     new_code = HillsideJukebox.Room.Manager.create()
+    Logger.debug("Creating room #{new_code}")
     redirect(conn, to: "/room/#{new_code}/listen")
   end
 
@@ -32,6 +34,22 @@ defmodule HjWeb.PageController do
       |> Map.merge(handle_meta_fields(conn, params))
 
     render(conn, "index.html", fields)
+  end
+
+  def disconnect(conn, params) do
+    user = HjWeb.Guardian.Plug.current_resource(conn)
+    Logger.info("Attempting to disconnect user with id '#{user.id}' at their request.")
+    HillsideJukebox.Accounts.disconnect(user)
+    conn = HjWeb.Guardian.Plug.sign_out(conn)
+    redirect(conn, to: "/disconnect-success")
+  end
+
+  def disconnect_success(conn, _params) do
+    render(conn, "disconnect_success.html", %{hj_web_host: get_host()})
+  end
+
+  def not_premium(conn, _params) do
+    render(conn, "not_premium.html", %{hj_web_host: get_host()})
   end
 
   defp handle_room_fields(_conn, params) do

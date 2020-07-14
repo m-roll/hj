@@ -49,10 +49,10 @@ defmodule HillsideJukebox.UserPool do
   end
 
   def remove_with_user_id(pid, user_id) do
-    Agent.get_and_update(pid, fn state = %__MODULE__{user_map: users} ->
+    Agent.get_and_update(pid, fn state = %__MODULE__{room_code: room_code, user_map: users} ->
       {user, new_map} = Map.pop(users, user_id)
       maybe_new_host = determine_new_host(state)
-      broadcast_new_host(maybe_new_host)
+      broadcast_new_host(room_code, maybe_new_host)
       {user, %{state | user_map: new_map}}
     end)
   end
@@ -81,11 +81,11 @@ defmodule HillsideJukebox.UserPool do
     end
   end
 
-  defp broadcast_new_host({:ok, _new_host_id}) do
-    # do the broadcast here
+  defp broadcast_new_host(room_code, {:ok, _new_host_id}) do
+    HjWeb.SecureUserChannel.broadcast_new_host(room_code)
   end
 
-  defp broadcast_new_host({:error, "no host"}) do
-    # start room shutdown timer
+  defp broadcast_new_host(room_code, {:error, "no host"}) do
+    Logger.debug("No host in room '#{room_code}', room should terminate here.")
   end
 end

@@ -29,3 +29,15 @@ html {
     display: initial !important;
   }
 }
+
+.toast {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .1);
+  z-index: 1000;
+  background-color: #303438;
+  border: 1px solid rgba(255, 255, 255, .2);
+  margin: 1rem;
+
+  .toast-header {
+    background-color: #191d21;
+  }
+}

@@ -1,27 +1,52 @@
+import SkipAlertView from "./alert/skip";
 const skipBtnId = "queue-skip";
 export default class SkipView {
   isActive;
   constructor() {
     this.skipBtn = document.getElementById(skipBtnId);
+    this.skipAlertView = new SkipAlertView();
+    this.skipBtn.addEventListener("click", (e) => {
+      console.log("Click, has voted", this.hasVoted);
+      if (this.hasVoted) {
+        this.activateSkipButton();
+        this.unSkipCb();
+      } else {
+        this.disableSkipButton();
+        this.skipCb();
+      }
+    });
   }
   setSkipValues(numSkipVotes, requiredSkipVotes) {
-    if (numSkipVotes === 0) {
-      this._activateButton();
+    this.skipAlertView.setSkipCount(requiredSkipVotes - numSkipVotes);
+    if (requiredSkipVotes >= numSkipVotes) {
+      this.skipAlertView.hide();
     }
-    console.log("node value", this.skipBtn);
-    this.skipBtn.innerText = this._formatText(numSkipVotes, requiredSkipVotes);
+    if (numSkipVotes === 0) {
+      this.activateSkipButton();
+      this.skipAlertView.hide();
+    } else {
+      this.skipAlertView.show();
+    }
   }
-  _activateSkipButton() {
-    this.skipBtn.classList.remove("disabled");
+  activateSkipButton() {
+    this.skipBtn.classList.remove("btn-primary");
   }
-  _disableSkipButton() {
-    this.skipBtn.classList.add("disabled");
+  disableSkipButton() {
+    this.skipBtn.classList.add("btn-primary");
+  }
+  setHasVoted(hasVoted) {
+    this.hasVoted = hasVoted;
+    if (hasVoted) {
+      this.disableSkipButton();
+    } else {
+      this.activateSkipButton();
+    }
   }
   onSkipRequest(cb) {
-    this.skipBtn.addEventListener("click", (e) => {
-      this._disableSkipButton();
-      cb();
-    });
+    this.skipCb = cb;
+  }
+  onUnSkipRequest(cb) {
+    this.unSkipCb = cb;
   }
   _formatText(numSkipVotes, requiredSkipVotes) {
     return `skip (${numSkipVotes}/${requiredSkipVotes})`;

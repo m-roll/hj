@@ -1,6 +1,9 @@
 defmodule HillsideJukebox.Room.Manager do
+  require Logger
+
   def create() do
     new_code = HillsideJukebox.Room.CodesRegistry.take()
+    Logger.info("Generated room code '#{new_code}'")
     HillsideJukebox.Room.Supervisor.start_room(new_code)
     new_code
   end

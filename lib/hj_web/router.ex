@@ -27,6 +27,8 @@ defmodule HjWeb.Router do
     get "/auth", PageController, :auth
     get "/", PageController, :jukebox
     get "/room/:room_code", PageController, :jukebox
+    get "/disconnect-success", PageController, :disconnect_success
+    get "/not-premium", PageController, :not_premium
   end
 
   scope "/", HjWeb do
@@ -34,10 +36,6 @@ defmodule HjWeb.Router do
 
     get "/createroom", PageController, :create_room
     get "/room/:room_code/listen", PageController, :listen
+    get "/disconnect", PageController, :disconnect
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", HjWeb do
-  #   pipe_through :api
-  # end
 end

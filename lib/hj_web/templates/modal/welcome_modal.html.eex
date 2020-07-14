@@ -1,0 +1,55 @@
+<div class="modal fade" id="welcome-modal" tabindex="-1" role="dialog" aria-labelledby="welcome-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <button id="welcome-modal-dismiss" class="btn modal-dismiss-btn"></button>
+      <div id="modal-body-welcome-modal" class="modal-body d-flex">
+        <h5 class="modal-header mb-4"> Welcome to Sesh</h5>
+        <div id="welcome-carousel" class="carousel slide" data-ride="carousel" data-wrap="false">
+          <ol class="carousel-indicators">
+            <li data-target="#welcome-carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#welcome-carousel" data-slide-to="1"></li>
+            <li data-target="#welcome-carousel" data-slide-to="2"></li>
+            <li data-target="#welcome-carousel" data-slide-to="3"></li>
+          </ol>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <h5>Adding songs</h5>
+              <div class="welcome-img-container mb-3"> <%= svg_image("undraw_compose_music", class: "welcome_playlist_img") %> </div>
+              <p>Use the plus button to add songs to your sesh. If the queue is empty, the song will be played immediately in the sesh.</p>
+            </div>
+            <div class="carousel-item">
+              <h5>Listening in</h5>
+              <div class="welcome-img-container mb-3"> <%= svg_image("undraw_playlist", class: "welcome_playlist_img") %> </div>
+              <p>To listen in, click the headphones button. This will allow you to select a Spotify device to play audio from. You may be prompted to log in.</p>
+            </div>
+            <div class="carousel-item">
+              <h5>Skipping</h5>
+              <div class="welcome-img-container mb-3"> <%= svg_image("undraw_walk_in_the_city", class: "welcome_playlist_img") %> </div>
+              <p>Any song may be skipped by way of voting. Click the "skip?" button to vote to skip. This vote can be retracted.</p>
+            </div>
+            <div class="carousel-item">
+              <h5>Deleting account</h5>
+              <div class="welcome-img-container mb-3"> <%= svg_image("undraw_deliveries", class: "welcome_playlist_img") %> </div>
+              <p>Sesh does not save your personal data provided by Spotify. When you close your browser, you will be removed from the sesh and ejected from the queue. However, if you would like completely delete your Sesh account, you can do so at any time by clicking the <%= svg_image("ellipsis", class: "welcome-inline-svg ellipsis") %> button and selecting <span class="welcome-emphasis">disconnect</span>. </p>
+              <form id="welcome-form">
+                <div class="form-check">
+                  <input type="checkbox" name="welcome-do-not-show" id="welcome-do-not-show" class="form-check-input" />
+                  <label for="welcome-do-not-show">Do not show again</label>
+                </div>
+                <button type="submit" class="btn-secondary btn">Okay</button>
+              </form>
+            </div>
+          </div>
+          <a class="carousel-control carousel-control-prev" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control carousel-control-next" data-target="#welcome-carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" data-target="#welcome-carousel" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -104,7 +104,7 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @doc """
   Set the threshold for number of votes to skip a song. Can only be set by the host
-  of the room.
+  of the room. This action can only be done by the host.
   """
   @spec set_skip_vote_threshold(room_code :: String.t(), user :: any, threshold :: pos_integer) ::
           {:ok, new_threshold :: pos_integer} | {:error, error_reason :: String.t()}
@@ -119,6 +119,17 @@ defmodule HillsideJukebox.JukeboxServer do
   """
   def vote_skip(room_code, identifier) do
     GenServer.call(via_tuple(room_code), {:vote_skip, identifier})
+  end
+
+  def unvote_skip(room_code, identifier) do
+    GenServer.call(via_tuple(room_code), {:unvote_skip, identifier})
+  end
+
+  @doc """
+  Checks if there is a skip vote associated with the given identifier (boolean)
+  """
+  def vote_skip_status(room_code, identifier) do
+    GenServer.call(via_tuple(room_code), {:vote_skip_status, identifier})
   end
 
   @doc """
@@ -152,6 +163,7 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         server
       ) do
+    Logger.info("Playing next song in room '#{server.room_code}'")
     next_song = play_next_internal(server)
     {:reply, next_song, server}
   end
@@ -162,6 +174,8 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         server
       ) do
+    Logger.info("Adding track with id '#{track_id}' in room '#{server.room_code}'")
+
     {:ok, spotify_track} =
       HillsideJukebox.Auth.Spotify.call_for_client(
         &DeSpotify.Tracks.get_track/3,
@@ -223,6 +237,10 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid}
       ) do
+    Logger.info(
+      "User with ID #{user.id} setting skip threshold to #{threshold} in room '#{state.room_code}'"
+    )
+
     case(is_host_int?(users_pid, user.id)) do
       {:ok, true} -> {:reply, {:ok, threshold}, set_vote_threshold(state, threshold)}
       _ -> {:reply, {:error, "not a host"}, state}
@@ -233,16 +251,61 @@ defmodule HillsideJukebox.JukeboxServer do
   def handle_call(
         {:vote_skip, identifier},
         _from,
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log, queue_pid: queue_pid}
+      ) do
+    if(HillsideJukebox.SongQueue.Server.is_empty(queue_pid)) do
+      {:reply, {:error, "cannot vote when the queue is empty"}, state}
+    else
+      if MapSet.member?(skip_log, identifier) do
+        {:reply, {:error, "already voted"}, state}
+      else
+        new_state = vote_for_identifier(state, identifier)
+
+        new_skip_state = %{
+          num_skips: new_state.num_skip_votes,
+          skips_needed: new_state.skip_thresh
+        }
+
+        Logger.info(
+          "Some user voting to skip in room '#{state.room_code}'. Skip votes: #{
+            new_skip_state.num_skips
+          }/#{new_skip_state.skips_needed}"
+        )
+
+        {:reply, {:ok, new_skip_state}, new_state}
+      end
+    end
+  end
+
+  @impl true
+  def handle_call(
+        {:unvote_skip, identifier},
+        _from,
         state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
       ) do
-    if MapSet.member?(skip_log, identifier) do
-      {:reply, {:error, "already voted"}, state}
+    if !MapSet.member?(skip_log, identifier) do
+      {:reply, {:error, "already unvoted"}, state}
     else
-      new_state = vote_for_identifier(state, identifier)
+      new_state = unvote_for_identifier(state, identifier)
       new_skip_state = %{num_skips: new_state.num_skip_votes, skips_needed: new_state.skip_thresh}
+
+      Logger.info(
+        "Some user un-voting to skip in room '#{state.room_code}'. Skip votes: #{
+          new_skip_state.num_skips
+        }/#{new_skip_state.skips_needed}"
+      )
 
       {:reply, {:ok, new_skip_state}, new_state}
     end
+  end
+
+  @impl true
+  def handle_call(
+        {:vote_skip_status, identifier},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
+      ) do
+    {:reply, MapSet.member?(skip_log, identifier), state}
   end
 
   @impl true
@@ -273,6 +336,8 @@ defmodule HillsideJukebox.JukeboxServer do
         {:add_user, user},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
+    Logger.info("Adding user with id '#{user.id}' to room '#{state.room_code}'")
+
     case HillsideJukebox.UserPool.add_user(users_pid, user) do
       {:error, :already_in_pool} -> {:noreply, state}
       {:ok, _new_user} -> {:noreply, %{state | num_users: num_users + 1}}
@@ -284,6 +349,7 @@ defmodule HillsideJukebox.JukeboxServer do
         {:remove_user, %HillsideJukebox.User{id: id}},
         state = %HillsideJukebox.JukeboxServer{users_pid: users_pid, num_users: num_users}
       ) do
+    Logger.info("Removing user with id '#{id}' from room '#{state.room_code}'")
     HillsideJukebox.UserPool.remove_with_user_id(users_pid, id)
     # Need to make sure we actually removed someone before decrementing - security hole
     {:noreply, %{state | num_users: num_users - 1}}
@@ -296,6 +362,7 @@ defmodule HillsideJukebox.JukeboxServer do
           timer_pid: timer_pid
         }
       ) do
+    Logger.info("Syncing audio for user with id '#{user.id}' in room '#{server.room_code}'")
     offset = HillsideJukebox.SongQueue.Timer.get_offset(timer_pid)
 
     case offset do
@@ -314,7 +381,7 @@ defmodule HillsideJukebox.JukeboxServer do
        ) do
     # Why are we popping and then getting current? Really could be done in one step
     next = HillsideJukebox.SongQueue.Server.next(queue_pid)
-    HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, next)
+    HjWeb.Endpoint.broadcast!("queue", "queue:pop:" <> room_code, %{next_song: next})
     next_song = HillsideJukebox.SongQueue.Server.current(queue_pid)
     # HillsideJukebox.UserPool.reset_skip_votes(users_pid)
     play_and_autoplay_next(next_song, server)
@@ -377,14 +444,29 @@ defmodule HillsideJukebox.JukeboxServer do
     end
   end
 
+  defp vote_for_identifier(state, identifier) do
+    vote_for_identifier(state, identifier, true)
+  end
+
+  defp unvote_for_identifier(state, identifier) do
+    vote_for_identifier(state, identifier, false)
+  end
+
   defp vote_for_identifier(
          state = %HillsideJukebox.JukeboxServer{
            skip_log: skip_log,
            num_skip_votes: old_vote_num
          },
-         identifier
+         identifier,
+         vote_toggle
        ) do
-    new_skip_log = MapSet.put(skip_log, identifier)
+    new_skip_log =
+      if vote_toggle do
+        MapSet.put(skip_log, identifier)
+      else
+        MapSet.delete(skip_log, identifier)
+      end
+
     new_skip_votes = MapSet.size(new_skip_log)
 
     new_state = %{state | skip_log: new_skip_log, num_skip_votes: new_skip_votes}
@@ -408,6 +490,12 @@ defmodule HillsideJukebox.JukeboxServer do
            num_skip_votes: num_skip_votes
          }
        ) do
+    Logger.debug(
+      "checking if skip necessary. Thresh: #{inspect(skip_thresh)}, votes: #{
+        inspect(num_skip_votes)
+      }"
+    )
+
     if num_skip_votes >= skip_thresh do
       skip!(state)
     else
@@ -428,9 +516,14 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   defp skip!(state) do
-    %{state | num_skip_votes: 0, skip_log: MapSet.new()}
     new_song = skip_current_song(state)
-    HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", new_song)
+    new_state = %{state | num_skip_votes: 0, skip_log: MapSet.new()}
+
+    HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", %{
+      new_song: new_song
+    })
+
+    new_state
   end
 
   defp is_host_int?(users_pid, user_id) do

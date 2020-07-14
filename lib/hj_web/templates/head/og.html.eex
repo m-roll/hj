@@ -1,8 +1,10 @@
-    <title>Spotify Sesh</title>
-    <meta property="og:title" content="Spotify Sesh" />
+    <title>Sesh | Music with Many</title>
+    <meta property="og:title" content="Sesh | Music With Many" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= @hj_web_host%>" />
     <meta property="og:image" content="/images/og_image.png" />
-    <meta property="og:site_name" content="Spotify Sesh" />
+    <meta property="og:site_name" content="Sesh MWM" />
     <meta property="fb:admins" content="USER_ID" />
     <meta property="og:description" content="Play Spotify music with your friends" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">

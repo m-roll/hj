@@ -10,8 +10,28 @@ defmodule HjWeb.AnonUserChannel do
     |> get_skip_response(socket)
   end
 
-  defp get_skip_response({:ok, _} = ok_tuple, socket) do
-    {:reply, ok_tuple, socket}
+  def handle_in("user_anon:unvote_skip", _payload, socket) do
+    HillsideJukebox.JukeboxServer.unvote_skip(room_code(socket), socket_identity(socket))
+    |> get_skip_response(socket)
+  end
+
+  def handle_in("user_anon:vote_status", _payload, socket) do
+    has_voted =
+      HillsideJukebox.JukeboxServer.vote_skip_status(room_code(socket), socket_identity(socket))
+
+    {:reply, {:ok, %{has_voted: has_voted}}, socket}
+  end
+
+  def handle_in("user_anon:get_prefs", _payload, socket) do
+    skip_thresh = HillsideJukebox.JukeboxServer.get_skip_thresh(room_code(socket))
+    {:reply, {:ok, %{skip_thresh: skip_thresh}}, socket}
+  end
+
+  defp get_skip_response({:ok, skip_details} = ok_tuple, socket) do
+    has_voted =
+      HillsideJukebox.JukeboxServer.vote_skip_status(room_code(socket), socket_identity(socket))
+
+    {:reply, {:ok, Map.put(skip_details, :has_voted, has_voted)}, socket}
   end
 
   defp get_skip_response({:error, err_message}, socket) do

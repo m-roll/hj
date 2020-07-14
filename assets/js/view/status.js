@@ -1,6 +1,7 @@
 import {
   getArtistString
 } from "./util/artist";
+import $ from "jquery";
 import StatusEmptyView from "./status-empty";
 export default class StatusView {
   constructor(playerView) {
@@ -26,8 +27,6 @@ export default class StatusView {
       this._setTrackName(newEntry.track_name);
       this._setPlayingArtists(newEntry.track_artists);
       this._setTrackArtwork(newEntry.track_art_url);
-      this.trackPlayingName.classList.remove("blank");
-      this.trackPlayingArtist.classList.remove("blank");
     }
   }
   setEmpty() {
@@ -37,9 +36,12 @@ export default class StatusView {
     this.statusEmptyView.show();
     this.trackPlayingName.classList.add("blank");
     this.trackPlayingArtist.classList.add("blank");
+    console.log("empty")
+    this.playerView.setEmpty();
   }
   _setTrackName(trackName) {
     this.trackPlayingName.textContent = trackName;
+    this.trackPlayingName.classList.remove("blank");
   }
   _setPlayingArtists(artists) {
     if (artists) {
@@ -48,6 +50,7 @@ export default class StatusView {
   }
   _setPlayingArtistString(text) {
     this.trackPlayingArtist.textContent = text;
+    this.trackPlayingArtist.classList.remove("blank");
   }
   _setTrackArtwork(artworkUrl) {
     this.backgroundElem.style.backgroundImage = `url(${artworkUrl})`;

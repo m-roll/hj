@@ -2,6 +2,7 @@ defmodule HillsideJukebox.Accounts do
   import Ecto.Query
   alias HillsideJukebox.User
   alias Hj.Repo
+  require Logger
 
   @spec create(tokens :: %DeSpotify.Auth.Tokens{}, user :: %DeSpotify.PrivateUser{}) ::
           {:ok, %HillsideJukebox.User{}}
@@ -12,6 +13,7 @@ defmodule HillsideJukebox.Accounts do
 
   # Creates both a user and the preferences for that user, this is important
   defp do_create(user) do
+    Logger.info("Creating new user with id '#{user.id}'")
     {:ok, new_user} = Repo.insert(user)
   end
 
@@ -38,6 +40,8 @@ defmodule HillsideJukebox.Accounts do
   end
 
   def update_access_and_refresh_token(user, new_access_token, new_refresh_token) do
+    Logger.info("Updating access & refresh token for user with id '#{user.id}'")
+
     user
     |> Ecto.Changeset.cast(%{access_token: new_access_token, refresh_token: new_refresh_token}, [
       :access_token,
@@ -47,6 +51,8 @@ defmodule HillsideJukebox.Accounts do
   end
 
   def set_active_room(user, active_room) do
+    Logger.info("Setting active room to '#{active_room}' for user with ID '#{user.id}'")
+
     user
     |> Ecto.Changeset.cast(%{room_active: active_room}, [
       :room_active
@@ -70,15 +76,19 @@ defmodule HillsideJukebox.Accounts do
     Repo.exists?(query_user_by_email(email))
   end
 
+  def disconnect(user = %User{}) do
+    Repo.delete(user)
+  end
+
   defp user_struct(
          %DeSpotify.Auth.Tokens{access_token: at, refresh_token: rt},
-         %DeSpotify.PrivateUser{id: id, display_name: dn, email: email}
+         %DeSpotify.PrivateUser{id: id, email: email}
        ) do
     %HillsideJukebox.User{
       id: id,
       access_token: at,
       refresh_token: rt,
-      display_name: dn,
+      display_name: "Anonymous",
       email: email
     }
   end
