@@ -9,8 +9,19 @@ export default class UserAnonChannel {
   }
   voteSkip() {
     this.userChannel.push('user_anon:vote_skip').receive("ok", resp => {
-      //fire and forget
+      this.onGetVoteStatusCb(resp);
     })
+  }
+  unVoteSkip() {
+    this.userChannel.push('user_anon:unvote_skip').receive("ok", resp => {
+      this.onGetVoteStatusCb(resp);
+    })
+  }
+  onGetVoteStatus(cb) {
+    this.onGetVoteStatusCb = cb;
+  }
+  getVoteStatus(cb) {
+    this.userChannel.push('user_anon:vote_status').receive("ok", this.onGetVoteStatusCb);
   }
   join() {
     this.userChannel.join().receive("ok", resp => {

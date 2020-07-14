@@ -89,8 +89,26 @@ defmodule HjWeb.SecureUserChannel do
     user = socket_user(socket)
     HillsideJukebox.UserPreferences.save(user, prefs_changeset_from(payload))
     # TODO if host, save the vote threshold number
-    {:ok, is_host} = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+    is_host = HillsideJukebox.JukeboxServer.is_host?(room_code(socket), user)
+    save_host_prefs(room_code(socket), user, payload)
     {:reply, :ok, socket}
+  end
+
+  defp save_host_prefs(room_code, user, prefs) do
+    case Integer.parse(prefs["skipThreshold"]) do
+      :error ->
+        nil
+
+      {thresh, _} when thresh > 0 ->
+        HillsideJukebox.JukeboxServer.set_skip_vote_threshold(
+          room_code,
+          user,
+          thresh
+        )
+
+      _ ->
+        nil
+    end
   end
 
   def terminate(reason, socket) do

@@ -104,7 +104,7 @@ defmodule HillsideJukebox.JukeboxServer do
 
   @doc """
   Set the threshold for number of votes to skip a song. Can only be set by the host
-  of the room.
+  of the room. This action can only be done by the host.
   """
   @spec set_skip_vote_threshold(room_code :: String.t(), user :: any, threshold :: pos_integer) ::
           {:ok, new_threshold :: pos_integer} | {:error, error_reason :: String.t()}
@@ -119,6 +119,17 @@ defmodule HillsideJukebox.JukeboxServer do
   """
   def vote_skip(room_code, identifier) do
     GenServer.call(via_tuple(room_code), {:vote_skip, identifier})
+  end
+
+  def unvote_skip(room_code, identifier) do
+    GenServer.call(via_tuple(room_code), {:unvote_skip, identifier})
+  end
+
+  @doc """
+  Checks if there is a skip vote associated with the given identifier (boolean)
+  """
+  def vote_skip_status(room_code, identifier) do
+    GenServer.call(via_tuple(room_code), {:vote_skip_status, identifier})
   end
 
   @doc """
@@ -242,6 +253,7 @@ defmodule HillsideJukebox.JukeboxServer do
         _from,
         state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
       ) do
+    # if(HillsideJukebox.SongQueue.Server.is_empty(queue_pid))
     if MapSet.member?(skip_log, identifier) do
       {:reply, {:error, "already voted"}, state}
     else
@@ -256,6 +268,37 @@ defmodule HillsideJukebox.JukeboxServer do
 
       {:reply, {:ok, new_skip_state}, new_state}
     end
+  end
+
+  @impl true
+  def handle_call(
+        {:unvote_skip, identifier},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
+      ) do
+    if !MapSet.member?(skip_log, identifier) do
+      {:reply, {:error, "already unvoted"}, state}
+    else
+      new_state = unvote_for_identifier(state, identifier)
+      new_skip_state = %{num_skips: new_state.num_skip_votes, skips_needed: new_state.skip_thresh}
+
+      Logger.info(
+        "Some user un-voting to skip in room '#{state.room_code}'. Skip votes: #{
+          new_skip_state.num_skips
+        }/#{new_skip_state.skips_needed}"
+      )
+
+      {:reply, {:ok, new_skip_state}, new_state}
+    end
+  end
+
+  @impl true
+  def handle_call(
+        {:vote_skip_status, identifier},
+        _from,
+        state = %HillsideJukebox.JukeboxServer{skip_log: skip_log}
+      ) do
+    {:reply, MapSet.member?(skip_log, identifier), state}
   end
 
   @impl true
@@ -394,14 +437,29 @@ defmodule HillsideJukebox.JukeboxServer do
     end
   end
 
+  defp vote_for_identifier(state, identifier) do
+    vote_for_identifier(state, identifier, true)
+  end
+
+  defp unvote_for_identifier(state, identifier) do
+    vote_for_identifier(state, identifier, false)
+  end
+
   defp vote_for_identifier(
          state = %HillsideJukebox.JukeboxServer{
            skip_log: skip_log,
            num_skip_votes: old_vote_num
          },
-         identifier
+         identifier,
+         vote_toggle
        ) do
-    new_skip_log = MapSet.put(skip_log, identifier)
+    new_skip_log =
+      if vote_toggle do
+        MapSet.put(skip_log, identifier)
+      else
+        MapSet.delete(skip_log, identifier)
+      end
+
     new_skip_votes = MapSet.size(new_skip_log)
 
     new_state = %{state | skip_log: new_skip_log, num_skip_votes: new_skip_votes}
@@ -425,6 +483,12 @@ defmodule HillsideJukebox.JukeboxServer do
            num_skip_votes: num_skip_votes
          }
        ) do
+    Logger.debug(
+      "checking if skip necessary. Thresh: #{inspect(skip_thresh)}, votes: #{
+        inspect(num_skip_votes)
+      }"
+    )
+
     if num_skip_votes >= skip_thresh do
       skip!(state)
     else
@@ -445,9 +509,10 @@ defmodule HillsideJukebox.JukeboxServer do
   end
 
   defp skip!(state) do
-    %{state | num_skip_votes: 0, skip_log: MapSet.new()}
     new_song = skip_current_song(state)
+    new_state = %{state | num_skip_votes: 0, skip_log: MapSet.new()}
     HjWeb.Endpoint.broadcast!("user_anon:" <> state.room_code, "user_anon:song_skipped", new_song)
+    new_state
   end
 
   defp is_host_int?(users_pid, user_id) do
