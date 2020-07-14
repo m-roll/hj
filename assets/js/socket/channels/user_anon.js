@@ -19,4 +19,14 @@ export default class UserAnonChannel {
       console.warn("Unable to join anon user channel", resp)
     })
   }
+  onGetUserPrefs(cb) {
+    this.onGetUserPrefsCb = cb;
+  }
+  fetchUserPrefs() {
+    this.userChannel.push("user_anon:prefs_get").receive("ok", (resp => {
+      this.onGetUserPrefsCb(resp);
+    }).bind(this)).receive("error", resp => {
+      console.warn("error retrieving user preferences", resp);
+    });
+  }
 }

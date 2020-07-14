@@ -12,6 +12,9 @@ export default class WelcomeModal {
       focus: false,
       show: false
     });
+    document.getElementById("welcome-modal-dismiss").addEventListener("click", (e) => {
+      $('#' + id).modal('hide');
+    });
   }
   onWelcomeFormSubmit(cb) {
     $('#' + formId).on('submit', ((event) => {

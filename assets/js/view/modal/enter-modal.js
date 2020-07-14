@@ -31,7 +31,9 @@ export default class EnterModal {
     }
     $('#' + joinRoomFormId).on('submit', (event) => {
       let roomCode = getInputValueFromForm($(event.currentTarget), roomCodeInputName);
-      history.pushState({}, document.title, roomCode);
+      history.pushState({}, document.title, "/room/" + roomCode);
+      hj_has_room_code = true;
+      hj_room_code = roomCode;
       cb(roomCode.toLowerCase());
       dismiss();
       event.preventDefault();

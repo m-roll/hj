@@ -30,7 +30,9 @@ import HostAlertView from "../view/alert/host.js";
 import HostsController from "./jukebox/hosts.js";
 import WelcomeModal from "../view/modal/welcome-modal.js";
 import WelcomeController from "./jukebox/welcome.js";
+import LogInModal from "../view/modal/log-in-modal.js";
 export default class JukeboxController {
+  isLoggedIn = typeof hj_resource_token !== 'undefined';
   // views
   queueView = new QueueView();
   playerView = new PlayerView();
@@ -39,7 +41,8 @@ export default class JukeboxController {
   joinRoomView = new JoinRoomView();
   addTrackModal = new AddTrackModal();
   roomNotFoundView = new RoomNotFoundView(this.joinRoomView);
-  devicesView = new DevicesView();
+  logInModal = new LogInModal();
+  devicesView = new DevicesView(this.isLoggedIn, this.logInModal);
   skipDetailsView = new SkipView();
   errorModal = new ErrorModal();
   roomCodeView = new RoomCodeView();
@@ -54,7 +57,6 @@ export default class JukeboxController {
   isPaused = true;
   roomCode;
   isListening;
-  isLoggedIn = typeof hj_resource_token !== 'undefined';
   onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
   roomChannel;
   isReadyForPlayback;
@@ -72,6 +74,10 @@ export default class JukeboxController {
   getStatusChannelThunk = () => this.roomedChannels.status;
   getQueueProviderThunk = () => this.roomedChannels.queue;
   getUserChannelThunk = () => this.roomedChannels.user;
+  getUserPrefsProviderThunk = () => {
+    console.log(this.roomedChannels);
+    return this.isLoggedIn ? this.roomedChannels.user : this.roomedChannels.userAnon;
+  }
   getUserAnonChannelThunk = () => this.roomedChannels.userAnon;
   getUserPrefsControllerThunk = () => this.userPrefsController;
   getSpotifyOAuthThunk = (() => this.spotify_access_token).bind(this);
@@ -82,11 +88,11 @@ export default class JukeboxController {
   queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.getUserPrefsControllerThunk, this.queueView, this.statusView);
   spotifyPlayer = new SpotifyPlayer(this.getSpotifyOAuthThunk);
   skipController = new SkipController(this.getUserAnonChannelThunk, this.skipDetailsView);
-  userPrefsController = new UserPrefsController(this.isLoggedIn, this.getUserChannelThunk, new UserPrefsView());
+  userPrefsController = new UserPrefsController(this.isLoggedIn, this.getUserPrefsProviderThunk, new UserPrefsView());
   hostsController = new HostsController(this.getUserChannelThunk, this.hostAlertView)
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
   animationController = new AnimationController(this.playerView);
-  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal);
+  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal, this.isLoggedIn);
   welcomeController = new WelcomeController(this.welcomeView);
   constructor() {
     this.setupEvents();
@@ -101,14 +107,6 @@ export default class JukeboxController {
     this.roomController.onRoomJoined(this.setupRoom.bind(this));
     this.devicesController.onReadyForPlayback((() => {
       this.roomedChannels.user.register();
-    }).bind(this));
-    this.devicesController.onNotReadyForPlayback((() => {
-      //if the user does not have an active device, remove them from the user pool.
-      this.roomedChannels.user.unregister();
-      console.log("SHould unregister here");
-    }).bind(this));
-    window.addEventListener("beforeunload", ((event) => {
-      this.roomedChannels.user.unregister();
     }).bind(this));
   }
   setupRoom(roomCode) {
@@ -131,9 +129,15 @@ export default class JukeboxController {
     this.welcomeController.onRoomEnter();
   }
   setupRoomedChannels(roomCode) {
-    let userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);
+    let userChannel;
+    if (this.isLoggedIn) {
+      userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);
+    }
     let userAnonChannel = this.socket.joinChannel(UserAnonChannel, roomCode);
-    this._setupUserEvents(userChannel, this.devicesView);
+    console.log("Is logged in:", this.isLoggedIn);
+    if (this.isLoggedIn) {
+      this._setupUserEvents(userChannel, this.devicesView);
+    }
     this.roomedChannels = {
       queue: this.socket.joinChannel(QueueChannel, roomCode),
       user: userChannel,
@@ -168,5 +172,12 @@ export default class JukeboxController {
       this.userPrefsController.setIsHost(false);
       this.hostAlertView.hide();
     });
+    this.devicesController.onNotReadyForPlayback((() => {
+      //if the user does not have an active device, remove them from the user pool.
+      this.roomedChannels.user.unregister();
+    }).bind(this));
+    window.addEventListener("beforeunload", ((event) => {
+      this.roomedChannels.user.unregister();
+    }).bind(this));
   }
 }

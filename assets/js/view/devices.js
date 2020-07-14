@@ -1,12 +1,16 @@
 import DeviceListModal from "./modal/device-list-modal";
 export default class DevicesView {
-  constructor() {
+  constructor(isLoggedIn, logInModal) {
     this.devicesListModal = new DeviceListModal();
     this.devicesListModal.init();
     this.devicesBtn = document.getElementById("btn-devices");
     this.devicesBtn.addEventListener("click", ((e) => {
-      this.devicesListModal.show();
-      this.deviceListRefreshCb();
+      if (isLoggedIn) {
+        this.devicesListModal.show();
+        this.deviceListRefreshCb();
+      } else {
+        logInModal.show();
+      }
     }).bind(this));
   }
   updateDevices(devices, isListening) {
@@ -19,6 +23,7 @@ export default class DevicesView {
     this.devicesListModal.onMute(cb);
   }
   onDeviceListRefresh(cb) {
+    console.log("On device list refresh cb")
     this.deviceListRefreshCb = cb;
   }
   setHasActiveDevice(hasActiveDevice) {

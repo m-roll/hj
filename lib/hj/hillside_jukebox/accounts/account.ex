@@ -82,13 +82,13 @@ defmodule HillsideJukebox.Accounts do
 
   defp user_struct(
          %DeSpotify.Auth.Tokens{access_token: at, refresh_token: rt},
-         %DeSpotify.PrivateUser{id: id, display_name: dn, email: email}
+         %DeSpotify.PrivateUser{id: id, email: email}
        ) do
     %HillsideJukebox.User{
       id: id,
       access_token: at,
       refresh_token: rt,
-      display_name: dn,
+      display_name: "Anonymous",
       email: email
     }
   end

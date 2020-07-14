@@ -10,6 +10,11 @@ defmodule HjWeb.AnonUserChannel do
     |> get_skip_response(socket)
   end
 
+  def handle_in("user_anon:get_prefs", _payload, socket) do
+    skip_thresh = HillsideJukebox.JukeboxServer.get_skip_thresh(room_code(socket))
+    {:reply, {:ok, %{skip_thresh: skip_thresh}}, socket}
+  end
+
   defp get_skip_response({:ok, _} = ok_tuple, socket) do
     {:reply, ok_tuple, socket}
   end

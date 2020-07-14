@@ -1,0 +1,16 @@
+<div class="modal fade" id="log-in-modal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <button id="log-in-modal-dismiss" class="btn modal-dismiss-btn"></button>
+      <div id="log-in-modal-body" class="modal-body">
+        <h5 id="log-in-modal-title" class="card-title mb-4">Log in to Spotify Premium</h5>
+        <div class="col">
+          <div id="log-in-modal-content" class="row">
+            <p>You must log in to your Spotify Premium account to access this feature.</p>
+            <a id="log-in-modal-button" class="btn btn-secondary" href="/">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

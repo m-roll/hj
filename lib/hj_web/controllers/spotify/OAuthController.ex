@@ -19,7 +19,14 @@ defmodule SpotifyController.OAuthController do
         _ -> session_opts
       end
 
-    UserSession.save_state(state_nonce, Map.merge(session_opts, params))
+    # prevents atom DoS attack when popping state.
+    other_params =
+      case params do
+        %{"room_code" => room_code} -> %{room_code: room_code}
+        _ -> %{}
+      end
+
+    UserSession.save_state(state_nonce, Map.merge(session_opts, other_params))
     redirect(conn, external: redirect_url)
   end
 

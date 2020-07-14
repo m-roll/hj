@@ -1,17 +1,20 @@
 export default class DevicesController {
   devicesListCache;
   isListening;
-  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening, errorView) {
+  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening, errorView, isLoggedIn) {
     this.devicesView = devicesView;
     this.devicesProviderThunk = devicesProviderThunk;
     this.roomCodeThunk = roomCodeThunk;
     this.isDeviceReady = false;
     this.isListening = isListening;
-    this.errorView = errorView
+    this.errorView = errorView;
+    this.isLoggedIn = isLoggedIn;
   }
   ready() {
     this._setupListeners();
-    this.devicesProviderThunk().getDevices();
+    if (this.isLoggedIn) {
+      this.devicesProviderThunk().getDevices();
+    }
   }
   onReadyForPlayback(cb) {
     this._onReadyForPlaybackCb = cb;
@@ -29,13 +32,21 @@ export default class DevicesController {
     this.hasAlreadyJoined = hasAlreadyJoined;
   }
   _setupListeners() {
+    if (this.isLoggedIn) {
+      this._setupLoggedInListeners();
+    }
+    this.devicesView.onDeviceListRefresh((() => {
+      if (this.isLoggedIn) {
+        this.devicesProviderThunk().getDevices();
+      }
+    }).bind(this));
+  }
+  _setupLoggedInListeners() {
     this.devicesProviderThunk().onReceiveDevices((payload) => {
       this.devicesListCache = payload.devices;
       this._updateDevices(payload.devices, this.isListening);
+      console.log("Received devices");
     });
-    this.devicesView.onDeviceListRefresh((() => {
-      this.devicesProviderThunk().getDevices();
-    }).bind(this));
     this.devicesView.onDeviceChangeSubmit(((newDevice) => {
       this.devicesProviderThunk().setDeviceId(newDevice, this._onChangeDevice.bind(this), ((error) => {
         if (error.message === "already active") {
