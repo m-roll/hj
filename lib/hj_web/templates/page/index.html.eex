@@ -39,19 +39,15 @@
           <div class="col-4">
             <div class="row mb-1">
               <div class="col">
-                <p class="my-auto font-weight-bold">
-                  <div class="overflow-marquee">
-                    <span id="status-song-title" class="overlay-text overflow-marquee-inner blank"></span>
-                  </div>
+                <p class="info-overflow my-auto font-weight-bold">
+                  <span id="status-song-title" class="overlay-text overflow-marquee-inner blank"></span>
                 </p>
               </div>
             </div>
             <div class="row">
               <div class="col">
-                <p class="my-auto overflow-marquee">
-                  <div class="overflow-marquee">
-                    <span id="status-song-artist" class="overlay-text overflow-marquee-inner blank"></span>
-                  </div>
+                <p class="info-overflow my-auto overflow-marquee">
+                  <span id="status-song-artist" class="overlay-text overflow-marquee-inner blank"></span>
                 </p>
               </div>
             </div>

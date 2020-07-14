@@ -5,6 +5,7 @@
 @import "../node_modules/bootstrap/scss/mixins";
 @import "util.scss";
 @import "welcome.scss";
+@import "status.scss";
 $search-filler-color: rgba(255, 255, 255, 0.1);
 $theme-primary-color: #64B5F6;
 $theme-primary-darker: #2196f3;
@@ -371,6 +372,8 @@ tr td {
   }
 
   .search-result-meta {
+    overflow: hidden;
+    white-space: nowrap;
     margin: auto 0;
 
     .status-song-artist {
