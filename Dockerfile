@@ -17,6 +17,10 @@ ENV MIX_ENV=prod
 # install mix dependencies
 COPY mix.exs mix.lock ./
 COPY config config
+# have to do this since the certificate at git.waitstreet.com keeps expiring
+RUN git config --global http.sslVerify false
+RUN mix hex.config unsafe_https true
+
 RUN mix do deps.get --only $MIX_ENV
 RUN mix deps.compile
 
