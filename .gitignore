@@ -31,8 +31,8 @@ npm-debug.log
 # Since we are building assets from assets/,
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
-/priv/
-!/priv/repo/*
+/priv/static/
+/priv/gettext/
 
 /.elixir_ls/
 
