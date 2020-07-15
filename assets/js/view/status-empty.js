@@ -1,12 +1,14 @@
 const overlayId = "preview-container-overlay";
-export default class StatusEmptyView {
-  constructor() {
-    this.overlayDom = document.getElementById(overlayId);
+export default function StatusEmptyView() {
+  let overlayDom = document.getElementById(overlayId);
+  function show() {
+    overlayDom.hidden = false;
   }
-  show() {
-    this.overlayDom.hidden = false;
+  function hide() {
+    overlayDom.hidden = true;
   }
-  hide() {
-    this.overlayDom.hidden = true;
+
+  return {
+    show, hide
   }
 }

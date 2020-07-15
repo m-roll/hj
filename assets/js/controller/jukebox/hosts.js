@@ -1,22 +1,22 @@
-export default class HostsController {
-  constructor(hostProviderThunk, hostView) {
-    this.hostProviderThunk = hostProviderThunk;
-    this.hostView = hostView;
-  }
-  ready() {
-    this.hostProviderThunk().onHostUpdated((() => {
-      this.hostProviderThunk().checkIsHost(((hostInfo) => {
-        this.onUpdateHostStatusCb(hostInfo);
-        this._updateHostInfo(hostInfo);
+export default function HostsController(hostProviderThunk, hostView) {
+  function ready() {
+    hostProviderThunk().onHostUpdated(() => {
+      hostProviderThunk().checkIsHost(((hostInfo) => {
+        onUpdateHostStatusCb(hostInfo);
+        _updateHostInfo(hostInfo);
       }));
-    }).bind(this));
+    });
   }
-  onUpdateHostStatus(cb) {
-    this.onUpdateHostStatusCb = cb;
+  function onUpdateHostStatus(cb) {
+    onUpdateHostStatusCb = cb;
   }
-  _updateHostInfo(hostInfo) {
+  function _updateHostInfo(hostInfo) {
     if (hostInfo) {
-      this.hostView.show();
+      hostView.show();
     }
+  }
+  return {
+    ready,
+    onUpdateHostStatus
   }
 }

@@ -1,40 +1,38 @@
-export default class UserPrefsController {
-  prefs;
-  constructor(isLoggedIn, userPrefsProviderThunk, userPrefsView) {
-    this.isLoggedIn = isLoggedIn;
-    this.userPrefsProviderThunk = userPrefsProviderThunk;
-    this.userPrefsView = userPrefsView;
-  }
-  ready() {
-    this._setupListeners();
-    console.log("User prefs controller ready, is logged in", this.isLoggedIn);
-    if (this.isLoggedIn) {
+export default function UserPrefsController(isLoggedIn, userPrefsProviderThunk, userPrefsView) {
+  let prefs;
+  function ready() {
+    _setupListeners();
+    console.log("User prefs controller ready, is logged in", isLoggedIn);
+    if (isLoggedIn) {
       console.log("getting user prefs");
-      this.userPrefsProviderThunk().fetchUserPrefs();
+      userPrefsProviderThunk().fetchUserPrefs();
     }
   }
-  getUserNickname() {
-    return this.prefs.nickname;
+  function getUserNickname() {
+    return prefs.nickname;
   }
-  setIsHost(isHost) {
-    this.userPrefsView.setIsHost(isHost);
+  function setIsHost(isHost) {
+    userPrefsView.setIsHost(isHost);
   }
-  _setupListeners() {
-    this.userPrefsProviderThunk().onGetUserPrefs(((prefs) => {
-      this.prefs = prefs;
-      this.userPrefsView.setUserPrefs(prefs);
-    }).bind(this));
-    this.userPrefsView.onPrefsOpen((() => {
-      if (this.isLoggedIn) {
-        this.userPrefsProviderThunk().fetchUserPrefs();
+  function _setupListeners() {
+    userPrefsProviderThunk().onGetUserPrefs((_prefs) => {
+      prefs = _prefs;
+      userPrefsView.setUserPrefs(prefs);
+    });
+    userPrefsView.onPrefsOpen(() => {
+      if (isLoggedIn) {
+        userPrefsProviderThunk().fetchUserPrefs();
       }
-    }).bind(this));
-    this.userPrefsView.onPrefsSubmit(((prefs) => {
-      this.prefs = prefs;
-      console.log(this.isLoggedIn)
-      if (this.isLoggedIn) {
-        this.userPrefsProviderThunk().saveUserPrefs(prefs);
+    });
+    userPrefsView.onPrefsSubmit((_prefs) => {
+      prefs = _prefs;
+      if (isLoggedIn) {
+        userPrefsProviderThunk().saveUserPrefs(prefs);
       }
-    }).bind(this));
+    });
+  }
+
+  return {
+    ready, getUserNickname, setIsHost
   }
 }

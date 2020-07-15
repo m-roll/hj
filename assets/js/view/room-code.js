@@ -1,10 +1,12 @@
-export default class RoomCodeView {
-  constructor() {
-    this.roomCodeElement = document.getElementById("code-disp");
-    this.roomCodeLabel = document.getElementById("code-disp-label");
+export default function RoomCodeView() {
+  let roomCodeElement = document.getElementById("code-disp");
+  let roomCodeLabel = document.getElementById("code-disp-label");
+  function setRoomCode(roomCode) {
+    roomCodeElement.textContent = roomCode;
+    roomCodeLabel.classList.remove("hidden");
   }
-  setRoomCode(roomCode) {
-    this.roomCodeElement.textContent = roomCode;
-    this.roomCodeLabel.classList.remove("hidden");
+
+  return {
+    setRoomCode
   }
 }

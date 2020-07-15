@@ -1,10 +1,8 @@
 export default function WelcomeController(welcomeView) {
   const cookieKey = "hj.doNotWelcome";
   welcomeView.onWelcomeFormSubmit((doNotPrompt) => {
-    console.log("do not prompt:", doNotPrompt);
     if (doNotPrompt) {
       let cookieEntry = cookieKey + "=" + new String(doNotPrompt);
-      console.log("New cookie: ", cookieEntry);
       document.cookie = cookieEntry;
     }
   });

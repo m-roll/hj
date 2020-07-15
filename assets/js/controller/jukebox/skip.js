@@ -1,24 +1,25 @@
-export default class SkipController {
-  constructor(skipDetailsProviderThunk, skipDetailsView) {
-    this.skipDetailsProviderThunk = skipDetailsProviderThunk;
-    this.skipDetailsView = skipDetailsView;
+export default function SkipController(skipDetailsProviderThunk, skipDetailsView) {
+
+  function ready() {
+    _setupListeners();
+    skipDetailsProviderThunk().getVoteStatus();
   }
-  ready() {
-    this._setupListeners();
-    this.skipDetailsProviderThunk().getVoteStatus();
+  function _setupListeners() {
+    skipDetailsProviderThunk().onSkipStateUpdate((update) => {
+      skipDetailsView.setSkipValues(update.num_skips, update.skips_needed);
+    });
+    skipDetailsView.onSkipRequest(() => {
+      skipDetailsProviderThunk().voteSkip();
+    });
+    skipDetailsView.onUnSkipRequest(() => {
+      skipDetailsProviderThunk().unVoteSkip();
+    });
+    skipDetailsProviderThunk().onGetVoteStatus((resp) => {
+      skipDetailsView.setHasVoted(resp.has_voted);
+    });
   }
-  _setupListeners() {
-    this.skipDetailsProviderThunk().onSkipStateUpdate(((update) => {
-      this.skipDetailsView.setSkipValues(update.num_skips, update.skips_needed);
-    }).bind(this));
-    this.skipDetailsView.onSkipRequest(() => {
-      this.skipDetailsProviderThunk().voteSkip();
-    });
-    this.skipDetailsView.onUnSkipRequest(() => {
-      this.skipDetailsProviderThunk().unVoteSkip();
-    });
-    this.skipDetailsProviderThunk().onGetVoteStatus(((resp) => {
-      this.skipDetailsView.setHasVoted(resp.has_voted);
-    }).bind(this));
+
+  return {
+    ready
   }
 }

@@ -1,55 +1,58 @@
-export default class UserChannel {
-  constructor(socket, ...args) {
-    let roomCode = args[0];
-    this.isLoggedIn = args[1];
-    this.userChannel = socket.channel("user:" + roomCode, {});
+export default function UserChannel(socket, ...args) {
+  let roomCode = args[0];
+  let isLoggedIn = args[1];
+  let userChannel = socket.channel("user:" + roomCode, {});
+  let onRegisterCb;
+  let onUnregisterCb;
+  let onUserRegisterErrorCb;
+  let receiveDevicesCb;
+  let onGetUserPrefsCb;
+  function onAuthUpdate(authUpdateCb) {
+    userChannel.on("auth:update", authUpdateCb);
   }
-  onAuthUpdate(authUpdateCb) {
-    this.userChannel.on("auth:update", authUpdateCb);
-  }
-  register() {
-    this.userChannel.push('user:register').receive("ok", (resp => {
+  function register() {
+    userChannel.push('user:register').receive("ok", resp => {
       if (resp.error) {
-        this.onUserRegisterErrorCb(resp.error)
+        onUserRegisterErrorCb(resp.error)
       } else {
-        this.onRegisterCb(resp);
+        onRegisterCb(resp);
       }
-    }).bind(this));
+    });
   }
-  unregister() {
-    this.userChannel.push('user:unregister').receive("ok", (resp => {
-      this.onUnregisterCb(resp);
+  function unregister() {
+    userChannel.push('user:unregister').receive("ok", resp => {
+      onUnregisterCb(resp);
       console.log("Unregistered");
-    }).bind(this));
+    });
   }
-  onUnregister(cb) {
-    this.onUnregisterCb = cb;
+  function onUnregister(cb) {
+    onUnregisterCb = cb;
   }
-  onSongStatusUpdate(songStatusUpdateCb) {
-    this.songStatusUpdateCb = songStatusUpdateCb;
+  function onSongStatusUpdate(_songStatusUpdateCb) {
+    songStatusUpdateCb = _songStatusUpdateCb;
   }
-  onRegister(cb) {
-    this.onRegisterCb = cb;
+  function onRegister(cb) {
+    onRegisterCb = cb;
   }
-  onUserRegisterError(cb) {
-    this.onUserRegisterErrorCb = cb;
+  function onUserRegisterError(cb) {
+    onUserRegisterErrorCb = cb;
   }
-  join() {
-    this.userChannel.join().receive("ok", resp => {
+  function join() {
+    userChannel.join().receive("ok", resp => {
       console.log("Joined user channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join user channel", resp)
     })
   }
-  createRoom(cb) {
-    this.userChannel.push("user:create_room").receive("ok", resp => {
+  function createRoom(cb) {
+    userChannel.push("user:create_room").receive("ok", resp => {
       cb(resp);
     }).receive("error", resp => {
       console.warn("Error creating room", resp);
     })
   }
-  setDeviceId(newId, successCb, failureCb) {
-    this.userChannel.push("user:set_device", {
+  function setDeviceId(newId, successCb, failureCb) {
+    userChannel.push("user:set_device", {
       deviceId: newId
     }).receive("ok", (payload) => {
       if (payload && payload.error) {
@@ -59,50 +62,71 @@ export default class UserChannel {
       }
     });
   }
-  getDevices() {
-    this.userChannel.push("user:get_devices").receive("ok", (resp => {
-      this.receiveDevicesCb(resp);
-    }).bind(this)).receive("error", resp => {
+  function getDevices() {
+    userChannel.push("user:get_devices").receive("ok", resp => {
+      receiveDevicesCb(resp);
+    }).receive("error", resp => {
       console.warn("error retrieving user devices", resp);
     });
   }
-  refreshCredentials(cb) {
-    this.userChannel.push("user:refresh_credentials").receive("ok", (resp => {
+  function refreshCredentials(cb) {
+    userChannel.push("user:refresh_credentials").receive("ok", resp => {
       cb(resp);
-    }).bind(this)).receive("error", resp => {
+    }).receive("error", resp => {
       console.warn("error refreshing user credentials", resp);
     });
   }
-  onReceiveDevices(cb) {
-    this.receiveDevicesCb = cb;
+  function onReceiveDevices(cb) {
+    receiveDevicesCb = cb;
   }
-  onGetUserPrefs(cb) {
-    this.onGetUserPrefsCb = cb;
+  function onGetUserPrefs(cb) {
+    onGetUserPrefsCb = cb;
   }
-  fetchUserPrefs() {
-    this.userChannel.push("user:prefs_get").receive("ok", (resp => {
-      this.onGetUserPrefsCb(resp);
-    }).bind(this)).receive("error", resp => {
+  function fetchUserPrefs() {
+    userChannel.push("user:prefs_get").receive("ok", resp => {
+      onGetUserPrefsCb(resp);
+    }).receive("error", resp => {
       console.warn("error retrieving user preferences", resp);
     });
   }
-  saveUserPrefs(prefs) {
-    this.userChannel.push("user:prefs_save", prefs).receive("ok", (resp) => {
+  function saveUserPrefs(prefs) {
+    userChannel.push("user:prefs_save", prefs).receive("ok", (resp) => {
       //fire and forget
     });
   }
-  onHostUpdated(cb) {
-    this.userChannel.on("user:new_host", (resp => {
+  function onHostUpdated(cb) {
+    userChannel.on("user:new_host", resp => {
       cb(resp);
-    }).bind(this));
+    });
   }
-  checkIsHost(cb) {
-    if (!this.isLoggedIn) {
+  function checkIsHost(cb) {
+    if (!isLoggedIn) {
       cb(false);
       return;
     }
-    this.userChannel.push("user:get_authority").receive("ok", (resp => {
+    userChannel.push("user:get_authority").receive("ok", resp => {
       cb(resp);
-    }).bind(this));
+    });
+  }
+
+  return {
+    onAuthUpdate,
+    register,
+    unregister,
+    onUnregister,
+    onRegister,
+    onSongStatusUpdate,
+    onUserRegisterError,
+    join,
+    createRoom,
+    setDeviceId,
+    getDevices,
+    refreshCredentials,
+    onReceiveDevices,
+    onGetUserPrefs,
+    fetchUserPrefs,
+    saveUserPrefs,
+    onHostUpdated,
+    checkIsHost
   }
 }

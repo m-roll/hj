@@ -1,8 +1,8 @@
-export function AddTrackController(addTrackView, searchControllerThunk, getRoomCodeThunk) {
+export default function AddTrackController(addTrackView, searchControllerThunk, getRoomCodeThunk) {
   let addSongCb;
   _setupListeners(addTrackView, searchControllerThunk, getRoomCodeThunk);
-  function onSongSubmit(addSongCb) {
-    addSongCb = addSongCb;
+  function onSongSubmit(cb) {
+    addSongCb = cb;
   }
   function _setupListeners(addTrackView, searchControllerThunk, getRoomCodeThunk) {
     addTrackView.init();
@@ -13,5 +13,9 @@ export function AddTrackController(addTrackView, searchControllerThunk, getRoomC
       addSongCb(songUri);
       addTrackView.dismiss();
     });
+  }
+
+  return {
+    onSongSubmit
   }
 }

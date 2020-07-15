@@ -31,36 +31,35 @@ import HostsController from "./jukebox/hosts.js";
 import WelcomeModal from "../view/modal/welcome-modal.js";
 import WelcomeController from "./jukebox/welcome.js";
 import LogInModal from "../view/modal/log-in-modal.js";
-export default class JukeboxController {
-  isLoggedIn = typeof hj_resource_token !== 'undefined';
+export default function JukeboxController() {
+  let isLoggedIn = typeof hj_resource_token !== 'undefined';
   // views
-  queueView = new QueueView();
-  playerView = new PlayerView();
-  statusView = new StatusView(this.playerView);
-  audioActivatorView = new AudioActivatorView();
-  joinRoomView = new JoinRoomView();
-  addTrackModal = new AddTrackModal();
-  roomNotFoundView = new RoomNotFoundView(this.joinRoomView);
-  logInModal = new LogInModal();
-  devicesView = new DevicesView(this.isLoggedIn, this.logInModal);
-  skipDetailsView = new SkipView();
-  errorModal = new ErrorModal();
-  roomCodeView = new RoomCodeView();
-  hostAlertView = new HostAlertView();
-  welcomeView = new WelcomeModal();
+  const queueView = new QueueView();
+  const playerView = new PlayerView();
+  const statusView = new StatusView(playerView);
+  const audioActivatorView = new AudioActivatorView();
+  const joinRoomView = new JoinRoomView();
+  const addTrackModal = new AddTrackModal();
+  const roomNotFoundView = new RoomNotFoundView(joinRoomView);
+  const logInModal = new LogInModal();
+  const devicesView = new DevicesView(isLoggedIn, logInModal);
+  const skipDetailsView = new SkipView();
+  const errorModal = new ErrorModal();
+  const roomCodeView = new RoomCodeView();
+  const hostAlertView = new HostAlertView();
+  const welcomeView = new WelcomeModal();
   // misc.
-  spotifyPlayer;
-  socket;
-  spotify_access_token;
-  songPlayedTime;
-  currentSongLength;
-  isPaused = true;
-  roomCode;
-  isListening;
-  onSongPlayed = (payload => this.statusView.updateStatusView(payload)).bind(this);
-  roomChannel;
-  isReadyForPlayback;
-  roomedChannels = {
+  let socket = new JukeboxSocket(isLoggedIn);
+  let spotify_access_token;
+  let songPlayedTime;
+  let currentSongLength;
+  let isPaused = true;
+  let roomCode;
+  let isListening = hj_listening;
+  let onSongPlayed = (payload => statusView.updateStatusView(payload));
+  let roomChannel;
+  let isReadyForPlayback;
+  let roomedChannels = {
     queue: null,
     user: null,
     userAnon: null,
@@ -69,115 +68,110 @@ export default class JukeboxController {
   }
   //misc providers
   // thunks
-  getRoomChannelThunk = () => this.roomChannel;
-  getSearchControllerThunk = () => this.roomedChannels.search;
-  getStatusChannelThunk = () => this.roomedChannels.status;
-  getQueueProviderThunk = () => this.roomedChannels.queue;
-  getUserChannelThunk = () => this.roomedChannels.user;
-  getUserPrefsProviderThunk = () => {
-    console.log(this.roomedChannels);
-    return this.isLoggedIn ? this.roomedChannels.user : this.roomedChannels.userAnon;
+  const getRoomChannelThunk = () => roomChannel;
+  const getSearchControllerThunk = () => roomedChannels.search;
+  const getStatusChannelThunk = () => roomedChannels.status;
+  const getQueueProviderThunk = () => roomedChannels.queue;
+  const getUserChannelThunk = () => roomedChannels.user;
+  const getUserPrefsProviderThunk = () => {
+    return isLoggedIn ? roomedChannels.user : roomedChannels.userAnon;
   }
-  getUserAnonChannelThunk = () => this.roomedChannels.userAnon;
-  getUserPrefsControllerThunk = () => this.userPrefsController;
-  getSpotifyOAuthThunk = (() => this.spotify_access_token).bind(this);
+  const getUserAnonChannelThunk = () => roomedChannels.userAnon;
+  const getUserPrefsControllerThunk = () => userPrefsController;
+  const getSpotifyOAuthThunk = () => spotify_access_token;
   // secondary controllers
-  roomController = new RoomController(this.joinRoomView, this.roomNotFoundView, this.getRoomChannelThunk, this.setupRoom.bind(this));
-  addTrackController = new AddTrackController(this.addTrackModal, this.getSearchControllerThunk, this.roomController.getRoomCode);
-  statusController = new StatusController(this.statusView, this.getStatusChannelThunk, this.roomController.getRoomCode);
-  queueController = new QueueController(this.roomController.getRoomCode, this.getQueueProviderThunk, this.getQueueProviderThunk, this.getUserPrefsControllerThunk, this.queueView, this.statusView);
-  spotifyPlayer = new SpotifyPlayer(this.getSpotifyOAuthThunk);
-  skipController = new SkipController(this.getUserAnonChannelThunk, this.skipDetailsView);
-  userPrefsController = new UserPrefsController(this.isLoggedIn, this.getUserPrefsProviderThunk, new UserPrefsView());
-  hostsController = new HostsController(this.getUserChannelThunk, this.hostAlertView)
+  const roomController = new RoomController(joinRoomView, roomNotFoundView, getRoomChannelThunk, _setupRoom);
+  const addTrackController = new AddTrackController(addTrackModal, getSearchControllerThunk, roomController.getRoomCode);
+  const statusController = new StatusController(statusView, getStatusChannelThunk,roomController.getRoomCode);
+  const queueController = new QueueController(roomController.getRoomCode, getQueueProviderThunk, getQueueProviderThunk, getUserPrefsControllerThunk, queueView, statusView);
+  const spotifyPlayer = new SpotifyPlayer(getSpotifyOAuthThunk);
+  const skipController = new SkipController(getUserAnonChannelThunk, skipDetailsView);
+  const userPrefsController = new UserPrefsController(isLoggedIn, getUserPrefsProviderThunk, new UserPrefsView());
+  const hostsController = new HostsController(getUserChannelThunk, hostAlertView)
   //localPlaybackController = new SpotifyPlaybackController(this.spotifyPlayer, this.playerView, this.initAudio.bind(this));
-  animationController = new AnimationController(this.playerView);
-  devicesController = new DevicesController(this.devicesView, this.getUserChannelThunk, this.roomController.getRoomCode, this.isListening, this.errorModal, this.isLoggedIn);
-  welcomeController = new WelcomeController(this.welcomeView);
-  constructor() {
-    this.setupEvents();
-    this.socket = new JukeboxSocket(this.isLoggedIn);
-    this.roomChannel = this.socket.joinChannel(RoomChannel);
-    this.roomController.ready();
-    this.isListening = hj_listening;
-    this.userPrefsController.setIsHost(false);
+  const animationController = new AnimationController(playerView);
+  const devicesController = new DevicesController(devicesView, getUserChannelThunk, roomController.getRoomCode, isListening, errorModal, isLoggedIn);
+  const welcomeController = new WelcomeController(welcomeView);
+  
+  //construct
+  _setupEvents();
+  
+  roomChannel = socket.joinChannel(RoomChannel);
+  roomController.ready();
+  userPrefsController.setIsHost(false);
+
+  function _setupEvents() {
+    addTrackController.onSongSubmit(queueController.addSong);
+    roomController.onRoomJoined(_setupRoom);
+    devicesController.onReadyForPlayback(() => {
+      roomedChannels.user.register();
+    });
   }
-  setupEvents() {
-    this.addTrackController.onSongSubmit(this.queueController.addSong.bind(this.queueController));
-    this.roomController.onRoomJoined(this.setupRoom.bind(this));
-    this.devicesController.onReadyForPlayback((() => {
-      this.roomedChannels.user.register();
-    }).bind(this));
-  }
-  setupRoom(roomCode) {
-    this.setupRoomedChannels(roomCode);
-    if (this.isListening) {
-      this.roomedChannels.user.refreshCredentials(((creds) => {
-        this.spotify_access_token = creds.access_token;
+  function _setupRoom(_roomCode) {
+    setupRoomedChannels(_roomCode);
+    if (isListening) {
+      roomedChannels.user.refreshCredentials((creds) => {
+        spotify_access_token = creds.access_token;
         //this.localPlaybackController.ready();
         //this.audioActivatorView.show();
-      }).bind(this));
+      });
     }
-    this.roomedChannels.queue.fetch(this.onFetchQueue.bind(this));
-    this.queueController.ready();
-    this.devicesController.ready();
-    this.skipController.ready();
-    this.userPrefsController.ready();
-    this.statusController.ready();
-    this.roomCodeView.setRoomCode(roomCode);
-    this.roomCode = roomCode;
-    this.welcomeController.onRoomEnter();
+    roomedChannels.queue.fetch(onFetchQueue);
+    queueController.ready();
+    devicesController.ready();
+    skipController.ready();
+    userPrefsController.ready();
+    statusController.ready();
+    roomCodeView.setRoomCode(_roomCode);
+    roomCode = _roomCode;
+    welcomeController.onRoomEnter();
   }
-  setupRoomedChannels(roomCode) {
+  function setupRoomedChannels(_roomCode) {
     let userChannel;
-    if (this.isLoggedIn) {
-      userChannel = this.socket.joinChannel(UserChannel, roomCode, this.isLoggedIn);
+    if (isLoggedIn) {
+      userChannel = socket.joinChannel(UserChannel, _roomCode, isLoggedIn);
     }
-    let userAnonChannel = this.socket.joinChannel(UserAnonChannel, roomCode);
-    console.log("Is logged in:", this.isLoggedIn);
-    if (this.isLoggedIn) {
-      this._setupUserEvents(userChannel, this.devicesView);
-    }
-    this.roomedChannels = {
-      queue: this.socket.joinChannel(QueueChannel, roomCode),
+    let userAnonChannel = socket.joinChannel(UserAnonChannel, _roomCode);
+    roomedChannels = {
+      queue: socket.joinChannel(QueueChannel, _roomCode),
       user: userChannel,
       userAnon: userAnonChannel,
-      status: this.socket.joinChannel(StatusChannel, roomCode),
-      search: this.socket.joinChannel(SearchChannel, roomCode)
+      status: socket.joinChannel(StatusChannel, _roomCode),
+      search: socket.joinChannel(SearchChannel, _roomCode)
     }
-    this.roomCode = roomCode;
+    if (isLoggedIn) {
+      _setupUserEvents();
+    }
+    roomCode = _roomCode;
   }
-  onFetchQueue(payload) {
-    console.log("fetched queue:", payload)
-    payload.queue.forEach(song => this.queueView.addToQueueDisplay.call(this.queueView, {
+  function onFetchQueue(payload) {
+    payload.queue.forEach(song => queueView.addToQueueDisplay.call(queueView, {
       song
     }));
   }
-  _setupUserEvents(userProvider, userView) {
-    userProvider.onAuthUpdate(((auth) => {
-      this.spotify_access_token = auth;
-    }).bind(this));
-    userProvider.onRegister(((payload) => {
-      console.log("Registered: ", payload)
+  function _setupUserEvents() {
+    getUserChannelThunk().onAuthUpdate((auth) => {
+      spotify_access_token = auth;
+    });
+    getUserChannelThunk().onRegister((payload) => {
       if (payload.is_host) {
-        this.hostAlertView.show();
+        hostAlertView.show();
       }
-      this.userPrefsController.setIsHost(payload.is_host);
-    }).bind(this));
-    userProvider.onUserRegisterError((resp) => {
+      userPrefsController.setIsHost(payload.is_host);
+    });
+    getUserChannelThunk().onUserRegisterError((resp) => {
       console.log("Registration error", resp);
     });
-    userProvider.onUnregister((resp) => {
-      console.log("Unregister");
-      this.userPrefsController.setIsHost(false);
-      this.hostAlertView.hide();
+    getUserChannelThunk().onUnregister((resp) => {
+      userPrefsController.setIsHost(false);
+      hostAlertView.hide();
     });
-    this.devicesController.onNotReadyForPlayback((() => {
+    devicesController.onNotReadyForPlayback(() => {
       //if the user does not have an active device, remove them from the user pool.
-      this.roomedChannels.user.unregister();
-    }).bind(this));
-    window.addEventListener("beforeunload", ((event) => {
-      this.roomedChannels.user.unregister();
-    }).bind(this));
+      roomedChannels.user.unregister();
+    });
+    window.addEventListener("beforeunload", (event) => {
+      roomedChannels.user.unregister();
+    });
   }
 }

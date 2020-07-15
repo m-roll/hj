@@ -1,43 +1,54 @@
-export default class UserAnonChannel {
-  constructor(socket, ...args) {
-    let roomCode = args[0];
-    this.userChannel = socket.channel("user_anon:" + roomCode, {});
-  }
-  onSkipStateUpdate(cb) {
+export default function UserAnonChannel(socket, ...args) {
+  let roomCode = args[0];
+  let userChannel = socket.channel("user_anon:" + roomCode, {});
+  let onGetVoteStatusCb;
+
+  function onSkipStateUpdate(cb) {
     //{num_skips: , skips_needed: }
-    this.userChannel.on("user_anon:skip_state", cb);
+    userChannel.on("user_anon:skip_state", cb);
   }
-  voteSkip() {
-    this.userChannel.push('user_anon:vote_skip').receive("ok", resp => {
-      this.onGetVoteStatusCb(resp);
+  function voteSkip() {
+    userChannel.push('user_anon:vote_skip').receive("ok", resp => {
+      onGetVoteStatusCb(resp);
     })
   }
-  unVoteSkip() {
-    this.userChannel.push('user_anon:unvote_skip').receive("ok", resp => {
-      this.onGetVoteStatusCb(resp);
+  function unVoteSkip() {
+    userChannel.push('user_anon:unvote_skip').receive("ok", resp => {
+      onGetVoteStatusCb(resp);
     })
   }
-  onGetVoteStatus(cb) {
-    this.onGetVoteStatusCb = cb;
+  function onGetVoteStatus(cb) {
+    onGetVoteStatusCb = cb;
   }
-  getVoteStatus(cb) {
-    this.userChannel.push('user_anon:vote_status').receive("ok", this.onGetVoteStatusCb);
+  function getVoteStatus(cb) {
+    userChannel.push('user_anon:vote_status').receive("ok", onGetVoteStatusCb);
   }
-  join() {
-    this.userChannel.join().receive("ok", resp => {
+  function join() {
+    userChannel.join().receive("ok", resp => {
       console.log("Joined anon user channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join anon user channel", resp)
     })
   }
-  onGetUserPrefs(cb) {
-    this.onGetUserPrefsCb = cb;
+  function onGetUserPrefs(cb) {
+    onGetUserPrefsCb = cb;
   }
-  fetchUserPrefs() {
-    this.userChannel.push("user_anon:prefs_get").receive("ok", (resp => {
-      this.onGetUserPrefsCb(resp);
-    }).bind(this)).receive("error", resp => {
+  function fetchUserPrefs() {
+    userChannel.push("user_anon:prefs_get").receive("ok", resp => {
+      onGetUserPrefsCb(resp);
+    }).receive("error", resp => {
       console.warn("error retrieving user preferences", resp);
     });
+  }
+
+  return {
+    onSkipStateUpdate,
+    voteSkip,
+    unVoteSkip,
+    onGetVoteStatus,
+    getVoteStatus,
+    join,
+    onGetUserPrefs,
+    fetchUserPrefs
   }
 }

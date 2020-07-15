@@ -1,90 +1,84 @@
-export default class DevicesController {
-  devicesListCache;
-  isListening;
-  constructor(devicesView, devicesProviderThunk, roomCodeThunk, isListening, errorView, isLoggedIn) {
-    this.devicesView = devicesView;
-    this.devicesProviderThunk = devicesProviderThunk;
-    this.roomCodeThunk = roomCodeThunk;
-    this.isDeviceReady = false;
-    this.isListening = isListening;
-    this.errorView = errorView;
-    this.isLoggedIn = isLoggedIn;
-  }
-  ready() {
-    this._setupListeners();
-    if (this.isLoggedIn) {
-      this.devicesProviderThunk().getDevices();
+export default function  DevicesController(devicesView, devicesProviderThunk, roomCodeThunk, isListening, errorView, isLoggedIn) {
+  let isDeviceReady = false;
+  let hasAlreadyJoined;
+  let devicesListCache;
+  let onMuteCb;
+  let _onReadyForPlaybackCb, _onNotReadyForPlaybackCb;
+  function ready() {
+    _setupListeners();
+    if (isLoggedIn) {
+      devicesProviderThunk().getDevices();
     }
   }
-  onReadyForPlayback(cb) {
-    this._onReadyForPlaybackCb = cb;
+  function onReadyForPlayback(cb) {
+    _onReadyForPlaybackCb = cb;
   }
-  onNotReadyForPlayback(cb) {
-    this._onNotReadyForPlaybackCb = cb;
+  function onNotReadyForPlayback(cb) {
+    _onNotReadyForPlaybackCb = cb;
   }
-  onMute(cb) {
-    this.onMuteCb = cb;
+  function onMute(cb) {
+    onMuteCb = cb;
   }
-  onListen(cb) {
-    this.onListenCb = cb;
+  function onListen(cb) {
+    onListenCb = cb;
   }
-  setAlreadyJoined(hasAlreadyJoined) {
-    this.hasAlreadyJoined = hasAlreadyJoined;
+  function setAlreadyJoined(alreadyJoined) {
+    hasAlreadyJoined = alreadyJoined;
   }
-  _setupListeners() {
-    if (this.isLoggedIn) {
-      this._setupLoggedInListeners();
+  function _setupListeners() {
+    if (isLoggedIn) {
+      _setupLoggedInListeners();
     }
-    this.devicesView.onDeviceListRefresh((() => {
-      if (this.isLoggedIn) {
-        this.devicesProviderThunk().getDevices();
+    devicesView.onDeviceListRefresh(() => {
+      if (isLoggedIn) {
+        devicesProviderThunk().getDevices();
       }
-    }).bind(this));
+    });
   }
-  _setupLoggedInListeners() {
-    this.devicesProviderThunk().onReceiveDevices((payload) => {
-      this.devicesListCache = payload.devices;
-      this._updateDevices(payload.devices, this.isListening);
+  function _setupLoggedInListeners() {
+    devicesProviderThunk().onReceiveDevices((payload) => {
+      devicesListCache = payload.devices;
+      _updateDevices(payload.devices, isListening);
       console.log("Received devices");
     });
-    this.devicesView.onDeviceChangeSubmit(((newDevice) => {
-      this.devicesProviderThunk().setDeviceId(newDevice, this._onChangeDevice.bind(this), ((error) => {
+    devicesView.onDeviceChangeSubmit((newDevice) => {
+      devicesProviderThunk().setDeviceId(newDevice, _onChangeDevice, (error) => {
         if (error.message === "already active") {
-          this.devicesView.hide();
-          this.errorView.error("Already playing music", `A device is already connected in queue '${error.room_code}'. Please disconnect audio there to listen to this queue.`)
+          devicesView.hide();
+          errorView.error("Already playing music", `A device is already connected in queue '${error.room_code}'. Please disconnect audio there to listen to this queue.`)
         }
-      }).bind(this));
-    }).bind(this.devicesView));
-    this.devicesView.onMute(() => {
-      this.isListening = false;
-      this._updateDevices(this.devicesListCache, this.isListening);
+      });
+    });
+    devicesView.onMute(() => {
+      isListening = false;
+      _updateDevices(devicesListCache, isListening);
     });
   }
-  _updateDevices(devices) {
-    this.devicesView.updateDevices(devices, this.isListening);
-    let hasActiveDevice = this._hasActiveDevice(devices);
-    this.devicesView.setHasActiveDevice(hasActiveDevice);
-    if (hasActiveDevice && !this.isDeviceReady) {
-      this.isDeviceReady = true;
-      this._onReadyForPlaybackCb();
-    } else if (!hasActiveDevice && this.isDeviceReady) {
-      this.isDeviceReady = false;
-      this._onNotReadyForPlaybackCb();
+  function _updateDevices(devices) {
+    devicesView.updateDevices(devices, isListening);
+    let hasActiveDevice = _hasActiveDevice(devices);
+    devicesView.setHasActiveDevice(hasActiveDevice);
+    if (hasActiveDevice && !isDeviceReady) {
+      isDeviceReady = true;
+      _onReadyForPlaybackCb();
+    } else if (!hasActiveDevice && isDeviceReady) {
+      isDeviceReady = false;
+      _onNotReadyForPlaybackCb();
     }
   }
-  _onChangeDevice(deviceId) {
-    if (!this.isListening) {
-      this.isListening = true;
-      //this._onReadyForPlaybackCb();
+  function _onChangeDevice(deviceId) {
+    if (!isListening) {
+      isListening = true;
+      //_onReadyForPlaybackCb();
     }
-    for (let i = 0; i < this.devicesListCache.length; i++) {
-      let device = this.devicesListCache[i];
+    for (let i = 0; i < devicesListCache.length; i++) {
+      let device = devicesListCache[i];
       device.is_active = device.id === deviceId;
-      this.devicesListCache[i] = device;
+      devicesListCache[i] = device;
     }
-    this._updateDevices(this.devicesListCache, this.isListening);
+    _updateDevices(devicesListCache, isListening);
   }
-  _hasActiveDevice(devices) {
+  function _hasActiveDevice(devices) {
     for (let i = 0; i < devices.length; i++) {
       if (devices[i]["is_active"]) {
         return true;
@@ -93,5 +87,14 @@ export default class DevicesController {
       }
     }
     return false;
+  }
+
+  return {
+    ready,
+    onReadyForPlayback,
+    onNotReadyForPlayback,
+    onMute,
+    onListen,
+    setAlreadyJoined
   }
 }
