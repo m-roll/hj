@@ -348,6 +348,7 @@ tr td {
 
 .headline-main-content {
   height: 100vh;
+  max-height: -webkit-fill-available;
 }
 
 .queue-peek-holder {
