@@ -1,30 +1,38 @@
 import UserPrefsModal from "./modal/user-prefs-modal";
-export default class UserPrefsView {
-  constructor() {
-    this.userPrefsModal = new UserPrefsModal();
-    this.userPrefsModal.init();
-    this.userPrefsBtn = document.getElementById("settings-button");
-    this.userPrefsBtn.addEventListener("click", ((event) => {
-      this.onPrefsOpenCb();
-      this.userPrefsModal.show();
-    }).bind(this));
+export default function UserPrefsView() {
+  let userPrefsModal = new UserPrefsModal();
+  let userPrefsBtn = document.getElementById("settings-button");
+  let onPrefsOpenCb;
+  userPrefsModal.init();
+  userPrefsBtn.addEventListener("click", (event) => {
+    onPrefsOpenCb();
+    userPrefsModal.show();
+  });
+
+  function onPrefsOpen(cb) {
+    onPrefsOpenCb = cb;
   }
-  onPrefsOpen(cb) {
-    this.onPrefsOpenCb = cb;
-  }
-  onPrefsSubmit(cb) {
-    this.userPrefsModal.onDismiss((() => {
-      cb(this.getUserPrefChanges());
-    }).bind(this));
+  function onPrefsSubmit(cb) {
+    userPrefsModal.onDismiss(() => {
+      cb(getUserPrefChanges());
+    });
   }
   //should only be called when fecthing pre-set data, logged-in users only.
-  setUserPrefs(prefs) {
-    this.userPrefsModal.setUserPrefs(prefs);
+  function setUserPrefs(prefs) {
+    userPrefsModal.setUserPrefs(prefs);
   }
-  getUserPrefChanges() {
-    return this.userPrefsModal.collectUserPrefs();
+  function getUserPrefChanges() {
+    return userPrefsModal.collectUserPrefs();
   }
-  setIsHost(isHost) {
-    this.userPrefsModal.setIsHost(isHost);
+  function setIsHost(isHost) {
+    userPrefsModal.setIsHost(isHost);
+  }
+
+  return {
+    onPrefsOpen,
+    onPrefsSubmit,
+    setUserPrefs,
+    getUserPrefChanges,
+    setIsHost
   }
 }

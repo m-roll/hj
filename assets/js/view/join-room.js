@@ -1,13 +1,15 @@
 import EnterModal from "./modal/enter-modal";
-export default class JoinRoomView {
-  constructor() {
-    this.enterModal = new EnterModal();
-    this.enterModal.init();
+export default function JoinRoomView() {
+  let enterModal = new EnterModal();
+  enterModal.init();
+  function promptJoin() {
+    enterModal.show();
   }
-  promptJoin() {
-    this.enterModal.show();
+  function onJoinRoomSubmit(cb) {
+    enterModal.onJoinRoomSubmit(cb);
   }
-  onJoinRoomSubmit(cb) {
-    this.enterModal.onJoinRoomSubmit(cb);
+  return {
+    promptJoin,
+    onJoinRoomSubmit
   }
 }

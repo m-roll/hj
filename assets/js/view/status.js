@@ -3,57 +3,59 @@ import {
 } from "./util/artist";
 import $ from "jquery";
 import StatusEmptyView from "./status-empty";
-export default class StatusView {
-  constructor(playerView) {
-    this.backgroundElem = document.getElementById("background");
-    this.trackPlayingName = document.getElementById("status-song-title");
-    this.trackPlayingArtist = document.getElementById("status-song-artist");
-    this.albumSmall = document.getElementById("preview-image");
-    this.playerView = playerView;
-    this.statusEmptyView = new StatusEmptyView();
-  }
-  updateStatusView(songData) {
+export default function StatusView(playerView) {
+  let backgroundElem = document.getElementById("background");
+  let trackPlayingName = document.getElementById("status-song-title");
+  let trackPlayingArtist = document.getElementById("status-song-artist");
+  let albumSmall = document.getElementById("preview-image");
+  let statusEmptyView = new StatusEmptyView();
+
+  function updateStatusView(songData) {
     if (songData.song === "empty") {
-      this.statusEmptyView.show();
+      statusEmptyView.show();
     } else {
-      this.statusEmptyView.hide();
+      statusEmptyView.hide();
       let newEntry = songData.song;
       let playbackPos = songData.playback_pos;
-      this.playerView.updatePlayer({
+      playerView.updatePlayer({
         paused: false,
         position: playbackPos,
         duration: newEntry.duration
       });
-      this._setTrackName(newEntry.track_name);
-      this._setPlayingArtists(newEntry.track_artists);
-      this._setTrackArtwork(newEntry.track_art_url);
+      _setTrackName(newEntry.track_name);
+      _setPlayingArtists(newEntry.track_artists);
+      _setTrackArtwork(newEntry.track_art_url);
     }
   }
-  setEmpty() {
-    this._setTrackArtwork('');
-    this._setTrackName('');
-    this._setPlayingArtistString()
-    this.statusEmptyView.show();
-    this.trackPlayingName.classList.add("blank");
-    this.trackPlayingArtist.classList.add("blank");
-    console.log("empty")
-    this.playerView.setEmpty();
+  function setEmpty() {
+    _setTrackArtwork('');
+    _setTrackName('');
+    _setPlayingArtistString()
+    statusEmptyView.show();
+    trackPlayingName.classList.add("blank");
+    trackPlayingArtist.classList.add("blank");
+    playerView.setEmpty();
   }
-  _setTrackName(trackName) {
-    this.trackPlayingName.textContent = trackName;
-    this.trackPlayingName.classList.remove("blank");
+  function _setTrackName(trackName) {
+    trackPlayingName.textContent = trackName;
+    trackPlayingName.classList.remove("blank");
   }
-  _setPlayingArtists(artists) {
+  function _setPlayingArtists(artists) {
     if (artists) {
-      this._setPlayingArtistString(getArtistString(artists));
+      _setPlayingArtistString(getArtistString(artists));
     }
   }
-  _setPlayingArtistString(text) {
-    this.trackPlayingArtist.textContent = text;
-    this.trackPlayingArtist.classList.remove("blank");
+  function _setPlayingArtistString(text) {
+    trackPlayingArtist.textContent = text;
+    trackPlayingArtist.classList.remove("blank");
   }
-  _setTrackArtwork(artworkUrl) {
-    this.backgroundElem.style.backgroundImage = `url(${artworkUrl})`;
-    this.albumSmall.style.backgroundImage = `url(${artworkUrl})`;
+  function _setTrackArtwork(artworkUrl) {
+    backgroundElem.style.backgroundImage = `url(${artworkUrl})`;
+    albumSmall.style.backgroundImage = `url(${artworkUrl})`;
+  }
+
+  return {
+    updateStatusView,
+    setEmpty
   }
 }

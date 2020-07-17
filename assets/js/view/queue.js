@@ -1,16 +1,15 @@
 import {
   getArtistString
 } from "./util/artist";
-export default class QueueView {
-  constructor() {
-    this.queueDisp = document.getElementById("song-list");
-    let queueHeader = document.getElementById("queue-table-header");
-    document.getElementById("queue-peek-btn").addEventListener("click", e => {
-      queueHeader.scrollIntoView(true);
-    });
-  }
+export default function QueueView() {
+  let queueDisp = document.getElementById("song-list");
+  let queueHeader = document.getElementById("queue-table-header");
+  document.getElementById("queue-peek-btn").addEventListener("click", e => {
+    queueHeader.scrollIntoView(true);
+  });
+
   // TODO use JSX
-  addToQueueDisplay(newEntry) {
+  function addToQueueDisplay(newEntry) {
     let capitalize = (str) => {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -33,9 +32,14 @@ export default class QueueView {
     row.appendChild(artistCol);
     row.appendChild(nicknameCol);
     row.appendChild(durationCol);
-    this.queueDisp.appendChild(row);
+    queueDisp.appendChild(row);
   }
-  pop() {
-    this.queueDisp.removeChild(this.queueDisp.childNodes[2]);
+  function pop() {
+    queueDisp.removeChild(queueDisp.childNodes[2]);
+  }
+
+  return {
+    addToQueueDisplay,
+    pop
   }
 }

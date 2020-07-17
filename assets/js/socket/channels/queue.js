@@ -1,33 +1,40 @@
-export default class QueueChannel {
-  constructor(socket, ...args) {
-    let roomCode = args[0];
-    this.queueChannel = socket.channel("queue:" + roomCode, {});
+export default function QueueChannel(socket, ...args) {
+  let roomCode = args[0];
+  const queueChannel = socket.channel("queue:" + roomCode, {});
+  function onSongProcessed(roomCode, songProcessedCb) {
+    queueChannel.on('song:processed', songProcessedCb);
   }
-  onSongProcessed(roomCode, songProcessedCb) {
-    this.queueChannel.on('song:processed', songProcessedCb);
+  function onQueuePop(roomCode, popCb) {
+    queueChannel.on('queue:pop', popCb);
   }
-  onQueuePop(roomCode, popCb) {
-    this.queueChannel.on('queue:pop', popCb);
+  function onQueueEmpty(cb) {
+    queueChannel.on('queue:empty', cb);
   }
-  onQueueEmpty(cb) {
-    this.queueChannel.on('queue:empty', cb);
-  }
-  join() {
-    this.queueChannel.join().receive("ok", resp => {
+  function join() {
+    queueChannel.join().receive("ok", resp => {
       console.log("Joined queue channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join queue channel", resp)
     })
   }
-  addSong(roomCode, url, nickname) {
-    this.queueChannel.push('queue:add', {
+  function addSong(roomCode, url, nickname) {
+    queueChannel.push('queue:add', {
       songInput: url,
       user: nickname
     });
   }
-  fetch(fetchCb) {
-    let req = this.queueChannel.push('queue:fetch');
+  function fetch(fetchCb) {
+    let req = queueChannel.push('queue:fetch');
     req.receive("ok", fetchCb);
     return req;
+  }
+
+  return {
+    onSongProcessed,
+    onQueuePop,
+    onQueueEmpty,
+    join,
+    addSong,
+    fetch
   }
 }

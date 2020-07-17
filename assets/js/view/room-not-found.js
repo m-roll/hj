@@ -2,21 +2,24 @@ import RoomNotFoundModal from "../view/modal/room-nf-modal.js";
 import {
   mockRedirectHome
 } from "../util/history.js";
-export default class RoomNotFoundView {
-  roomNfModal = new RoomNotFoundModal();
-  constructor(joinRoomView) {
-    this._setupRoomNfModal();
-    this.joinRoomView = joinRoomView;
+export default function RoomNotFoundView(joinRoomView) {
+  let roomNfModal = new RoomNotFoundModal();
+  _setupRoomNfModal();
+
+  function showRoomNotFoundError() {
+    roomNfModal.show();
   }
-  _setupRoomNfModal() {
-    this.roomNfModal.init();
-    this.roomNfModal.onAccept((() => {
-      this.roomNfModal.dismiss();
+
+  function _setupRoomNfModal() {
+    roomNfModal.init();
+    roomNfModal.onAccept(() => {
+      roomNfModal.dismiss();
       mockRedirectHome();
-      this.joinRoomView.promptJoin();
-    }).bind(this));
+      joinRoomView.promptJoin();
+    });
   }
-  showRoomNotFoundError() {
-    this.roomNfModal.show();
+
+  return {
+    showRoomNotFoundError
   }
 }

@@ -1,30 +1,35 @@
-export default class RoomChannel {
-  constructor(socket) {
-    this.roomChannel = socket.channel("room", {});
-  }
-  join() {
-    this.roomChannel.join().receive("ok", resp => {
+export default function RoomChannel(socket) {
+  let roomChannel = socket.channel("room", {});
+  function join() {
+    roomChannel.join().receive("ok", resp => {
       console.log("Joined room channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join room channel", resp)
     })
   }
-  onRoomExists(cb) {
-    this.onRoomExists = cb;
+  function onRoomExists(cb) {
+    onRoomExists = cb;
   }
-  onRoomNotFound(cb) {
-    this.onRoomNotFound = cb;
+  function onRoomNotFound(cb) {
+    onRoomNotFound = cb;
   }
-  checkExists(roomCode) {
-    this.roomChannel.push('room:exists', {
+  function checkExists(roomCode) {
+    roomChannel.push('room:exists', {
       roomCode
     }).receive("ok", res => {
       console.log("Trying create room", res);
       if (res["created"]) {
-        this.onRoomExists(res["room_code"]);
+        onRoomExists(res["room_code"]);
       } else {
-        this.onRoomNotFound(roomCode);
+        onRoomNotFound(roomCode);
       }
     });
+  }
+
+  return {
+    join,
+    onRoomExists,
+    onRoomNotFound,
+    checkExists
   }
 }

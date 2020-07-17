@@ -1,40 +1,49 @@
 import DeviceListModal from "./modal/device-list-modal";
-export default class DevicesView {
-  constructor(isLoggedIn, logInModal) {
-    this.devicesListModal = new DeviceListModal();
-    this.devicesListModal.init();
-    this.devicesBtn = document.getElementById("btn-devices");
-    this.devicesBtn.addEventListener("click", ((e) => {
-      if (isLoggedIn) {
-        this.devicesListModal.show();
-        this.deviceListRefreshCb();
-      } else {
-        logInModal.show();
-      }
-    }).bind(this));
-  }
-  updateDevices(devices, isListening) {
-    this.devicesListModal.populateDevicesList(devices, isListening);
-  }
-  onDeviceChangeSubmit(cb) {
-    this.devicesListModal.onChangeDevice(cb);
-  }
-  onMute(cb) {
-    this.devicesListModal.onMute(cb);
-  }
-  onDeviceListRefresh(cb) {
-    console.log("On device list refresh cb")
-    this.deviceListRefreshCb = cb;
-  }
-  setHasActiveDevice(hasActiveDevice) {
-    this.hasActiveDevice = hasActiveDevice;
-    if (hasActiveDevice) {
-      this.devicesBtn.classList.remove("devices-disabled");
+export default function DevicesView(isLoggedIn, logInModal) {
+  let devicesListModal = new DeviceListModal();
+  let deviceListRefreshCb;
+  devicesListModal.init();
+  let devicesBtn = document.getElementById("btn-devices");
+  let hasActiveDevice;
+  devicesBtn.addEventListener("click", (e) => {
+    if (isLoggedIn) {
+      devicesListModal.show();
+      deviceListRefreshCb();
     } else {
-      this.devicesBtn.classList.add("devices-disabled");
+      logInModal.show();
+    }
+  });
+  function updateDevices(devices, isListening) {
+    devicesListModal.populateDevicesList(devices, isListening);
+  }
+  function onDeviceChangeSubmit(cb) {
+    devicesListModal.onChangeDevice(cb);
+  }
+  function onMute(cb) {
+    devicesListModal.onMute(cb);
+  }
+  function onDeviceListRefresh(cb) {
+    console.log("On device list refresh cb")
+    deviceListRefreshCb = cb;
+  }
+  function setHasActiveDevice(_hasActiveDevice) {
+    hasActiveDevice = _hasActiveDevice;
+    if (hasActiveDevice) {
+      devicesBtn.classList.remove("devices-disabled");
+    } else {
+      devicesBtn.classList.add("devices-disabled");
     }
   }
-  hide() {
-    this.devicesListModal.dismiss();
+  function hide() {
+    devicesListModal.dismiss();
+  }
+
+  return {
+    updateDevices,
+    onDeviceChangeSubmit,
+    onMute,
+    onDeviceListRefresh,
+    setHasActiveDevice,
+    hide
   }
 }

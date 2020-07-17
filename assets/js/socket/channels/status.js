@@ -1,19 +1,24 @@
-export default class StatusChannel {
-  constructor(socket, ...args) {
-    let roomCode = args[0];
-    this.statusChannel = socket.channel("status:" + roomCode, {});
+export default function StatusChannel(socket, ...args) {
+  let roomCode = args[0];
+  let statusChannel = socket.channel("status:" + roomCode, {});
+
+  function onSongStatusUpdate(songPlayingCb) {
+    statusChannel.on('status:play', songPlayingCb);
   }
-  onSongStatusUpdate(songPlayingCb) {
-    this.statusChannel.on('status:play', songPlayingCb);
-  }
-  join() {
-    this.statusChannel.join().receive("ok", resp => {
+  function join() {
+    statusChannel.join().receive("ok", resp => {
       console.log("Joined status channel successfully", resp)
     }).receive("error", resp => {
       console.warn("Unable to join status channel", resp)
     })
   }
-  getCurrent(roomCode, cb) {
-    this.statusChannel.push('status:current').receive("ok", cb);
+  function getCurrent(roomCode, cb) {
+    statusChannel.push('status:current').receive("ok", cb);
+  }
+
+  return {
+    onSongStatusUpdate,
+    join,
+    getCurrent
   }
 }

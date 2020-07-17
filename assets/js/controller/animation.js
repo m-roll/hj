@@ -1,14 +1,11 @@
-export default class AnimationController {
-  constructor(...animationReceivers) {
-    this.animationReceivers = animationReceivers;
-    this.animationStartTimestamp = +new Date();
-    requestAnimationFrame(this._animate.bind(this));
-  }
-  _animate(timestamp) {
-    let absTimestamp = this.animationStartTimestamp + timestamp;
-    this.animationReceivers.forEach((receiver) => {
+export default function AnimationController(...animationReceivers) {
+  let animationStartTimestamp = +new Date();
+  requestAnimationFrame(_animate);
+  function _animate(timestamp) {
+    let absTimestamp = animationStartTimestamp + timestamp;
+    animationReceivers.forEach((receiver) => {
       receiver.animate(absTimestamp);
     });
-    requestAnimationFrame(this._animate.bind(this));
+    requestAnimationFrame(_animate);
   }
 }

@@ -1,54 +1,61 @@
 import SkipAlertView from "./alert/skip";
-const skipBtnId = "queue-skip";
-export default class SkipView {
-  isActive;
-  constructor() {
-    this.skipBtn = document.getElementById(skipBtnId);
-    this.skipAlertView = new SkipAlertView();
-    this.skipBtn.addEventListener("click", (e) => {
-      console.log("Click, has voted", this.hasVoted);
-      if (this.hasVoted) {
-        this.activateSkipButton();
-        this.unSkipCb();
-      } else {
-        this.disableSkipButton();
-        this.skipCb();
-      }
-    });
-  }
-  setSkipValues(numSkipVotes, requiredSkipVotes) {
-    this.skipAlertView.setSkipCount(requiredSkipVotes - numSkipVotes);
+export default function SkipView() {
+  const skipBtnId = "queue-skip";
+  let skipBtn = document.getElementById(skipBtnId);
+  let skipAlertView = new SkipAlertView();
+  let isActive;
+  let hasVoted;
+  let skipCb;
+  let unSkipCb;
+  skipBtn.addEventListener("click", (e) => {
+    console.log("Click, has voted", hasVoted);
+    if (hasVoted) {
+      activateSkipButton();
+      unSkipCb();
+    } else {
+      disableSkipButton();
+      skipCb();
+    }
+  });
+  function setSkipValues(numSkipVotes, requiredSkipVotes) {
+    skipAlertView.setSkipCount(requiredSkipVotes - numSkipVotes);
     if (requiredSkipVotes >= numSkipVotes) {
-      this.skipAlertView.hide();
+      skipAlertView.hide();
     }
     if (numSkipVotes === 0) {
-      this.activateSkipButton();
-      this.skipAlertView.hide();
+      activateSkipButton();
+      skipAlertView.hide();
     } else {
-      this.skipAlertView.show();
+      skipAlertView.show();
     }
   }
-  activateSkipButton() {
-    this.skipBtn.classList.remove("btn-primary");
+  function activateSkipButton() {
+    skipBtn.classList.remove("btn-primary");
   }
-  disableSkipButton() {
-    this.skipBtn.classList.add("btn-primary");
+  function disableSkipButton() {
+    skipBtn.classList.add("btn-primary");
   }
-  setHasVoted(hasVoted) {
-    this.hasVoted = hasVoted;
+  function setHasVoted(_hasVoted) {
+    hasVoted = _hasVoted;
     if (hasVoted) {
-      this.disableSkipButton();
+      disableSkipButton();
     } else {
-      this.activateSkipButton();
+      activateSkipButton();
     }
   }
-  onSkipRequest(cb) {
-    this.skipCb = cb;
+  function onSkipRequest(cb) {
+    skipCb = cb;
   }
-  onUnSkipRequest(cb) {
-    this.unSkipCb = cb;
+  function onUnSkipRequest(cb) {
+    unSkipCb = cb;
   }
-  _formatText(numSkipVotes, requiredSkipVotes) {
-    return `skip (${numSkipVotes}/${requiredSkipVotes})`;
+
+  return {
+    setSkipValues,
+    activateSkipButton,
+    disableSkipButton,
+    setHasVoted,
+    onSkipRequest,
+    onUnSkipRequest
   }
 }

@@ -8,18 +8,16 @@ const modalSelector = '#add-track-modal';
 const addTrackButtonSelector = '.search-result-add';
 const searchFieldInputName = "search-query";
 const searchTimeoutMs = 400;
-export default class AddTrackModal {
+export default function AddTrackModal {
   searchTimeout;
-  constructor() {
-    this.modalElement = $(modalSelector);
-    this.searchResultsView = new SearchResultsView();
-    this.searchResultsView.updateSearchResults([]);
-    this._setupEvents();
-    document.getElementById("add-track-button").addEventListener("click", (e) => {
-      this.show();
-    });
-  }
-  init() {
+  let modalElement = $(modalSelector);
+  let searchResultsView = new SearchResultsView();
+  searchResultsView.updateSearchResults([]);
+  _setupEvents();
+  document.getElementById("add-track-button").addEventListener("click", (e) => {
+    show();
+  });
+  function init() {
     $(modalSelector).modal({
       backdrop: true,
       keyboard: true,
@@ -30,46 +28,54 @@ export default class AddTrackModal {
       $('#search-query').focus();
     });
   }
-  show() {
+  function show() {
     $(modalSelector).modal('show');
   }
-  populateSearchResults(searchResults) {
-    this.searchResultsView.updateSearchResults(searchResults);
-    this._setupEvents();
-    let that = this;
+  function populateSearchResults(searchResults) {
+    searchResultsView.updateSearchResults(searchResults);
+    _setupEvents();
     $(addTrackButtonSelector).click(e => {
-      that.onAddTrackCb("spotify:track:" + e.currentTarget.value);
+      onAddTrackCb("spotify:track:" + e.currentTarget.value);
     });
   }
-  onSearchQuerySubmit(cb) {
-    this.onSearchQuerySubmitCb = cb;
+  function onSearchQuerySubmit(cb) {
+    onSearchQuerySubmitCb = cb;
   }
-  onAddTrack(cb) {
-    this.onAddTrackCb = cb;
+  function onAddTrack(cb) {
+    onAddTrackCb = cb;
   }
-  dismiss() {
+  function dismiss() {
     $(modalSelector).modal('hide');
   }
-  _setupEvents() {
+  function _setupEvents() {
     $(searchFormSelector).on('submit', (event) => {
       event.preventDefault();
       event.stopPropagation();
       let searchQuery = getInputValueFromForm($(event.currentTarget), searchFieldInputName);
-      this.onSearchQuerySubmitCb(searchQuery);
-      this.searchResultsView.showLoading();
+      onSearchQuerySubmitCb(searchQuery);
+      searchResultsView.showLoading();
       return false;
     });
     $('#search-query').on("input", ((event) => {
-      clearTimeout(this.searchTimeout);
+      clearTimeout(searchTimeout);
       if (!event.currentTarget.focus) return;
       let searchQuery = event.currentTarget.value;
-      this.searchResultsView.showLoading();
-      this.searchTimeout = setTimeout(() => {
-        this.onSearchQuerySubmitCb(searchQuery);
+      searchResultsView.showLoading();
+      searchTimeout = setTimeout(() => {
+        onSearchQuerySubmitCb(searchQuery);
       }, searchTimeoutMs);
     }).bind(this));
-    $('#add-modal-dismiss').click((e => {
-      this.dismiss();
-    }).bind(this));
+    $('#add-modal-dismiss').click(e => {
+      dismiss();
+    });
+  }
+
+  return {
+    init,
+    show,
+    populateSearchResults,
+    onSearchQuerySubmit,
+    onAddTrack,
+    dismiss
   }
 }

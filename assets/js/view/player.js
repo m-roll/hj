@@ -1,28 +1,38 @@
-export default class PlayerView {
-  constructor() {
-    this.progressBarElement = document.getElementById("track-progress");
-    this.setEmpty();
-  }
-  updatePlayer(status) {
-    this.progressBarElement.classList.remove('hide');
+export default function PlayerView() {
+  let progressBarElement = document.getElementById("track-progress");
+  let isPaused;
+  let startTimestamp;
+  let trackLength;
+  let isEmpty;
+  setEmpty();
+  
+  function updatePlayer(status) {
+    progressBarElement.classList.remove('hide');
     let isStarting = !status.paused;
-    this.isPaused = status.paused;
-    this.startTimestamp = +new Date() - status.position;
-    this.trackLength = status.duration;
-    this.isEmpty = false;
+    isPaused = status.paused;
+    startTimestamp = +new Date() - status.position;
+    trackLength = status.duration;
+    isEmpty = false;
   }
-  setEmpty() {
-    this.progressBarElement.classList.add('hide');
+  function setEmpty() {
+    progressBarElement.classList.add('hide');
   }
-  setTrackPlaybackInfo(startTimestamp, trackLength) {}
-  animate(absTimestamp) {
-    if (this.trackLength && !this.isPaused) {
-      let ratio = (absTimestamp - this.startTimestamp) / this.trackLength;
+  function setTrackPlaybackInfo(startTimestamp, trackLength) {}
+  function animate(absTimestamp) {
+    if (trackLength && !isPaused) {
+      let ratio = (absTimestamp - startTimestamp) / trackLength;
       if (ratio > 1) ratio = 1;
-      this._setTrackProgress(ratio);
+      _setTrackProgress(ratio);
     }
   }
-  _setTrackProgress(ratio) {
-    this.progressBarElement.style.width = (ratio * 100) + "%";
+  function _setTrackProgress(ratio) {
+    progressBarElement.style.width = (ratio * 100) + "%";
+  }
+
+  return {
+    updatePlayer,
+    setEmpty,
+    setTrackPlaybackInfo,
+    animate
   }
 }

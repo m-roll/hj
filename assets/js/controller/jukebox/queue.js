@@ -1,28 +1,22 @@
-import {
-  ready
-} from "jquery"
-export default class QueueController {
-  constructor(roomCodeThunk, queueProducerThunk, queueReceiverThunk, userPrefsProviderThunk, queueView, statusView) {
-    this.roomCodeThunk = roomCodeThunk;
-    this.queueProducerThunk = queueProducerThunk;
-    this.queueReceiverThunk = queueReceiverThunk;
-    this.userPrefsProviderThunk = userPrefsProviderThunk;
-    this.queueView = queueView;
-    this.statusView = statusView;
-  }
-  ready() {
-    console.log("Queueview", this.queueView);
-    this.queueProducerThunk().onSongProcessed(this.roomCodeThunk(), this.queueView.addToQueueDisplay.bind(this.queueView));
-    this.queueProducerThunk().onQueuePop(this.roomCodeThunk(), this.queueView.pop);
-    this.queueProducerThunk().fetch(this.roomCodeThunk());
-    this.queueProducerThunk().onQueueEmpty(() => {
-      this.statusView.setEmpty();
+export default function QueueController(roomCodeThunk, queueProducerThunk, queueReceiverThunk, userPrefsProviderThunk, queueView, statusView) {
+
+  function ready() {
+    queueProducerThunk().onSongProcessed(roomCodeThunk(), queueView.addToQueueDisplay);
+    queueProducerThunk().onQueuePop(roomCodeThunk(), queueView.pop);
+    queueProducerThunk().fetch(roomCodeThunk());
+    queueProducerThunk().onQueueEmpty(() => {
+      statusView.setEmpty();
     });
   }
-  addSong(url) {
-    this.queueReceiverThunk().addSong(this.roomCodeThunk(), url, this._getUserNickname());
+  function addSong(url) {
+    queueReceiverThunk().addSong(roomCodeThunk(), url, _getUserNickname());
   }
-  _getUserNickname() {
-    return this.userPrefsProviderThunk().getUserNickname();
+  function _getUserNickname() {
+    return userPrefsProviderThunk().getUserNickname();
+  }
+
+  return {
+    ready,
+    addSong
   }
 }
