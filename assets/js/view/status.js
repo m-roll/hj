@@ -37,21 +37,21 @@ export default function StatusView(playerView) {
     playerView.setEmpty();
   }
   function _setTrackName(trackName) {
-    this.trackPlayingName.textContent = trackName;
-    this.trackPlayingName.classList.remove("blank");
+    trackPlayingName.textContent = trackName;
+    trackPlayingName.classList.remove("blank");
   }
   function _setPlayingArtists(artists) {
     if (artists) {
-      this._setPlayingArtistString(getArtistString(artists));
+      _setPlayingArtistString(getArtistString(artists));
     }
   }
   function _setPlayingArtistString(text) {
-    this.trackPlayingArtist.textContent = text;
-    this.trackPlayingArtist.classList.remove("blank");
+    trackPlayingArtist.textContent = text;
+    trackPlayingArtist.classList.remove("blank");
   }
   function _setTrackArtwork(artworkUrl) {
-    this.backgroundElem.style.backgroundImage = `url(${artworkUrl})`;
-    this.albumSmall.style.backgroundImage = `url(${artworkUrl})`;
+    backgroundElem.style.backgroundImage = `url(${artworkUrl})`;
+    albumSmall.style.backgroundImage = `url(${artworkUrl})`;
   }
 
   return {

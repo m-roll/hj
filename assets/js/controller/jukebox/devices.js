@@ -4,6 +4,8 @@ export default function  DevicesController(devicesView, devicesProviderThunk, ro
   let devicesListCache;
   let onMuteCb;
   let _onReadyForPlaybackCb, _onNotReadyForPlaybackCb;
+  let _deviceListinitialized = false;
+  isListening = false;
   function ready() {
     _setupListeners();
     if (isLoggedIn) {
@@ -56,6 +58,10 @@ export default function  DevicesController(devicesView, devicesProviderThunk, ro
   }
   function _updateDevices(devices) {
     devicesView.updateDevices(devices, isListening);
+    if (!_deviceListinitialized) {
+      //_deviceListinitialized = true;
+      return;
+    }
     let hasActiveDevice = _hasActiveDevice(devices);
     devicesView.setHasActiveDevice(hasActiveDevice);
     if (hasActiveDevice && !isDeviceReady) {

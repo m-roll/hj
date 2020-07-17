@@ -7,7 +7,7 @@ export default function RoomNotFoundView(joinRoomView) {
   _setupRoomNfModal();
 
   function showRoomNotFoundError() {
-    this.roomNfModal.show();
+    roomNfModal.show();
   }
 
   function _setupRoomNfModal() {
